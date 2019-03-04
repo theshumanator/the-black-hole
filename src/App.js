@@ -1,32 +1,27 @@
 import React, { Component } from 'react';
-import Button from 'react-bootstrap/Button';
-
-const axios = require('axios');
+import Header from './components/functional/Header';
 
 
 class App extends Component {
 
   state = {
-    topics: []
+    loggedUser: null
   }
   componentDidMount () {
-    axios.get('https://shumanator-nc-knews.herokuapp.com/api/topics')
-      .then((response) => {
-        //console.log(response);
-        this.setState({topics: response.data.topics});
-      })
-      .catch((error) => console.log(error));
+   if (localStorage.getItem('userLoggedIn')) {
+     this.setState({loggedUser: localStorage.getItem('userLoggedIn')})
+   }
   }
 
   render() {
     return (
       <div>
-        <h1>The Black Hole</h1>
-        <Button variant="primary">Primary</Button>
-        {this.state.topics.map(topic => <p>{topic.slug}</p>)}
+        
+        <Header/>
       </div>
     );
   }
+
 }
 
 export default App;
