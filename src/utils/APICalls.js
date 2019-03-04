@@ -22,9 +22,21 @@ const createNewUser = ( newUser ) => {
         } );
 };
 
-module.exports = { getUserDetails, createNewUser };
+const getArticlesByUser = ( username ) => {
+    return axios.get( `https://shumanator-nc-knews.herokuapp.com/api/articles?author=${ username }` )
+        .then( ( { data: { articles } } ) => {
+            return articles;
+        } )
+        .catch( ( { response: { data } } ) => {                           
+            console.error( data );
+            return data;
+        } );
+};
+
+module.exports = { getUserDetails, createNewUser, getArticlesByUser };
 
 /* 
+`
 http://localhost:3000/
 GET /api/topics
 POST /api/topics
@@ -43,9 +55,11 @@ PATCH /api/comments/:comment_id
 DELETE /api/comments/:comment_id
 
 GET /api/users
+
+Done:
+GET /api/users/:username
 POST /api/users
 
-GET /api/users/:username
-
+No need:
 GET /api
 */

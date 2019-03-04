@@ -5,6 +5,7 @@ import LoginForm from './LoginForm';
 import {getUserDetails, createNewUser} from '../utils/APICalls';
 import WelcomeUser from './WelcomeUser';
 import SignupForm from './SignupForm';
+import {Link} from '@reach/router';
 
 class Header extends Component {
 
@@ -94,11 +95,11 @@ class Header extends Component {
 
     render () {
         return(
-            <div className="header">            
+            <div className="header">               
                 <Container>
                     <Row>
                         <Col xs={6}>
-                            <h1>The Black Hole</h1>
+                        <Link to={`/`}><h1>The Black Hole</h1></Link>
                         </Col>
                         <Col>
                             {
