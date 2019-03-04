@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { Alert, Form, Button, Row, Col, FormGroup, FormControl} from 'react-bootstrap';
+import React from 'react';
+import '../main.css';
+import {Form, Button, Row, Col, FormGroup, FormControl} from 'react-bootstrap';
 
 
 const LoginForm = (props) => {
@@ -21,8 +22,7 @@ const LoginForm = (props) => {
                     </FormGroup>
                 </Form>                
             </div>
-        )
-    
+        )    
 }
 
 export default LoginForm;

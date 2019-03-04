@@ -1,18 +1,28 @@
 const axios = require( 'axios' );
 
 const getUserDetails = ( username ) => {
-    console.log( username );
-
     return axios.get( `https://shumanator-nc-knews.herokuapp.com/api/users/${ username }` )
         .then( ( { data: { user } } ) => {
             return user;
         } )
-        .catch( ( error ) => {            
+        .catch( ( { response: { data } } ) => {               
+            console.error( data );
             return null;
         } );
 };
 
-module.exports = { getUserDetails };
+const createNewUser = ( newUser ) => {
+    return axios.post( 'https://shumanator-nc-knews.herokuapp.com/api/users', newUser )
+        .then( ( { data } ) => {
+            return data;
+        } )
+        .catch( ( { response: { data } } ) => {               
+            console.error( data );
+            return data;
+        } );
+};
+
+module.exports = { getUserDetails, createNewUser };
 
 /* 
 http://localhost:3000/
