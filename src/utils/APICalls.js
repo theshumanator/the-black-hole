@@ -96,6 +96,17 @@ const createNewTopic = ( newTopic ) => {
         } );
 };
 
+const createNewComment = ( articleId, newComment ) => {
+    return axios.post( `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }/${ COMMENTS_EP }`, newComment )
+        .then( ( { data } ) => {
+            return data;
+        } )
+        .catch( ( { response: { data } } ) => {               
+            console.error( data );
+            return data;
+        } );
+};
+
 const updateVote = ( articleId, vote ) => {
     return axios.patch( `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }`, vote )
         .then( ( { data: { article } } ) => {
@@ -129,7 +140,7 @@ const getArticleComments = ( articleId ) => {
         } );
 };
 
-module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics, updateVote , getArticleComments, updateCommentVote };
+module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics, updateVote , getArticleComments, updateCommentVote, createNewComment };
 
 /* 
 getArticlesByUser

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import {updateCommentVote} from '../utils/APICalls';
 

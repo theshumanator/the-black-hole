@@ -53,7 +53,7 @@ class SingleArticle extends Component {
                                     <span> What do you think this article? </span>
                                     <Button variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
                                 </p>
-                                <ArticleComments article={singleArticle}/>                                                   
+                                <ArticleComments article={singleArticle} loggedUser={this.props.loggedUser}/>                                                   
                             </Fragment>                                    
                         :   <p>{singleArticle.msg}</p>                        
                 }
