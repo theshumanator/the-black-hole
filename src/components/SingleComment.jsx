@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, Button } from 'react-bootstrap';
-import {updateCommentVote} from '../utils/APICalls';
+import {updateCommentVote, deleteComment} from '../utils/APICalls';
 
 class SingleComment extends Component {
 
@@ -21,6 +21,15 @@ class SingleComment extends Component {
             .catch(error => console.log('got : ' + error))
     }
 
+    handleDelete = () => {
+        deleteComment(this.state.comment.comment_id)
+            .then((status) => {
+                if(status===204) {
+                    this.props.handleDeleteDone()
+                }
+            })
+            .catch(error => console.log('got : ' + error))
+    }
 
     render() {
         const {comment} = this.state;
@@ -35,6 +44,11 @@ class SingleComment extends Component {
                     <Button variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
                         <span> What do you think of this comment? </span>
                     <Button variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
+                    </p>
+                    <p>
+                        {
+                            this.props.loggedUser === comment.author && <Button variant="danger" size="sm" onClick={this.handleDelete}>Delete my comment</Button>
+                        }
                     </p>
                 </Card.Body>
             </Card>

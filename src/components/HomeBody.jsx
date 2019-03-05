@@ -48,8 +48,7 @@ class HomeBody extends Component {
     componentDidUpdate () {
         if(this.state.reQuery) {
             this.fetchArticles();
-        }
-        
+        }        
     }
 
     fetchArticles () {

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import {Link} from '@reach/router';
+import {Link, navigate} from '@reach/router';
 import {Button} from 'react-bootstrap'
-import {getArticleById, updateVote} from '../utils/APICalls';
+import {getArticleById, updateVote, deleteArticle} from '../utils/APICalls';
 import ArticleComments from './ArticleComments';
 
 class SingleArticle extends Component {
@@ -23,6 +23,16 @@ class SingleArticle extends Component {
         updateVote(this.props.articleId, {inc_votes: voteVal})
             .then((article) => { 
                 this.setState({article: JSON.stringify(article)});                
+            })
+            .catch(error => console.log('got : ' + error))
+    }
+
+    handleDelete = () => {
+        deleteArticle(this.props.articleId)
+            .then((status) => {
+                if(status===204) {
+                    navigate('/');
+                }
             })
             .catch(error => console.log('got : ' + error))
     }
@@ -53,6 +63,9 @@ class SingleArticle extends Component {
                                     <span> What do you think this article? </span>
                                     <Button variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
                                 </p>
+                                {
+                                    this.props.loggedUser === singleArticle.author && <Button variant="danger" size="sm" onClick={this.handleDelete}>Delete article</Button>
+                                }
                                 <ArticleComments article={singleArticle} loggedUser={this.props.loggedUser}/>                                                   
                             </Fragment>                                    
                         :   <p>{singleArticle.msg}</p>                        

@@ -14,12 +14,11 @@ class AddNewComment extends Component {
     handleAddNewComment = () => {
         createNewComment(this.props.articleId, {username: this.state.username, 
                             body: this.state.commentBody})
-            .then((data) => {
-                console.log(data)
+            .then((data) => {                
                 if ('comment' in data) {
                     this.setState({commentAdded: true, commentAddError:'none', newCommentId: data.comment.comment_id})
                 } else {
-                    this.setState({topicAdded: false, topicAddError: data.msg})
+                    this.setState({commentAdded: false, commentAddError: data.msg})
                 }
             })
             .catch(error => console.log('got : ' + error))
@@ -27,6 +26,11 @@ class AddNewComment extends Component {
 
     handleCommentChange = (event) => {
         this.setState({commentBody: event.target.value, commentAdded: false, commentAddError: 'none', newCommentId: null})
+    }
+    componentDidUpdate(){
+        if (this.state.newCommentId!==null && this.state.commentAdded && this.state.commentAddError==='none') {
+            this.props.handleNewCommentClose();
+        }
     }
     componentDidMount () {
         this.setState({username: this.props.loggedUser});        
@@ -45,15 +49,15 @@ class AddNewComment extends Component {
                     </Form>
                    { 
                         (!this.state.commentAdded && this.state.commentAddError!=='none')
-                        ?   <Alert variant='danger'>Topic could not be added: {this.state.commentAddError}</Alert>
+                        ?   <Alert variant='danger'>Comment could not be added: {this.state.commentAddError}</Alert>
                         :   this.state.commentAdded
-                            ?   <Alert variant='success'>Topic has been added</Alert>
+                            ?   <Alert variant='success'>Comment has been added</Alert>
                             :   <Fragment/>                            
                     }                   
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={this.handleAddNewComment}>
-                        Create new Topic
+                        Post comment
                     </Button>
                     <Button variant="secondary" onClick={this.props.handleNewCommentClose}>
                         Close

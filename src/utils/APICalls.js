@@ -129,8 +129,24 @@ const updateCommentVote = ( commentId, vote ) => {
         } );
 };
 
-const getArticleComments = ( articleId ) => {
-    return axios.get( `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }/comments` )
+const getArticleComments = ( articleId, requestedQuery ) => {
+    let url = `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }/comments`;
+
+    const possibleQueries = [ 'sort_by', 'order' ];
+    const queryClause = Object.keys( requestedQuery ).reduce( ( acc, key, idx ) => {
+        if ( possibleQueries.includes( key ) ) {
+            if ( idx !== 0 ) {
+                acc += '&';
+            }
+            acc += `${ key }=${ requestedQuery[ key ] }`;            
+        }
+        return acc;
+    },'' );
+
+    if ( queryClause !== '' ) {
+        url += `?${ queryClause }`;
+    }
+    return axios.get( url )
         .then( ( { data: { comments } } ) => {
             return comments;
         } )
@@ -140,7 +156,29 @@ const getArticleComments = ( articleId ) => {
         } );
 };
 
-module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics, updateVote , getArticleComments, updateCommentVote, createNewComment };
+const deleteArticle = ( articleId ) => {
+    return axios.delete( `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }` )
+        .then( ( { status } ) => {
+            return status;
+        } )
+        .catch( ( { response: { data } } ) => {                           
+            console.error( data );
+            return data;
+        } );
+};
+
+const deleteComment = ( commentId ) => {
+    return axios.delete( `${ BASE_URL }/${ COMMENTS_EP }/${ commentId }` )
+        .then( ( { status } ) => {
+            return status;
+        } )
+        .catch( ( { response: { data } } ) => {                           
+            console.error( data );
+            return data;
+        } );
+};
+
+module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics, updateVote , getArticleComments, updateCommentVote, createNewComment, deleteArticle, deleteComment };
 
 /* 
 getArticlesByUser
