@@ -63,7 +63,7 @@ class HomeBody extends Component {
     render() {
         const articleArr = this.state.articles;        
         const loggedUser = this.props.loggedUser;
-        //console.log('loggedUser in homebody' + loggedUser);
+        console.log('loggedUser in homebody' + loggedUser);
         return (    
             <div>
                 <Row>

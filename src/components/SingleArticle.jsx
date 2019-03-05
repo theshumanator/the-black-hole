@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import {Link} from '@reach/router';
-import {getArticleById} from '../utils/APICalls';
+import {Button} from 'react-bootstrap'
+import {getArticleById, updateVote} from '../utils/APICalls';
+import ArticleComments from './ArticleComments';
 
 class SingleArticle extends Component {
 
@@ -17,13 +19,20 @@ class SingleArticle extends Component {
             .catch(error => console.log('got : ' + error))
     }
 
+    handleVote = (voteVal) => {        
+        updateVote(this.props.articleId, {inc_votes: voteVal})
+            .then((article) => { 
+                this.setState({article: JSON.stringify(article)});                
+            })
+            .catch(error => console.log('got : ' + error))
+    }
 
     render() {
-        const articleStr = this.state.article;
+        const articleStr = this.state.article;        
         let singleArticle={};
         if (articleStr) {
             singleArticle=JSON.parse(articleStr);
-        }        
+        }                
         return (
             <div>
                 {
@@ -38,11 +47,15 @@ class SingleArticle extends Component {
                                     <span>ON: {singleArticle.created_at}</span>
                                 </p>
                                 <p>{singleArticle.body}</p>
-                                <p>Rating: {singleArticle.votes}</p>
-                                <p>Comments: {singleArticle.comment_count}</p>                    
+                                <span>Rating: {singleArticle.votes}</span>
+                                <p>
+                                    <Button variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
+                                    <span> What do you think this article? </span>
+                                    <Button variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
+                                </p>
+                                <ArticleComments article={singleArticle}/>                                                   
                             </Fragment>                                    
-                        :   <p>{singleArticle.msg}</p>
-                        
+                        :   <p>{singleArticle.msg}</p>                        
                 }
             </div>
         )

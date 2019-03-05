@@ -1,5 +1,5 @@
 const axios = require( 'axios' );
-const { BASE_URL, USERS_EP, ARTICLES_EP, TOPICS_EP } = require( '../utils/urls' );
+const { BASE_URL, USERS_EP, ARTICLES_EP, TOPICS_EP, COMMENTS_EP } = require( '../utils/urls' );
 
 const getUserDetails = ( username ) => {
     return axios.get( `${ BASE_URL }/${ USERS_EP }/${ username }` )
@@ -96,7 +96,40 @@ const createNewTopic = ( newTopic ) => {
         } );
 };
 
-module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics };
+const updateVote = ( articleId, vote ) => {
+    return axios.patch( `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }`, vote )
+        .then( ( { data: { article } } ) => {
+            return article;
+        } )
+        .catch( ( { response: { data } } ) => {               
+            console.error( data );
+            return data;
+        } );
+};
+
+const updateCommentVote = ( commentId, vote ) => {
+    return axios.patch( `${ BASE_URL }/${ COMMENTS_EP }/${ commentId }`, vote )
+        .then( ( { data: { comment } } ) => {
+            return comment;
+        } )
+        .catch( ( { response: { data } } ) => {               
+            console.error( data );
+            return data;
+        } );
+};
+
+const getArticleComments = ( articleId ) => {
+    return axios.get( `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }/comments` )
+        .then( ( { data: { comments } } ) => {
+            return comments;
+        } )
+        .catch( ( { response: { data } } ) => {                           
+            console.error( data );
+            return data;
+        } );
+};
+
+module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics, updateVote , getArticleComments, updateCommentVote };
 
 /* 
 getArticlesByUser

@@ -49,7 +49,7 @@ class Header extends Component {
 
     handleSignupClose = () => {
         console.log('Closing signup')
-        this.setState({ showSignupModal: false, isActionLoginOut: false });
+        this.setState({ showSignupModal: false, isActionLoginOut: true });
     } 
     componentDidUpdate () {
         if(this.state.isActionLoginOut) {

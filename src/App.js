@@ -10,7 +10,8 @@ import SingleTopic from './components/SingleTopic';
 class App extends Component {
 
   state = {
-    loggedUser: null
+    loggedUser: null    
+    
   }
   componentDidMount () {
    if (localStorage.getItem('userLoggedIn')) {
