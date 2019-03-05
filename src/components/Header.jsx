@@ -5,7 +5,6 @@ import {Link} from '@reach/router';
 import LoginForm from './LoginForm';
 import WelcomeUser from './WelcomeUser';
 import SignupForm from './SignupForm';
-import NewTopicForm from './NewTopicForm';
 import '../main.css';
 
 class Header extends Component {
@@ -14,11 +13,11 @@ class Header extends Component {
         userInput : '',
         loginError: false,
         showSignupModal: false,
-        showNewTopicModal: false        
+        isActionLoginOut: false
     };
 
     handleChange = (event) => {
-        this.setState({ userInput: event.target.value, loginError: false });
+        this.setState({ userInput: event.target.value, loginError: false, isActionLoginOut: false });
     }
 
     handleLogin = (event) => {
@@ -26,12 +25,12 @@ class Header extends Component {
         getUserDetails(this.state.userInput)
             .then((user) => {
                 if (!user) {
-                    this.setState({userInput: '', loginError: true});
+                    this.setState({userInput: '', loginError: true, isActionLoginOut: false});
                 } else {
                     localStorage.setItem('userLoggedIn', this.state.userInput);
                     localStorage.setItem('userName', user.name);
                     localStorage.setItem('userAvatar', user.avatar_url);
-                    this.setState({loginError: false});                    
+                    this.setState({loginError: false, isActionLoginOut: true});                    
                 }
             })
             .catch(error => console.log('got : ' + error))
@@ -41,27 +40,24 @@ class Header extends Component {
         localStorage.removeItem('userLoggedIn');
         localStorage.removeItem('userName');
         localStorage.removeItem('userAvatar');
-        this.setState({loginError: false});
+        this.setState({loginError: false, isActionLoginOut: true});
     }
 
     handleShowSignup = () => {        
-        this.setState({ loginError: false, showSignupModal: true });
+        this.setState({ loginError: false, showSignupModal: true, isActionLoginOut: false});
     }
 
     handleSignupClose = () => {
         console.log('Closing signup')
-        this.setState({ showSignupModal: false });
+        this.setState({ showSignupModal: false, isActionLoginOut: false });
     } 
-
-    handleShowNewTopic = () => {
-        console.log('bringing up new modal')
-        this.setState({ showNewTopicModal: true });
+    componentDidUpdate () {
+        if(this.state.isActionLoginOut) {
+            this.setState({isActionLoginOut: false}, () => {
+                this.props.updateUser();
+            })
+        }
     }
-
-    handleNewTopicClose = () => {
-        console.log('Closing new topic modal')
-        this.setState({ showNewTopicModal: false });
-    } 
 
     render () {        
         return(
@@ -98,16 +94,7 @@ class Header extends Component {
                                 }          
                             </Col>                        
                         </Row> 
-                        :<Row>
-                            <Button variant="primary" onClick={this.handleShowNewTopic}>Create a new topic</Button>
-                            {
-                                this.state.showNewTopicModal && <NewTopicForm
-                                    showNewTopicModal={this.state.showNewTopicModal}
-                                    handleNewTopicClose={this.handleNewTopicClose}
-                                />
-                            }
-                            <Button variant="primary">Create a new article</Button>
-                        </Row>
+                        :<Row/>
                     }                                           
                 </Container>
             </div>

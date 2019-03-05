@@ -18,19 +18,29 @@ class App extends Component {
    }
   }
 
-  render() {
+  updateUser = () => {
+    if(localStorage.getItem('userLoggedIn')) {
+      this.setState({loggedUser: localStorage.getItem('userLoggedIn')})
+    } else {
+      this.setState({loggedUser: null})
+    }
+  }
+
+  render () {
+    console.log('loggedUser is ' + this.state.loggedUser)
     return (
       <div>
-        <Header/>
+        <Header updateUser={this.updateUser}/>
         <Router>
-          <HomeBody path='/'/>
+          <HomeBody path='/' loggedUser={this.state.loggedUser}/>
           <UserDashboard path='/users/:username'/>
-          <SingleArticle path='/articles/:articleId'/>          
+          <SingleArticle path='/articles/:articleId' loggedUser={this.state.loggedUser}/>          
           <SingleTopic path='/topics/:slug'/>
         </Router>        
       </div>
     );
   }
+
 
 }
 

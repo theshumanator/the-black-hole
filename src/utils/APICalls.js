@@ -23,6 +23,17 @@ const createNewUser = ( newUser ) => {
         } );
 };
 
+const postNewArticle = ( newArticle ) => {
+    return axios.post( `${ BASE_URL }/${ ARTICLES_EP }`, newArticle )
+        .then( ( { data } ) => {
+            return data;
+        } )
+        .catch( ( { response: { data } } ) => {               
+            console.error( data );
+            return data;
+        } );
+};
+
 const getAllArticles = ( requestedQuery ) => {        
 
     let url = `${ BASE_URL }/${ ARTICLES_EP }`;
@@ -63,6 +74,17 @@ const getArticleById = ( articleId ) => {
         } );
 };
 
+const getAllTopics = ( ) => {
+    return axios.get( `${ BASE_URL }/${ TOPICS_EP }` )
+        .then( ( { data: { topics } } ) => {
+            return topics;
+        } )
+        .catch( ( { response: { data } } ) => {                           
+            console.error( data );
+            return data;
+        } );
+};
+
 const createNewTopic = ( newTopic ) => {
     return axios.post( `${ BASE_URL }/${ TOPICS_EP }`, newTopic )
         .then( ( { data } ) => {
@@ -74,7 +96,7 @@ const createNewTopic = ( newTopic ) => {
         } );
 };
 
-module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic };
+module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics };
 
 /* 
 getArticlesByUser

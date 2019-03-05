@@ -1,7 +1,9 @@
-import React, { Component} from 'react';
+import React, { Component, Fragment} from 'react';
 import {Link} from '@reach/router';
 import {getAllArticles} from '../utils/APICalls';
-import {Dropdown, DropdownButton, Row, Col} from 'react-bootstrap'
+import {Dropdown, DropdownButton, Row, Col, Button} from 'react-bootstrap'
+import NewTopicForm from './NewTopicForm';
+import NewArticleForm from './NewArticleForm';
 
 class HomeBody extends Component {
 
@@ -9,13 +11,36 @@ class HomeBody extends Component {
         articles: [],
         sortByKey: 'created_at', //default
         sortOrder: 'desc', //default
-        reQuery: true
+        reQuery: true,
+        showNewTopicModal: false,
+        showNewArticleModal: false
     }
 
     handleSortSelect = (eventKey) => {
         const sortArr = eventKey.split(' ');
         this.setState({sortByKey: sortArr[0], sortOrder: sortArr[1], reQuery: true});
     }
+
+    handleShowNewTopic = () => {
+        console.log('bringing up new modal')
+        this.setState({ showNewTopicModal: true, reQuery: false });
+    }
+
+    handleNewTopicClose = () => {
+        console.log('Closing new topic modal')
+        this.setState({ showNewTopicModal: false, reQuery: false });
+    } 
+
+    handleShowNewArticle = () => {
+        console.log('bringing up new modal')
+        this.setState({ showNewArticleModal: true, reQuery: false });
+    }
+
+    handleNewArticleClose = () => {
+        console.log('Closing new articl modal')
+        this.setState({ showNewArticleModal: false, reQuery: true });
+    } 
+
     componentDidMount () {
         this.fetchArticles();
     }
@@ -37,8 +62,9 @@ class HomeBody extends Component {
 
     render() {
         const articleArr = this.state.articles;        
-
-        return (
+        const loggedUser = this.props.loggedUser;
+        //console.log('loggedUser in homebody' + loggedUser);
+        return (    
             <div>
                 <Row>
                     <Col>
@@ -51,6 +77,31 @@ class HomeBody extends Component {
                             <Dropdown.Item eventKey="topic desc" onSelect={this.handleSortSelect}>Topic (Z-A)</Dropdown.Item>
                         </DropdownButton>
                     </Col>
+                    
+
+                    {
+                        loggedUser
+                        ?   <Fragment>
+                                 <Col>
+                                    <Button variant="primary" onClick={this.handleShowNewTopic}>Create a new topic</Button>
+                                    {
+                                        this.state.showNewTopicModal && <NewTopicForm
+                                        showNewTopicModal={this.state.showNewTopicModal}
+                                        handleNewTopicClose={this.handleNewTopicClose}
+                                    />
+                                    }
+                                </Col>
+                                <Col>
+                                    <Button variant="primary" onClick={this.handleShowNewArticle}>Create a new article</Button>
+                                    {
+                                        this.state.showNewArticleModal && <NewArticleForm
+                                        showNewArticleModal={this.state.showNewArticleModal}
+                                        handleNewArticleClose={this.handleNewArticleClose}/>
+                                    }
+                                </Col>
+                            </Fragment>
+                        :   <Fragment/>
+                    }
                 </Row>
                 
                 {
