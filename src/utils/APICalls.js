@@ -158,8 +158,8 @@ const getArticleComments = ( articleId, requestedQuery ) => {
 
 const deleteArticle = ( articleId ) => {
     return axios.delete( `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }` )
-        .then( ( { status } ) => {
-            return status;
+        .then( ( data ) => {
+            return data.status;
         } )
         .catch( ( { response: { data } } ) => {                           
             console.error( data );

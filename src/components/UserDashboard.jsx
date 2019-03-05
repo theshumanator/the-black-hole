@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import {getAllArticles} from '../utils/APICalls';
+import {getAllArticles, deleteArticle} from '../utils/APICalls';
 import {Link} from '@reach/router';
+import {Row, Col, Button} from 'react-bootstrap';
 
 class UserDashboard extends Component {
 
@@ -31,8 +32,18 @@ class UserDashboard extends Component {
         .catch(error => console.log('got : ' + error))
     }
 
+    handleDelete = (articleId) => {        
+        deleteArticle(articleId)
+            .then((status) => {
+                if(status===204) {
+                    this.fetchArticles();
+                }
+            })
+            .catch(error => console.log('got : ' + error))
+    }
+
     render() {
-        const username = this.props.username;
+        const {username, loggedUser} = this.props.username;
         const articleArr = this.state.articles;
         return (
             <div>
@@ -42,7 +53,18 @@ class UserDashboard extends Component {
                         ? articleArr &&
                                 articleArr.map(article => {                        
                                     return (
-                                        <p key={article.article_id}>{article.topic}: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> {article.created_at}</p>
+                                        <Row key={article.article_id}>
+                                            <Col>
+                                                <p key={article.article_id}>{article.topic}: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> {article.created_at}</p>
+                                            </Col>
+                                            {   loggedUser === username &&
+                                                <Col>
+                                                    <Button variant="danger" size="sm" onClick={()=>this.handleDelete(article.article_id)}>Delete article</Button>
+                                                </Col>
+                                            }
+                                            
+                                        </Row>
+                                        
                                     )
                                 })                            
                         :   <p>No articles found for {username}</p>

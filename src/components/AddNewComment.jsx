@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import {Form, Button, FormControl, Modal, Alert, Row, Col} from 'react-bootstrap';
+import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
 import {createNewComment} from '../utils/APICalls';
 
 class AddNewComment extends Component {

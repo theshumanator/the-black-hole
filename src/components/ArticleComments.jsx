@@ -1,6 +1,6 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {Row, Col, Button, Dropdown, DropdownButton} from 'react-bootstrap';
-import {getArticleComments, updateCommentVote} from '../utils/APICalls'
+import {getArticleComments} from '../utils/APICalls'
 import SingleComment from './SingleComment';
 import AddNewComment from './AddNewComment';
 class ArticleComments extends Component {
