@@ -1,5 +1,5 @@
 const axios = require( 'axios' );
-const { BASE_URL, USERS_EP, ARTICLES_EP } = require( '../utils/urls' );
+const { BASE_URL, USERS_EP, ARTICLES_EP, TOPICS_EP } = require( '../utils/urls' );
 
 const getUserDetails = ( username ) => {
     return axios.get( `${ BASE_URL }/${ USERS_EP }/${ username }` )
@@ -63,7 +63,18 @@ const getArticleById = ( articleId ) => {
         } );
 };
 
-module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById };
+const createNewTopic = ( newTopic ) => {
+    return axios.post( `${ BASE_URL }/${ TOPICS_EP }`, newTopic )
+        .then( ( { data } ) => {
+            return data;
+        } )
+        .catch( ( { response: { data } } ) => {               
+            console.error( data );
+            return data;
+        } );
+};
+
+module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic };
 
 /* 
 getArticlesByUser

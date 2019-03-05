@@ -6,6 +6,7 @@ import {getUserDetails, createNewUser} from '../utils/APICalls';
 import WelcomeUser from './WelcomeUser';
 import SignupForm from './SignupForm';
 import {Link} from '@reach/router';
+import NewTopicForm from './NewTopicForm';
 
 class Header extends Component {
 
@@ -13,9 +14,11 @@ class Header extends Component {
         userInput : '',
         loginError: false,
         showSignupModal: false,
+        showNewTopicModal: false,
         inputUsername: '',
         inputName: '',
         inputAvatar: 'https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg', //setting a default avatar
+        
     };
 
     handleChange = (event) => {
@@ -93,7 +96,17 @@ class Header extends Component {
         this.setState({ inputAvatar: event.target.value});
     }
 
-    render () {
+    handleShowNewTopic = () => {
+        console.log('bringing up new modal')
+        this.setState({ showNewTopicModal: true });
+    }
+
+    handleNewTopicClose = () => {
+        console.log('Closing new topic modal')
+        this.setState({ showNewTopicModal: false });
+    } 
+
+    render () {        
         return(
             <div className="header">               
                 <Container>
@@ -130,9 +143,20 @@ class Header extends Component {
                                     handleUsernameChange={this.handleUsernameChange}/>}          
                             </Col>                        
                         </Row> 
-                        :<Row/>
-                    }
-                                           
+                        :<Row>
+                            <Button variant="primary" onClick={this.handleShowNewTopic}>Create a new topic</Button>
+                            {
+                                this.state.showNewTopicModal && <NewTopicForm
+                                    showNewTopicModal={this.state.showNewTopicModal}
+                                    handleNewTopicClose={this.handleNewTopicClose}
+                                    handleAddNewTopic={this.handleAddNewTopic}
+                                    handleTopicSlugChange={this.handleTopicSlugChange}
+                                    handleTopicDescriptionChange={this.handleTopicDescriptionChange}
+                                />
+                            }
+                            <Button variant="primary">Create a new article</Button>
+                        </Row>
+                    }                                           
                 </Container>
             </div>
         );

@@ -4,6 +4,7 @@ import Header from './components/Header';
 import UserDashboard from './components/UserDashboard';
 import HomeBody from './components/HomeBody';
 import SingleArticle from './components/SingleArticle';
+import SingleTopic from './components/SingleTopic';
 
 
 class App extends Component {
@@ -25,6 +26,7 @@ class App extends Component {
           <HomeBody path='/'/>
           <UserDashboard path='/users/:username'/>
           <SingleArticle path='/articles/:articleId'/>          
+          <SingleTopic path='/topics/:slug'/>
         </Router>        
       </div>
     );
