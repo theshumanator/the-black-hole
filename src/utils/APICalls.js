@@ -1,7 +1,8 @@
 const axios = require( 'axios' );
+const { BASE_URL, USERS_EP, ARTICLES_EP } = require( '../utils/urls' );
 
 const getUserDetails = ( username ) => {
-    return axios.get( `https://shumanator-nc-knews.herokuapp.com/api/users/${ username }` )
+    return axios.get( `${ BASE_URL }/${ USERS_EP }/${ username }` )
         .then( ( { data: { user } } ) => {
             return user;
         } )
@@ -12,7 +13,7 @@ const getUserDetails = ( username ) => {
 };
 
 const createNewUser = ( newUser ) => {
-    return axios.post( 'https://shumanator-nc-knews.herokuapp.com/api/users', newUser )
+    return axios.post( `${ BASE_URL }/${ USERS_EP }`, newUser )
         .then( ( { data } ) => {
             return data;
         } )
@@ -22,8 +23,26 @@ const createNewUser = ( newUser ) => {
         } );
 };
 
-const getArticlesByUser = ( username ) => {
-    return axios.get( `https://shumanator-nc-knews.herokuapp.com/api/articles?author=${ username }` )
+const getAllArticles = ( requestedQuery ) => {        
+
+    let url = `${ BASE_URL }/${ ARTICLES_EP }`;
+
+    const possibleQueries = [ 'author', 'topic', 'sort_by', 'order' ];
+    const queryClause = Object.keys( requestedQuery ).reduce( ( acc, key, idx ) => {
+        if ( possibleQueries.includes( key ) ) {
+            if ( idx !== 0 ) {
+                acc += '&';
+            }
+            acc += `${ key }=${ requestedQuery[ key ] }`;            
+        }
+        return acc;
+    },'' );
+
+    if ( queryClause !== '' ) {
+        url += `?${ queryClause }`;
+    }
+    
+    return axios.get( url )
         .then( ( { data: { articles } } ) => {
             return articles;
         } )
@@ -33,9 +52,21 @@ const getArticlesByUser = ( username ) => {
         } );
 };
 
-module.exports = { getUserDetails, createNewUser, getArticlesByUser };
+const getArticleById = ( articleId ) => {
+    return axios.get( `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }` )
+        .then( ( { data: { article } } ) => {
+            return article;
+        } )
+        .catch( ( { response: { data } } ) => {                           
+            console.error( data );
+            return data;
+        } );
+};
+
+module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById };
 
 /* 
+getArticlesByUser
 `
 http://localhost:3000/
 GET /api/topics

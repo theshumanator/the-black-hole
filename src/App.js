@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {Router} from '@reach/router';
 import Header from './components/Header';
 import UserDashboard from './components/UserDashboard';
+import HomeBody from './components/HomeBody';
+import SingleArticle from './components/SingleArticle';
 
 
 class App extends Component {
@@ -20,7 +22,9 @@ class App extends Component {
       <div>
         <Header/>
         <Router>
-          <UserDashboard path="/users/:username"/>
+          <HomeBody path='/'/>
+          <UserDashboard path='/users/:username'/>
+          <SingleArticle path='/articles/:articleId'/>          
         </Router>        
       </div>
     );
