@@ -57,7 +57,10 @@ class HomeBody extends Component {
                     articleArr &&
                     articleArr.map(article => {                       
                         return (
-                            <p key={article.article_id}><Link to={`/topics/${article.topic}`}>{article.topic}</Link>: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> {article.created_at}</p>
+                            <p key={article.article_id}><Link to={`/topics/${article.topic}`}>{article.topic}</Link>: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
+                            <span> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
+                            {article.created_at}
+                            </p>
                         )
                     })
                 }

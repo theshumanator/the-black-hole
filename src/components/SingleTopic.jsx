@@ -42,7 +42,9 @@ class SingleTopic extends Component {
                         ? articleArr &&
                                 articleArr.map(article => {                        
                                     return (
-                                        <p key={article.article_id}>{article.topic}: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> {article.created_at}</p>
+                                        <p key={article.article_id}> <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
+                                        <span> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
+                                        <span> ON: {article.created_at}</span></p>
                                     )
                                 })                            
                         :   <p>No articles found for topic: {slug}</p>
