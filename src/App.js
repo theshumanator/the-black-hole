@@ -26,7 +26,7 @@ class App extends Component {
       this.setState({loggedUser: null})
     }
   }
-
+  
   render () {
     console.log('loggedUser is ' + this.state.loggedUser)
     return (

@@ -6,7 +6,12 @@ class SingleTopic extends Component {
     state = {
         topic: null,
         articles: [],
-        articlesFound: true
+        articlesFound: true,
+        error: false,
+        hasMore: true,
+        loadMore: false,
+        isLoading: false,
+        pageNum: 1 //default
     }
 
     componentDidMount () {
@@ -14,32 +19,85 @@ class SingleTopic extends Component {
     }
 
     componentDidUpdate() {
-        if (this.state.topic!==this.props.slug) {
+        if (this.state.topic!==this.props.slug && !this.state.isLoading) {            
             this.fetchArticles();
+        } else if (this.state.loadMore && !this.state.isLoading) {
+            this.handleScroll()            
         }
     }
 
-    fetchArticles () {
-        getAllArticles({topic: this.props.slug})
-        .then(({articles}) => {
-            if (Array.isArray(articles)) {
-                this.setState({articles: articles, topic: this.props.slug, articlesFound: true});
+    componentWillMount () {              
+        //console.log('adding scroll to event listener')
+        window.addEventListener('scroll', this.handleScroll);        
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll);
+    };
+
+    handleScroll = (event) => {        
+        //console.log('handleScroll')        
+        const {error,isLoading,hasMore,pageNum, loadMore} = this.state;
+        if (error || isLoading || (!hasMore && !loadMore)) return;
+        //console.log(window.innerHeight, document.documentElement.scrollTop, 
+          //  document.documentElement.scrollHeight , document.documentElement.offsetHeight) 
+        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight) {
+            console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
+            if (hasMore) {                
+                localStorage.setItem('currScrollHeight', document.documentElement.scrollTop);              
+                this.fetchArticles(pageNum+1);
             } else {
-                this.setState({articles: [], topic: this.props.slug, articlesFound: false});
-            } 
-        })
-        .catch(error => console.log('got : ' + error))
+                console.log('Reached end and no more available')
+            }            
+        } 
+    }
+
+    fetchArticles (pageNum=1) {
+        this.setState({isLoading: true}, () => getAllArticles({topic: this.props.slug, p: pageNum})
+               .then(({articles, total_count}) => {     
+                    if (!Array.isArray(articles)) {
+                        this.setState({
+                            isLoading: false,
+                            hasMore: false,
+                            loadMore: false,
+                            articles: [], 
+                            topic: this.props.slug, 
+                            articlesFound: false});
+                    } else {
+                        this.setState({
+                            hasMore: ((this.state.articles.length + articles.length)<total_count),
+                            loadMore: (this.state.articles.length!==total_count),
+                            isLoading: false,
+                            articles: [...this.state.articles, ...articles],
+                            topic: this.props.slug,
+                            articlesFound: true,                            
+                            pageNum: pageNum
+                        }, () => {
+                            if (localStorage.getItem('currScrollHeight')) {
+                                document.documentElement.scrollTop = localStorage.getItem('currScrollHeight');
+                                localStorage.removeItem('currScrollHeight');
+                            }
+                        })
+                    }                                    
+                })
+                .catch(error => console.log('got : ' + error)) )
+
     }
 
     render () {
         const slug = this.props.slug;
         const articleArr = this.state.articles;
+        const {hasMore, isLoading, articlesFound} = this.state;     
+
         return (
             <div>
                 <h3>Articles on topic: {slug}</h3>
                 {
-                    this.state.articlesFound
-                        ? articleArr &&
+                    isLoading
+                    ? <h3>Loading...</h3>
+                    : <div>
+                        {articlesFound
+                            ? articleArr &&
                                 articleArr.map(article => {                        
                                     return (
                                         <p key={article.article_id}> <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
@@ -47,7 +105,12 @@ class SingleTopic extends Component {
                                         <span> ON: {article.created_at}</span></p>
                                     )
                                 })                            
-                        :   <p>No articles found for topic: {slug}</p>
+                            :   <p>No articles found for topic: {slug}</p>}
+                            {!hasMore && articlesFound &&
+                                <h3>You did it! You reached the end!</h3>
+                            } 
+                    </div>   
+                                    
                 }
                 
             </div>

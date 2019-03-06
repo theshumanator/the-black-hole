@@ -75,16 +75,13 @@ class Header extends Component {
                             }                           
                         </Col>
                         <Col>
-                            {this.state.loginError && <Alert variant='danger' dismissible>Invalid username. Try again.</Alert>}
-                        </Col>
-                    </Row>  
+                            {this.state.loginError && <Alert variant='danger' dismissible>Invalid username. Try again.</Alert>}                            
+                        </Col>                        
+                    </Row> 
                     {
                         !localStorage.getItem('userLoggedIn')
                         ?<Row>
                             <Col xs={6}/>
-                            <Col>                            
-                                <p>New user?</p>                            
-                            </Col>
                             <Col>
                                 <Button variant="success" onClick={this.handleShowSignup}>Sign Up</Button>
                                 {
@@ -95,7 +92,12 @@ class Header extends Component {
                             </Col>                        
                         </Row> 
                         :<Row/>
-                    }                                           
+                    } 
+                    <Row>
+                        <Col>
+                            {!localStorage.getItem('userLoggedIn') && <Alert variant='primary'>Signup or login to get full functionality (like posting articles and commenting)</Alert>}
+                        </Col>
+                    </Row>                                                               
                 </Container>
             </div>
         );

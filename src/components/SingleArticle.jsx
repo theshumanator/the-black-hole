@@ -7,7 +7,8 @@ import ArticleComments from './ArticleComments';
 class SingleArticle extends Component {
 
     state = {
-        article: null
+        article: null,
+        userVoted: false
     }
 
     componentDidMount () {
@@ -22,7 +23,7 @@ class SingleArticle extends Component {
     handleVote = (voteVal) => {        
         updateVote(this.props.articleId, {inc_votes: voteVal})
             .then((article) => { 
-                this.setState({article: JSON.stringify(article)});                
+                this.setState({article: JSON.stringify(article), userVoted: true});                
             })
             .catch(error => console.log('got : ' + error))
     }
@@ -38,11 +39,11 @@ class SingleArticle extends Component {
     }
 
     render() {
-        const articleStr = this.state.article;        
+        const articleStr = this.state.article;           
         let singleArticle={};
         if (articleStr) {
             singleArticle=JSON.parse(articleStr);
-        }                
+        }                     
         return (
             <div>                            
                 {
@@ -59,9 +60,9 @@ class SingleArticle extends Component {
                                 <p>{singleArticle.body}</p>
                                 <span>Rating: {singleArticle.votes}</span>
                                 <p>
-                                    <Button variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
+                                    <Button disabled={this.state.userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
                                     <span> What do you think this article? </span>
-                                    <Button variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
+                                    <Button disabled={this.state.userVoted} variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
                                 </p>
                                 {
                                     this.props.loggedUser === singleArticle.author && <Button variant="danger" size="sm" onClick={this.handleDelete}>Delete article</Button>

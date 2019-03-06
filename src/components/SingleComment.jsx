@@ -5,7 +5,8 @@ import {updateCommentVote, deleteComment} from '../utils/APICalls';
 class SingleComment extends Component {
 
     state = {
-        comment: null
+        comment: null,
+        userVoted: false
     }
 
     componentDidMount () {
@@ -15,7 +16,7 @@ class SingleComment extends Component {
     handleVote = (voteVal) => {                
         updateCommentVote(this.state.comment.comment_id, {inc_votes: voteVal})
             .then((comment) => { 
-                this.setState({comment})
+                this.setState({comment, userVoted: true})
                  
             })
             .catch(error => console.log('got : ' + error))
@@ -32,7 +33,7 @@ class SingleComment extends Component {
     }
 
     render() {
-        const {comment} = this.state;
+        const {comment, userVoted} = this.state;        
         return (
             comment && <Card key={comment.comment_id}>                            
                 <Card.Body>
@@ -41,9 +42,9 @@ class SingleComment extends Component {
                     <p>{comment.body}</p>
                     <span>Rating: {comment.votes}</span>
                     <p>
-                    <Button variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
+                    <Button disabled={userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
                         <span> What do you think of this comment? </span>
-                    <Button variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
+                    <Button disabled={userVoted} variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
                     </p>
                     <p>
                         {

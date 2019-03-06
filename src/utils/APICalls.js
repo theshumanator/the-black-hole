@@ -134,7 +134,7 @@ const updateCommentVote = ( commentId, vote ) => {
 const getArticleComments = ( articleId, requestedQuery ) => {
     let url = `${ BASE_URL }/${ ARTICLES_EP }/${ articleId }/comments`;
 
-    const possibleQueries = [ 'sort_by', 'order' ];
+    const possibleQueries = [ 'sort_by', 'order' , 'p' ];
     const queryClause = Object.keys( requestedQuery ).reduce( ( acc, key, idx ) => {
         if ( possibleQueries.includes( key ) ) {
             if ( idx !== 0 ) {
@@ -148,9 +148,10 @@ const getArticleComments = ( articleId, requestedQuery ) => {
     if ( queryClause !== '' ) {
         url += `?${ queryClause }`;
     }
+    console.log( url );
     return axios.get( url )
-        .then( ( { data: { comments } } ) => {
-            return comments;
+        .then( ( { data } ) => {
+            return data;
         } )
         .catch( ( { response: { data } } ) => {                           
             console.error( data );
