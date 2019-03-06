@@ -1,7 +1,7 @@
 import React, { Component, Fragment} from 'react';
 import {Link} from '@reach/router';
 import {getAllArticles} from '../utils/APICalls';
-import {Dropdown, DropdownButton, Row, Col, Button, Breadcrumb} from 'react-bootstrap'
+import {Dropdown, DropdownButton, Row, Col, Button} from 'react-bootstrap'
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
 //import MostActiveUsers from './MostActiveUsers';
@@ -24,7 +24,7 @@ class HomeBody extends Component {
       
 
     handleScroll = (event) => {        
-        console.log('handleScroll')        
+        //console.log('handleScroll')        
 
         const {error,isLoading,hasMore,pageNum, loadMore} = this.state;
     
@@ -42,10 +42,10 @@ class HomeBody extends Component {
         } */
 
         //console.log('the scroll things', event)
-        console.log(window.innerHeight, document.documentElement.scrollTop, 
-            document.documentElement.scrollHeight , document.documentElement.offsetHeight) 
+        //console.log(window.innerHeight, document.documentElement.scrollTop, 
+          //  document.documentElement.scrollHeight , document.documentElement.offsetHeight) 
         if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight) {
-            console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
+            //console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
             if (hasMore) {
                 console.log('Reached end of page so fetching more')  
                 localStorage.setItem('currScrollHeight', document.documentElement.scrollTop);              
@@ -66,22 +66,22 @@ class HomeBody extends Component {
     }
 
     handleShowNewTopic = () => {
-        console.log('bringing up new modal')
+        //console.log('bringing up new modal')
         this.setState({ showNewTopicModal: true, reQuery: false });
     }
 
     handleNewTopicClose = () => {
-        console.log('Closing new topic modal')
+        //console.log('Closing new topic modal')
         this.setState({ showNewTopicModal: false, reQuery: false });
     } 
 
     handleShowNewArticle = () => {
-        console.log('bringing up new modal')
+        //console.log('bringing up new modal')
         this.setState({ showNewArticleModal: true, reQuery: false });
     }
 
     handleNewArticleClose = () => {
-        console.log('Closing new articl modal')
+        //console.log('Closing new articl modal')
         this.setState({ showNewArticleModal: false, reQuery: true, articles:[], pageNum: 1 });
     } 
           
@@ -141,7 +141,7 @@ class HomeBody extends Component {
     render() {        
         
         const articleArr = this.state.articles;   
-        const {error, hasMore, isLoading} = this.state;     
+        const { hasMore, isLoading} = this.state;     
         const loggedUser = this.props.loggedUser;
 
         return (    

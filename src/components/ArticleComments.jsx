@@ -44,7 +44,7 @@ class ArticleComments extends Component {
         const {error,isLoading,hasMore,pageNum, loadMore} = this.state;
         if (error || isLoading || (!hasMore && !loadMore)) return;
         if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight) {
-            console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
+            //console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
             if (hasMore) {
                 console.log('Reached end of page so fetching more')  
                 localStorage.setItem('currScrollHeight', document.documentElement.scrollTop);              
@@ -61,7 +61,7 @@ class ArticleComments extends Component {
     }
 
     componentDidUpdate () {
-        console.log(this.state.reQuery , this.state.isLoading)
+        //console.log(this.state.reQuery , this.state.isLoading)
        if(this.state.reQuery && !this.state.isLoading ) {    
             //console.log('in requery part')        
             this.fetchComments();
@@ -97,7 +97,7 @@ class ArticleComments extends Component {
                             hasMore: ((this.state.comments.length + comments.length)<total_count),
                             loadMore: (this.state.comments.length!==total_count),
                             isLoading: false,
-                            comments: pageNum===1?[...this.state.comments, ...comments]:comments,
+                            comments: pageNum!==1?[...this.state.comments, ...comments]:comments,
                             reQuery: false,
                             pageNum: pageNum
                         }, () => {
@@ -123,7 +123,7 @@ class ArticleComments extends Component {
                     isLoading
                     ?   <h3>Loading...</h3>
                     :   <div>
-                            <p>Comments: {article.comment_count}</p>
+                            <p>Comments: {comments.length}</p>
                             <Row>
                                 <Col xs={3}>
                                     {
