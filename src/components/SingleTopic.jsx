@@ -21,7 +21,7 @@ class SingleTopic extends Component {
 
     fetchArticles () {
         getAllArticles({topic: this.props.slug})
-        .then((articles) => {
+        .then(({articles}) => {
             if (Array.isArray(articles)) {
                 this.setState({articles: articles, topic: this.props.slug, articlesFound: true});
             } else {

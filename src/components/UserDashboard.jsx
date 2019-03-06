@@ -22,7 +22,7 @@ class UserDashboard extends Component {
 
     fetchArticles () {
         getAllArticles({author: this.props.username})
-        .then((articles) => {
+        .then(({articles}) => {
             if (Array.isArray(articles)) {
                 this.setState({articles: articles, requestedUser: this.props.username, articlesFound: true});
             } else {
