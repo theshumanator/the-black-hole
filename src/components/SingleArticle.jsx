@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {Link, navigate} from '@reach/router';
-import {Button} from 'react-bootstrap'
+import {Button, Breadcrumb} from 'react-bootstrap'
 import {getArticleById, updateVote, deleteArticle} from '../utils/APICalls';
 import ArticleComments from './ArticleComments';
 
@@ -44,7 +44,7 @@ class SingleArticle extends Component {
             singleArticle=JSON.parse(articleStr);
         }                
         return (
-            <div>
+            <div>                            
                 {
                     !singleArticle
                     ?   <p>Could not fetch article</p>

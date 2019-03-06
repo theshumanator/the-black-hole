@@ -30,7 +30,7 @@ class App extends Component {
   render () {
     console.log('loggedUser is ' + this.state.loggedUser)
     return (
-      <div>
+      <div className="appDiv">
         <Header updateUser={this.updateUser}/>
         <Router>
           <HomeBody path='/' loggedUser={this.state.loggedUser}/>
