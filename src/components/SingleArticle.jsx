@@ -45,7 +45,11 @@ class SingleArticle extends Component {
             singleArticle=JSON.parse(articleStr);
         }                     
         return (
-            <div>                            
+            <div>  
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    
+                    <Breadcrumb.Item active>Article Details</Breadcrumb.Item>
+                </Breadcrumb>                          
                 {
                     !singleArticle
                     ?   <p>Could not fetch article</p>

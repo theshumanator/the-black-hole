@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {getAllArticles, deleteArticle} from '../utils/APICalls';
 import {Link} from '@reach/router';
-import {Row, Col, Button} from 'react-bootstrap';
+import {Row, Col, Button, Breadcrumb} from 'react-bootstrap';
 
 class UserDashboard extends Component {
 
@@ -99,8 +99,12 @@ class UserDashboard extends Component {
         const {articlesFound, hasMore, isLoading} = this.state;     
         return (
             <div>
-                <h3>Articles by {username}</h3>
-                {
+                {/* <h3>Articles by {username}</h3> */}
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    
+                    <Breadcrumb.Item active>Articles by {username}</Breadcrumb.Item>
+                </Breadcrumb>
+                {                    
                     isLoading
                     ?   <h3>Loading...</h3>
                     :   <div>
@@ -128,6 +132,7 @@ class UserDashboard extends Component {
                                 <h3>You did it! You reached the end!</h3>
                             }
                         </div>
+                    
                 }                
             </div>
         )

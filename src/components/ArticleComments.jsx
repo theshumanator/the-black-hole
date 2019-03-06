@@ -30,7 +30,8 @@ class ArticleComments extends Component {
     }
 
     handleDeleteDone = () => {
-        this.setState({reQuery: true});
+        console.log('inHandleDelete')
+        this.setState({reQuery: true, isLoading: false});
     }
 
     handleSortSelect = (eventKey) => {
@@ -60,6 +61,7 @@ class ArticleComments extends Component {
     }
 
     componentDidUpdate () {
+        console.log(this.state.reQuery , this.state.isLoading)
        if(this.state.reQuery && !this.state.isLoading ) {    
             //console.log('in requery part')        
             this.fetchComments();
@@ -90,11 +92,12 @@ class ArticleComments extends Component {
                             comments: [], 
                             reQuery: false})
                     } else {
+                        console.log(comments)
                         this.setState({
                             hasMore: ((this.state.comments.length + comments.length)<total_count),
                             loadMore: (this.state.comments.length!==total_count),
                             isLoading: false,
-                            comments: [...this.state.comments, ...comments],
+                            comments: pageNum===1?[...this.state.comments, ...comments]:comments,
                             reQuery: false,
                             pageNum: pageNum
                         }, () => {
@@ -144,8 +147,8 @@ class ArticleComments extends Component {
                                 showNewCommentModal && loggedUser && <AddNewComment articleId={article.article_id} loggedUser={this.props.loggedUser} showNewCommentModal={showNewCommentModal} handleNewCommentClose={this.handleNewCommentClose}/>
                             }
                             {
-                                comments && comments.map((comment) => {
-                                return <SingleComment key={comment.comment_id} articleId={article.article_id} comment={comment} loggedUser={this.props.loggedUser} handleDeleteDone={this.handleDeleteDone}/>
+                                comments && comments.map((comment, idx) => {
+                                return <SingleComment key={idx} articleId={article.article_id} comment={comment} loggedUser={this.props.loggedUser} handleDeleteDone={this.handleDeleteDone}/>
                                 })
                             }
                             {!hasMore && comments.length>0 &&

@@ -1,9 +1,10 @@
 import React, { Component, Fragment} from 'react';
 import {Link} from '@reach/router';
 import {getAllArticles} from '../utils/APICalls';
-import {Dropdown, DropdownButton, Row, Col, Button} from 'react-bootstrap'
+import {Dropdown, DropdownButton, Row, Col, Button, Breadcrumb} from 'react-bootstrap'
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
+//import MostActiveUsers from './MostActiveUsers';
 
 class HomeBody extends Component {
       
@@ -119,10 +120,7 @@ class HomeBody extends Component {
         this.setState({isLoading: true},
             ()=>getAllArticles({sort_by: this.state.sortByKey, order: this.state.sortOrder, p: pageNum})
                 .then(({articles, total_count}) => {                    
-                    //console.log(this.state.articles.length, articles.length, total_count)
-                    //this.setState({articles: articles, reQuery: false});
                     this.setState({
-                        //hasMore: (this.state.articles.length<total_count),
                         hasMore: ((this.state.articles.length + articles.length)<total_count),
                         loadMore: (this.state.articles.length!==total_count),
                         isLoading: false,
@@ -145,11 +143,10 @@ class HomeBody extends Component {
         const articleArr = this.state.articles;   
         const {error, hasMore, isLoading} = this.state;     
         const loggedUser = this.props.loggedUser;
-        console.log('articleArr in render: ' + articleArr.length);
-        //console.log(isLoading, hasMore);
+
         return (    
             <div className="articleList">
-            { 
+            {                 
                 isLoading
                 ?  <h3>Loading...</h3>
                 : <div>
@@ -197,22 +194,35 @@ class HomeBody extends Component {
                             :   <Fragment/>
                         }
                     </Row>
-                    
-                    {
-                        articleArr && <div className="articlesList">
-                        {articleArr.map((article, idx) => {                       
-                            return (
-                                <p key={idx}><Link to={`/topics/${article.topic}`}>{article.topic}</Link>: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
-                                <span> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
-                                {article.created_at}
-                                </p>
-                            )
-                        })}</div>
-                        
-                    }                
-                    {!hasMore &&
-                        <h3>You did it! You reached the end!</h3>
-                    }
+                    <Row>
+                        <Col xs={9}>
+                            {articleArr && <div className="articlesList">
+                            {articleArr.map((article, idx) => {                       
+                                return (
+                                    <p key={idx}><Link to={`/topics/${article.topic}`}>{article.topic}</Link>: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
+                                    <span> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
+                                    {article.created_at}
+                                    </p>
+                                )
+                            })}</div>
+                            
+                        }                
+                        {!hasMore &&
+                            <h3>You did it! You reached the end!</h3>
+                        }
+                        </Col>
+                        {/* <Col>
+                            <Row>
+                                <h4>Most active users</h4>
+                                <MostActiveUsers/>
+                            </Row>
+                            <p></p>
+                            <Row>
+                                <h4>Most popular users</h4>
+                                <MostActiveUsers/>
+                            </Row>
+                        </Col> */}
+                    </Row>                                        
                 </div>
             
             }

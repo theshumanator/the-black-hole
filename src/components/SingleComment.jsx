@@ -6,7 +6,7 @@ class SingleComment extends Component {
 
     state = {
         comment: null,
-        userVoted: false
+        userVoted: false,        
     }
 
     componentDidMount () {
@@ -26,7 +26,7 @@ class SingleComment extends Component {
         deleteComment(this.state.comment.comment_id)
             .then((status) => {
                 if(status===204) {
-                    this.props.handleDeleteDone()
+                    this.setState({comment: null}, () => this.props.handleDeleteDone())                    
                 }
             })
             .catch(error => console.log('got : ' + error))

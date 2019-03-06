@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {getAllArticles} from '../utils/APICalls';
 import {Link} from '@reach/router';
+import {Breadcrumb} from 'react-bootstrap'
 
 class SingleTopic extends Component {
     state = {
@@ -91,7 +92,11 @@ class SingleTopic extends Component {
 
         return (
             <div>
-                <h3>Articles on topic: {slug}</h3>
+                {/* <h3>Articles on topic: {slug}</h3> */}
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    
+                    <Breadcrumb.Item active>Articles on topic: {slug}</Breadcrumb.Item>
+                </Breadcrumb>
                 {
                     isLoading
                     ? <h3>Loading...</h3>
