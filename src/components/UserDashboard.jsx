@@ -68,7 +68,8 @@ class UserDashboard extends Component {
                             hasMore: ((this.state.articles.length + articles.length)<total_count),
                             loadMore: (this.state.articles.length!==total_count),
                             isLoading: false,
-                            articles: [...this.state.articles, ...articles],
+                            //if it's the not the first page then just concat the 2 arrays
+                            articles: pageNum!==1?[...this.state.articles, ...articles]:articles, 
                             requestedUser: this.props.username,
                             articlesFound: true,
                             pageNum: pageNum

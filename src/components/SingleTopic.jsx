@@ -69,7 +69,7 @@ class SingleTopic extends Component {
                             hasMore: ((this.state.articles.length + articles.length)<total_count),
                             loadMore: (this.state.articles.length!==total_count),
                             isLoading: false,
-                            articles: [...this.state.articles, ...articles],
+                            articles: pageNum!==1?[...this.state.articles, ...articles]:articles,
                             topic: this.props.slug,
                             articlesFound: true,                            
                             pageNum: pageNum

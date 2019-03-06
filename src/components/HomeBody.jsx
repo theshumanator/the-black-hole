@@ -11,7 +11,7 @@ class HomeBody extends Component {
     state = {
         error: false,
         hasMore: true,
-        loadMore: false,
+        //loadMore: false,
         isLoading: false,
         articles: [],
         sortByKey: 'created_at', //default
@@ -26,37 +26,22 @@ class HomeBody extends Component {
     handleScroll = (event) => {        
         //console.log('handleScroll')        
 
-        const {error,isLoading,hasMore,pageNum, loadMore} = this.state;
+        //const {error,isLoading,hasMore,pageNum, loadMore} = this.state;
+        const {error,isLoading,hasMore,pageNum} = this.state;
     
-        //console.log(hasMore,loadMore,pageNum)
-        if (error || isLoading || (!hasMore && !loadMore)) return;
+        
+        //if (error || isLoading || (!hasMore && !loadMore)) return;
+        if (error || isLoading || (!hasMore)) return;
 
-        /* if (localStorage.getItem('currScrollHeight')) {
-            document.documentElement.scrollTop = localStorage.getItem('currScrollHeight');
-            localStorage.removeItem('currScrollHeight')
-        } */
-        /* const node = document.documentElement;
-        console.log(`window.innerHeight is ${window.innerHeight} scrolltop is: ${node.scrollTop} offsetheight is ${node.offsetHeight} and scrollheigh is ${node.scrollHeight}`)        
-        if (hasMore) {            
-            //document.documentElement.scrollTop = window.innerHeight;
-        } */
-
-        //console.log('the scroll things', event)
-        //console.log(window.innerHeight, document.documentElement.scrollTop, 
-          //  document.documentElement.scrollHeight , document.documentElement.offsetHeight) 
-        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight) {
-            //console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
+        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight) {            
             if (hasMore) {
                 console.log('Reached end of page so fetching more')  
                 localStorage.setItem('currScrollHeight', document.documentElement.scrollTop);              
                 this.fetchArticles(pageNum+1);
             } else {
-                console.log('Reached end and no more available')
-                //localStorage.removeItem('currScrollHeight')
+                console.log('Reached end and no more available');
             }            
-        } /* else {
-            localStorage.removeItem('currScrollHeight')
-        } */
+        }
     }
 
 
@@ -86,30 +71,23 @@ class HomeBody extends Component {
     } 
           
     componentDidMount () {   
-        console.log('Mounted so fetching')     
+        console.log('Mounted so fetching')             
         this.fetchArticles();
     }
 
     
     componentDidUpdate () {   
-
-        //console.log(this.state.reQuery, this.state.loadMore ,this.state.isLoading)
-        if(this.state.reQuery && !this.state.isLoading ) {    
-            //console.log('in requery part')        
+        if(this.state.reQuery && !this.state.isLoading ) {                
             this.fetchArticles();
-        } else if (this.state.loadMore && !this.state.isLoading) {
-            //console.log('Should i fetch?')
-            //console.log(window.innerHeight, document.documentElement.scrollTop , document.documentElement.offsetHeight) 
-            if (window.innerHeight+document.documentElement.scrollTop>=document.documentElement.offsetHeight) {
-                //console.log('Going to call handleScroll')
-                this.handleScroll()
-            }
+        //} else if (this.state.loadMore && !this.state.isLoading) {                    
+        } else if (this.state.hasMore && !this.state.isLoading) {                    
+                this.handleScroll()            
         }       
     }
 
     componentWillMount () {              
         //console.log('adding scroll to event listener')
-        window.addEventListener('scroll', this.handleScroll);        
+        window.addEventListener('scroll', this.handleScroll);                
     }
 
     componentWillUnmount() {
@@ -122,9 +100,9 @@ class HomeBody extends Component {
                 .then(({articles, total_count}) => {                    
                     this.setState({
                         hasMore: ((this.state.articles.length + articles.length)<total_count),
-                        loadMore: (this.state.articles.length!==total_count),
+                        //loadMore: (this.state.articles.length!==total_count),
                         isLoading: false,
-                        articles: [...this.state.articles, ...articles],
+                        articles: pageNum!==1?[...this.state.articles, ...articles]:articles,
                         reQuery: false,
                         pageNum: pageNum
                     }, () => {
@@ -142,8 +120,7 @@ class HomeBody extends Component {
         
         const articleArr = this.state.articles;   
         const { hasMore, isLoading} = this.state;     
-        const loggedUser = this.props.loggedUser;
-
+        const loggedUser = this.props.loggedUser;        
         return (    
             <div className="articleList">
             {                 
