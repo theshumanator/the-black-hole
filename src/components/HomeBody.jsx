@@ -1,9 +1,10 @@
 import React, { Component, Fragment} from 'react';
-import {Link} from '@reach/router';
-import {getAllArticles} from '../utils/APICalls';
+import {Link, navigate} from '@reach/router';
+import {getAllArticles, getAllTopics} from '../utils/APICalls';
 import {Dropdown, DropdownButton, Row, Col, Button} from 'react-bootstrap'
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
+import TopicsDropdown from './TopicsDropdown';
 //import MostActiveUsers from './MostActiveUsers';
 
 class HomeBody extends Component {
@@ -19,7 +20,8 @@ class HomeBody extends Component {
         pageNum: 1, //default
         reQuery: true,
         showNewTopicModal: false,
-        showNewArticleModal: false
+        showNewArticleModal: false,
+        topics: []
     };
       
 
@@ -44,6 +46,10 @@ class HomeBody extends Component {
         }
     }
 
+
+    handleFilterSelect = (eventKey) => {
+        navigate(`/topics/${eventKey}`);        
+    }
 
     handleSortSelect = (eventKey) => {
         const sortArr = eventKey.split(' ');
@@ -70,9 +76,9 @@ class HomeBody extends Component {
         this.setState({ showNewArticleModal: false, reQuery: true, articles:[], pageNum: 1 });
     } 
           
-    componentDidMount () {   
-        console.log('Mounted so fetching')             
+    componentDidMount () {           
         this.fetchArticles();
+        this.fetchTopics()
     }
 
     
@@ -94,6 +100,13 @@ class HomeBody extends Component {
         window.removeEventListener('scroll', this.handleScroll);
     };
 
+    fetchTopics () {
+        getAllTopics()
+            .then((topics) => {
+                this.setState({topics})
+            })
+            .catch(error => console.log('got : ' + error)) 
+    }
     fetchArticles (pageNum=1) {
         this.setState({isLoading: true},
             ()=>getAllArticles({sort_by: this.state.sortByKey, order: this.state.sortOrder, p: pageNum})
@@ -139,13 +152,10 @@ class HomeBody extends Component {
                                 <Dropdown.Item eventKey="comment_count desc" onSelect={this.handleSortSelect}>Highest comment count</Dropdown.Item>
                                 <Dropdown.Item eventKey="comment_count asc" onSelect={this.handleSortSelect}>Lowest comment count</Dropdown.Item>
                             </DropdownButton>
-                        </Col>{/* 
+                        </Col>{
                         <Col>
-                            <DropdownButton id="dropdown-filter-button" title="Filter articles by topic" variant='primary'>
-                                <Dropdown.Item eventKey="created_at desc" onSelect={this.handleFilterSelect}>Football</Dropdown.Item>
-                                <Dropdown.Item eventKey="created_at asc" onSelect={this.handleFilterSelect}>Coding</Dropdown.Item>
-                            </DropdownButton>
-                        </Col> */}
+                            <TopicsDropdown topics={this.state.topics} handleFilterSelect={this.handleFilterSelect}/>
+                        </Col>}
 
                         {
                             loggedUser

@@ -3,6 +3,8 @@ import {Row, Col, Button, Dropdown, DropdownButton} from 'react-bootstrap';
 import {getArticleComments} from '../utils/APICalls'
 import SingleComment from './SingleComment';
 import AddNewComment from './AddNewComment';
+import { throttle } from "lodash";
+
 class ArticleComments extends Component {
 
     state = {
@@ -13,7 +15,7 @@ class ArticleComments extends Component {
         showNewCommentModal: false,
         error: false,
         hasMore: true,
-        loadMore: false,
+        //loadMore: false,
         isLoading: false,    
         pageNum: 1, //default
     }
@@ -30,7 +32,7 @@ class ArticleComments extends Component {
     }
 
     handleDeleteDone = () => {
-        console.log('inHandleDelete')
+        //console.log('inHandleDelete')
         this.setState({reQuery: true, isLoading: false});
     }
 
@@ -41,13 +43,17 @@ class ArticleComments extends Component {
     }
 
     handleScroll = (event) => {        
-        const {error,isLoading,hasMore,pageNum, loadMore} = this.state;
-        if (error || isLoading || (!hasMore && !loadMore)) return;
+        const {error,isLoading,hasMore,pageNum} = this.state;
+        //if (error || isLoading || (!hasMore && !loadMore)) return;
+        if (error || isLoading || (!hasMore)) return;
         if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight) {
             //console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
             if (hasMore) {
                 console.log('Reached end of page so fetching more')  
-                localStorage.setItem('currScrollHeight', document.documentElement.scrollTop);              
+                console.log('going to add to localstorage ' + document.documentElement.scrollTop)
+                localStorage.removeItem('articleCommentsScroll');
+                localStorage.setItem('articleCommentsScroll', ''+document.documentElement.scrollTop);              
+                console.log('Local storae has in handlescroll' + localStorage.getItem('articleCommentsScroll'))                            
                 this.fetchComments(pageNum+1);
             } else {
                 console.log('Reached end and no more available')
@@ -56,7 +62,7 @@ class ArticleComments extends Component {
     }
 
 
-    componentDidMount () {        
+    componentDidMount () {         
        this.fetchComments();
     }
 
@@ -65,13 +71,13 @@ class ArticleComments extends Component {
        if(this.state.reQuery && !this.state.isLoading ) {    
             //console.log('in requery part')        
             this.fetchComments();
-        } else if (this.state.loadMore && !this.state.isLoading) {
+        } else if (this.state.hasMore && !this.state.isLoading) {
             this.handleScroll()            
         }
     }
 
-    componentWillMount () {              
-        window.addEventListener('scroll', this.handleScroll);        
+    componentWillMount () {                      
+        window.addEventListener('scroll', this.handleScroll);                
     }
 
     componentWillUnmount() {
@@ -88,22 +94,25 @@ class ArticleComments extends Component {
                         this.setState({
                             isLoading: false,
                             hasMore: false,
-                            loadMore: false,
+                            //loadMore: false,
                             comments: [], 
                             reQuery: false})
                     } else {
-                        console.log(comments)
+                        //console.log(comments)                        
                         this.setState({
                             hasMore: ((this.state.comments.length + comments.length)<total_count),
-                            loadMore: (this.state.comments.length!==total_count),
+                            //loadMore: (this.state.comments.length!==total_count),
                             isLoading: false,
                             comments: pageNum!==1?[...this.state.comments, ...comments]:comments,
                             reQuery: false,
                             pageNum: pageNum
                         }, () => {
-                            if (localStorage.getItem('currScrollHeight')) {
-                                document.documentElement.scrollTop = localStorage.getItem('currScrollHeight');
-                                localStorage.removeItem('currScrollHeight');
+                            if (localStorage.getItem('articleCommentsScroll')) {        
+                                console.log('Local storage has ' + localStorage.getItem('articleCommentsScroll'))                            
+                                console.log('before: ' + document.documentElement.scrollTop )                            
+                                document.documentElement.scrollTop = +localStorage.getItem('articleCommentsScroll');                                
+                                localStorage.removeItem('articleCommentsScroll');
+                                console.log('after ' + document.documentElement.scrollTop )                            
                             }
                         })
 
@@ -122,8 +131,8 @@ class ArticleComments extends Component {
                 {
                     isLoading
                     ?   <h3>Loading...</h3>
-                    :   <div>
-                            <p>Comments: {comments.length}</p>
+                    :   <div className="articleCommentList">
+                            <h4>Comments</h4>
                             <Row>
                                 <Col xs={3}>
                                     {
@@ -146,11 +155,13 @@ class ArticleComments extends Component {
                             {
                                 showNewCommentModal && loggedUser && <AddNewComment articleId={article.article_id} loggedUser={this.props.loggedUser} showNewCommentModal={showNewCommentModal} handleNewCommentClose={this.handleNewCommentClose}/>
                             }
+                            <div className="commentList">                            
                             {
                                 comments && comments.map((comment, idx) => {
                                 return <SingleComment key={idx} articleId={article.article_id} comment={comment} loggedUser={this.props.loggedUser} handleDeleteDone={this.handleDeleteDone}/>
                                 })
                             }
+                            </div>
                             {!hasMore && comments.length>0 &&
                                 <h3>You did it! You reached the end!</h3>
                             }
