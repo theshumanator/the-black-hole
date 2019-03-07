@@ -61,7 +61,7 @@ class ArticleComments extends Component {
     }
 
     componentDidUpdate (prevProps, prevState) {
-        const { pageNum, hasMore, reQuery, isLoading } = this.state;        
+        const { pageNum, hasMore, reQuery } = this.state;        
         const hasPageChanged = prevState.pageNum !== pageNum;
         if (hasPageChanged && hasMore) {
             this.fetchComments(pageNum);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {getAllArticles, deleteArticle} from '../utils/APICalls';
 import {Link} from '@reach/router';
 import {Row, Col, Button, Breadcrumb} from 'react-bootstrap';
-import Moment from 'react-moment';
+import { throttle } from "lodash";
 import PrettyDate from './PrettyDate';
 
 class UserDashboard extends Component {
@@ -13,102 +13,102 @@ class UserDashboard extends Component {
         articlesFound: true,
         error: false,
         hasMore: true,
-        loadMore: false,
-        isLoading: false,
+        isLoading: true,
         pageNum: 1, //default
     }
     componentDidMount () {
         this.fetchArticles();
+        this.addScrollEventListener();
     }
 
-    componentDidUpdate() {
+/*     componentDidUpdate() {
         if (this.state.requestedUser!==this.props.username && !this.state.isLoading) {
             this.fetchArticles();
         } else if (this.state.loadMore && !this.state.isLoading) {
             this.handleScroll()            
         }
-    }
+    } */
 
-    componentWillMount () {              
-        window.addEventListener('scroll', this.handleScroll);        
-    }
+    componentDidUpdate (prevProps, prevState) {
+        let {pageNum} = this.state;   
+        const { hasMore, requestedUser, isLoading } = this.state;       
+        const hasPageChanged = prevState.pageNum !== pageNum;
+        const hasUserChanged = requestedUser!==this.props.username;
 
-    componentWillUnmount() {
-        window.removeEventListener('scroll', this.handleScroll);
-    };
-
-    handleScroll = (event) => {        
-        const {error,isLoading,hasMore,pageNum, loadMore} = this.state;
-        if (error || isLoading || (!hasMore && !loadMore)) return;
-        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight) {
-            console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
-            if (hasMore) {
-                console.log('Reached end of page so fetching more')  
-                localStorage.setItem('currScrollHeight', document.documentElement.scrollTop);              
-                this.fetchArticles(pageNum+1);
-            } else {
-                console.log('Reached end and no more available')
-            }            
+        //console.log(`has page changed ${hasPageChanged}, has more ${hasMore}`)
+        if (hasPageChanged && hasMore) {
+            this.fetchArticles(pageNum);
+        } else if (hasUserChanged) {
+            this.fetchArticles();
+        } else if (hasMore && pageNum===1 && !isLoading) {
+            //load more to fill screen
+            this.setState({ pageNum: ++pageNum});
         }
     }
 
+    addScrollEventListener = () => {
+        document.querySelector('.articlesList').addEventListener('scroll', this.handleScroll);
+        window.addEventListener('scroll', this.handleScroll);
+    }
+
+    handleScroll = throttle((event) => {     
+        let {pageNum} = this.state;   
+        const { clientHeight, scrollTop, scrollHeight } = event.target.documentElement;        
+        const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);             
+        if (distanceFromBottom < 200) {
+          this.setState({ pageNum: ++pageNum});
+        }
+    }, 500);
+
     fetchArticles (pageNum=1) {
-        this.setState({isLoading: true},
-            ()=>getAllArticles({author: this.props.username, p: pageNum})
-                .then(({articles, total_count}) => { 
-                    if (!Array.isArray(articles)) {
-                        this.setState({
-                            hasMore: false,
-                            loadMore: false,
-                            isLoading: false,
-                            pageNum,
-                            articles: [], 
-                            requestedUser: this.props.username, 
-                            articlesFound: false});
-                    } else {
-                        this.setState({                        
-                            hasMore: ((this.state.articles.length + articles.length)<total_count),
-                            loadMore: (this.state.articles.length!==total_count),
-                            isLoading: false,
-                            //if it's the not the first page then just concat the 2 arrays
-                            articles: pageNum!==1?[...this.state.articles, ...articles]:articles, 
-                            requestedUser: this.props.username,
-                            articlesFound: true,
-                            pageNum: pageNum
-                        }, () => {
-                            if (localStorage.getItem('currScrollHeight')) {
-                                document.documentElement.scrollTop = localStorage.getItem('currScrollHeight');
-                                localStorage.removeItem('currScrollHeight');
-                            }
-                        })
-                    } 
-                })
-                .catch(error => console.log('got : ' + error)) )
+        getAllArticles({author: this.props.username, p: pageNum})
+            .then(({articles, total_count}) => { 
+                if (!Array.isArray(articles)) {
+                    this.setState({
+                        hasMore: false,                        
+                        isLoading: false,
+                        pageNum,
+                        articles: [], 
+                        requestedUser: this.props.username, 
+                        articlesFound: false});
+                } else {
+                    this.setState({                        
+                        hasMore: ((this.state.articles.length + articles.length)<total_count),
+                        isLoading: false,
+                        //if it's the not the first page then just concat the 2 arrays
+                        articles: pageNum!==1?[...this.state.articles, ...articles]:articles, 
+                        requestedUser: this.props.username,
+                        articlesFound: true,
+                        //pageNum: pageNum===1?pageNum
+                    })
+                } 
+            })
+            .catch(error => console.log('got : ' + error)) 
     }
 
     handleDelete = (articleId) => {        
         deleteArticle(articleId)
             .then((status) => {
                 if(status===204) {
-                    this.fetchArticles();
+                    this.setState({ pageNum: 1, articles: [], hasMore: true, isLoading: true});                    
                 }
             })
             .catch(error => console.log('got : ' + error))
     }
 
-    render() {
+    render() {        
         const {username, loggedUser} = this.props;
         const articleArr = this.state.articles;
         const {articlesFound, hasMore, isLoading} = this.state;     
         return (
-            <div>
+            <div className="articlesList">
                 {/* <h3>Articles by {username}</h3> */}
                 <Breadcrumb>
                     <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    
                     <Breadcrumb.Item active>Articles by {username}</Breadcrumb.Item>
                 </Breadcrumb>
                 {                    
-                    isLoading //2019-03-06T19:35:44.140Z   
+                    isLoading
                     ?   <h3>Loading...</h3>
                     :   <div>
                         {
