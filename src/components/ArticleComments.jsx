@@ -82,8 +82,7 @@ class ArticleComments extends Component {
                         reQuery: false})
                 } else {                 
                     this.setState({
-                        hasMore: ((this.state.comments.length + comments.length)<total_count),                        
-                        isLoading: false,
+                        hasMore: ((this.state.comments.length + comments.length)<total_count),         isLoading: false,
                         comments: pageNum!==1?[...this.state.comments, ...comments]:comments,
                         reQuery: false,
                         pageNum: pageNum

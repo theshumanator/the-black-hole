@@ -3,6 +3,7 @@ import {getAllArticles} from '../utils/APICalls';
 import {Link} from '@reach/router';
 import {Breadcrumb} from 'react-bootstrap'
 import PrettyDate from './PrettyDate';
+import { throttle } from "lodash";
 
 class SingleTopic extends Component {
     state = {
@@ -11,48 +12,47 @@ class SingleTopic extends Component {
         articlesFound: true,
         error: false,
         hasMore: true,
-        loadMore: false,
-        isLoading: false,
+        isLoading: true,
         pageNum: 1 //default
     }
 
     componentDidMount () {
         this.fetchArticles();
+        this.addScrollEventListener();
     }
 
-    componentDidUpdate() {
-        if (this.state.topic!==this.props.slug && !this.state.isLoading) {            
+    componentDidUpdate(prevProps, prevState) {
+        let {pageNum} = this.state;
+        const { hasMore, topic, isLoading } = this.state;        
+        const hasPageChanged = prevState.pageNum !== pageNum;
+        const hasTopicChanged = topic !== this.props.slug;
+
+        //console.log(hasPageChanged, hasTopicChanged, topic, this.props.slug)
+        if (hasPageChanged && hasMore)  {
+            this.fetchArticles(pageNum)
+        } else if (hasTopicChanged && topic!==null) {
             this.fetchArticles();
-        } else if (this.state.loadMore && !this.state.isLoading) {
-            this.handleScroll()            
+        } else if (hasMore && pageNum===1 && !isLoading) {
+            this.setState({ pageNum: ++pageNum});
         }
     }
 
-    componentWillMount () {              
-        //console.log('adding scroll to event listener')
-        window.addEventListener('scroll', this.handleScroll);        
+    addScrollEventListener = () => {
+        document.querySelector('.articlesByTopic').addEventListener('scroll', this.handleScroll);
+        window.addEventListener('scroll', this.handleScroll);
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('scroll', this.handleScroll);
-    };
+    handleScroll = throttle((event) => {     
+        let {pageNum} = this.state;   
+        const { clientHeight, scrollTop, scrollHeight } = event.target.documentElement;        
+        const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);        
+        //console.log(distanceFromBottom)
+        if (distanceFromBottom < 200) {
+          this.setState({ pageNum: ++pageNum});
+        }
+      }, 500);
 
-    handleScroll = (event) => {        
-        //console.log('handleScroll')        
-        const {error,isLoading,hasMore,pageNum, loadMore} = this.state;
-        if (error || isLoading || (!hasMore && !loadMore)) return;
-        //console.log(window.innerHeight, document.documentElement.scrollTop, 
-          //  document.documentElement.scrollHeight , document.documentElement.offsetHeight) 
-        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight) {
-            console.log(`Load more? ${loadMore} & has more? ${hasMore}`)
-            if (hasMore) {                
-                localStorage.setItem('currScrollHeight', document.documentElement.scrollTop);              
-                this.fetchArticles(pageNum+1);
-            } else {
-                console.log('Reached end and no more available')
-            }            
-        } 
-    }
+
 
     fetchArticles (pageNum=1) {
         this.setState({isLoading: true}, () => getAllArticles({topic: this.props.slug, p: pageNum})
@@ -61,24 +61,17 @@ class SingleTopic extends Component {
                         this.setState({
                             isLoading: false,
                             hasMore: false,
-                            loadMore: false,
                             articles: [], 
+                            pageNum,
                             topic: this.props.slug, 
                             articlesFound: false});
                     } else {
                         this.setState({
-                            hasMore: ((this.state.articles.length + articles.length)<total_count),
-                            loadMore: (this.state.articles.length!==total_count),
-                            isLoading: false,
+                            hasMore: ((this.state.articles.length + articles.length)<total_count),     isLoading: false,
                             articles: pageNum!==1?[...this.state.articles, ...articles]:articles,
                             topic: this.props.slug,
                             articlesFound: true,                            
-                            pageNum: pageNum
-                        }, () => {
-                            if (localStorage.getItem('currScrollHeight')) {
-                                document.documentElement.scrollTop = localStorage.getItem('currScrollHeight');
-                                localStorage.removeItem('currScrollHeight');
-                            }
+                            //pageNum: pageNum
                         })
                     }                                    
                 })
@@ -92,7 +85,7 @@ class SingleTopic extends Component {
         const {hasMore, isLoading, articlesFound} = this.state;     
 
         return (
-            <div>
+            <div className="articlesByTopic">
                 {/* <h3>Articles on topic: {slug}</h3> */}
                 <Breadcrumb>
                     <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    

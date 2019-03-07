@@ -21,21 +21,13 @@ class UserDashboard extends Component {
         this.addScrollEventListener();
     }
 
-/*     componentDidUpdate() {
-        if (this.state.requestedUser!==this.props.username && !this.state.isLoading) {
-            this.fetchArticles();
-        } else if (this.state.loadMore && !this.state.isLoading) {
-            this.handleScroll()            
-        }
-    } */
-
     componentDidUpdate (prevProps, prevState) {
         let {pageNum} = this.state;   
         const { hasMore, requestedUser, isLoading } = this.state;       
         const hasPageChanged = prevState.pageNum !== pageNum;
         const hasUserChanged = requestedUser!==this.props.username;
 
-        //console.log(`has page changed ${hasPageChanged}, has more ${hasMore}`)
+
         if (hasPageChanged && hasMore) {
             this.fetchArticles(pageNum);
         } else if (hasUserChanged) {
