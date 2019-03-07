@@ -114,9 +114,16 @@ class ArticleComments extends Component {
                     isLoading
                     ?   <h3>Loading...</h3>
                     :   <div>
-                            <h4>Comments</h4>
+                            <h4 className="commentsHeader">Comments</h4>
                             <Row>
-                                <Col xs={3}>
+                                <Col className="addCommentButton">
+                                {
+                                    loggedUser && <Button variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
+                                }
+                                </Col> 
+                            </Row>
+                            <Row>
+                                <Col className="commentsSort">
                                     {
                                         <DropdownButton id="dropdown-basic-button" title="Sort By" variant='secondary'>
                                             <Dropdown.Item eventKey="created_at desc" onSelect={this.handleSortSelect}>Newest (Default)</Dropdown.Item>
@@ -128,16 +135,16 @@ class ArticleComments extends Component {
                                         </DropdownButton>
                                     }
                                 </Col>
-                                <Col>
+                                {/* <Col>
                                     {
                                         loggedUser && <Button variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
                                     }
-                                </Col>                    
+                                </Col>  */}                   
                             </Row>  
                             <Row>
                                 <Col>
-                                    <Button onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || comments.length===0}>Previous</Button>
-                                    <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
+                                    <Button className = "prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || comments.length===0}>Previous</Button>
+                                    <Button className = "prevNextButton" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
                                 </Col>                        
                             </Row>          
                             {

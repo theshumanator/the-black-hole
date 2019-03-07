@@ -14,8 +14,8 @@ const ArticleListItem = (props) => {
             <Card.Body>
                 <Card.Title className="articleListItemTitle"><Link className="articleListItemTitle" to={`/articles/${article.article_id}`}>{article.title}</Link></Card.Title>
                 <Card.Text>
-                    <span className="articleListItemAuthor"> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
-                    <span> ON: <PrettyDate dateType="longDate" created_at={props.article.created_at}/></span>
+                    <span className="articleListItemAuthor"><Link to={`/users/${article.author}`}>{article.author}</Link></span> 
+                    <p><PrettyDate dateType="longDate" created_at={props.article.created_at}/></p>
               </Card.Text>
                 {   loggedUser && username && loggedUser === username &&                        
                     <Button variant="danger" size="sm" onClick={()=>props.handleDelete(article.article_id)}>Delete article</Button>

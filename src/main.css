@@ -1,3 +1,8 @@
+* {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 14px;
+}
+
 .header {
     border: 5px dashed black;
 }
@@ -6,15 +11,12 @@
     font-size: 52px;
     color: black;
 }
-
 .articleListItemCard {
     margin: 20px;   
    
 }
 
-.articleListItem {
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    font-size: 14px;
+.articleListItem {        
     text-align: left;
     justify-content: space-around;
     padding: 20px;
@@ -36,11 +38,44 @@
     font-weight: 600;
 }
 
-/* .appDiv {
-    overflow-y: scroll;
-} */
+.singleArticle {
+    margin: 20px;
+    padding: 20px;
+    /* text-align: justify; */
+    
+}
 
-/* .articlesList {
-    overflow-y: scroll;
-    height: 100%;
-} */
+.singleCommentItem {
+    margin-top: 10px;
+}
+
+.likesItem {
+    font-weight: 600;
+}
+
+.voteRequest {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+.commentBody {
+    font-style: italic;
+}
+
+.commentTitle {
+    font-weight: 600;
+}
+
+.commentsSort, .commentsHeader {
+    margin-top: 10px;    
+}
+
+.prevNextButton, .addCommentButton {
+    margin-top: 10px;   
+    width: 100px;
+}
+
+.prevNextGap {
+    margin-left: 20px
+}

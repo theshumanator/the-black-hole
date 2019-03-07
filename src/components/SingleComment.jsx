@@ -41,16 +41,15 @@ class SingleComment extends Component {
         const {comment} = this.props
         
         return (
-            comment && <Card key={comment.comment_id}>                            
+            comment && <Card key={comment.comment_id} className="singleCommentItem">                            
                 <Card.Body>
-                    <p>User: <span>{comment.author}</span></p>
-                    <p>Date: <span><PrettyDate dateType="fromNow" created_at={comment.created_at}/></span></p>
-                    <p>{comment.body}</p>
-                    <span>Rating: {userVoted && this.state.comment?this.state.comment.votes:comment.votes}</span>
-                    <p>
-                    <Button disabled={userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
-                        <span> What do you think of this comment? </span>
-                    <Button disabled={userVoted} variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
+                    <p className="commentTitle">{comment.author} comment on this <PrettyDate dateType="fromNow" created_at={comment.created_at}/>: </p>                    
+                    <p className="commentBody">{comment.body}</p>
+                    <p><span className="likesItem">(Dis)Likes: </span><span>{userVoted && this.state.comment?this.state.comment.votes:comment.votes}</span></p>                    
+                     <p>
+                    <Button disabled={userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>I agree with it</Button>
+                    <span> What do you think of this comment? </span>
+                    <Button disabled={userVoted} variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>It is infuriating</Button>
                     </p>
                     <p>
                         {

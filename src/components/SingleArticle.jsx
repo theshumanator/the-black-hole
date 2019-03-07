@@ -55,25 +55,22 @@ class SingleArticle extends Component {
                     !singleArticle
                     ?   <p>Could not fetch article</p>
                     :   (singleArticle.article_id)
-                        ?   <Fragment>
+                        ?   <div className="singleArticle">
                                 <h3>{singleArticle.title}</h3>
-                                <p>
-                                    <span>{singleArticle.topic} </span> 
-                                    <span>BY: <Link to={`/users/${singleArticle.author}`}> {singleArticle.author} </Link></span>
-                                    <span>ON: <PrettyDate dateType="longDate" created_at={singleArticle.created_at}/></span>
-                                </p>
-                                <p>{singleArticle.body}</p>
-                                <span>Rating: {singleArticle.votes}</span>
-                                <p>
-                                    <Button disabled={this.state.userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
-                                    <span> What do you think this article? </span>
-                                    <Button disabled={this.state.userVoted} variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>Boring</Button>
-                                </p>
+                                <p className="articleListItemTopic"><Link to={`/topics/${singleArticle.topic}`} className="articleListItemTopic">{singleArticle.topic}</Link></p>
+                                <p className="articleListItemAuthor"><Link to={`/users/${singleArticle.author}`} className="articleListItemAuthor">{singleArticle.author}</Link></p>
+                                <p><PrettyDate dateType="longDate" created_at={singleArticle.created_at}/></p>                                
+                                <p>{singleArticle.body}</p>                                
                                 {
-                                    this.props.loggedUser === singleArticle.author && <Button variant="danger" size="sm" onClick={this.handleDelete}>Delete article</Button>
+                                    this.props.loggedUser === singleArticle.author && <Button variant="danger" size="sm" onClick={this.handleDelete} className="deleteArticleButton">Delete article</Button>
                                 }
+                                <p className="voteRequest">Tell us what you think of this article</p>
+                                <p><span className="likesItem">(Dis)Likes: </span><span>{singleArticle.votes}</span></p>
+                                <Button disabled={this.state.userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>I like it</Button>
+                                <span> What do you think this article? </span>
+                                <Button disabled={this.state.userVoted} variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>I loathe it</Button>                                  
                                 <ArticleComments article={singleArticle} loggedUser={this.props.loggedUser}/>                                                   
-                            </Fragment>                                    
+                            </div>                                    
                         :   <p>{singleArticle.msg}</p>                        
                 }
             </div>
