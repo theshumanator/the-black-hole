@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {getAllArticles, deleteArticle} from '../utils/APICalls';
 import {Link} from '@reach/router';
 import {Row, Col, Button, Breadcrumb} from 'react-bootstrap';
+import Moment from 'react-moment';
+import PrettyDate from './PrettyDate';
 
 class UserDashboard extends Component {
 
@@ -106,7 +108,7 @@ class UserDashboard extends Component {
                     <Breadcrumb.Item active>Articles by {username}</Breadcrumb.Item>
                 </Breadcrumb>
                 {                    
-                    isLoading
+                    isLoading //2019-03-06T19:35:44.140Z   
                     ?   <h3>Loading...</h3>
                     :   <div>
                         {
@@ -116,7 +118,11 @@ class UserDashboard extends Component {
                                             return (
                                                 <Row key={article.article_id}>
                                                     <Col>
-                                                        <p key={article.article_id}>{article.topic}: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> {article.created_at}</p>
+                                                        <p key={article.article_id}>{article.topic}: 
+                                                            <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
+                                                            
+                                                            <PrettyDate dateType="longDate" created_at={article.created_at}/>
+                                                        </p>
                                                     </Col>
                                                     {   loggedUser === username &&
                                                         <Col>

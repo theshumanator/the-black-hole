@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import {updateCommentVote, deleteComment} from '../utils/APICalls';
+import PrettyDate from './PrettyDate';
 
 class SingleComment extends Component {
 
@@ -38,7 +39,7 @@ class SingleComment extends Component {
             comment && <Card key={comment.comment_id}>                            
                 <Card.Body>
                     <p>User: <span>{comment.author}</span></p>
-                    <p>Date: <span>{comment.created_at}</span></p>
+                    <p>Date: <span><PrettyDate dateType="fromNow" created_at={comment.created_at}/></span></p>
                     <p>{comment.body}</p>
                     <span>Rating: {comment.votes}</span>
                     <p>

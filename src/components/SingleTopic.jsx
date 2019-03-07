@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {getAllArticles} from '../utils/APICalls';
 import {Link} from '@reach/router';
 import {Breadcrumb} from 'react-bootstrap'
+import PrettyDate from './PrettyDate';
 
 class SingleTopic extends Component {
     state = {
@@ -107,7 +108,7 @@ class SingleTopic extends Component {
                                     return (
                                         <p key={article.article_id}> <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
                                         <span> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
-                                        <span> ON: {article.created_at}</span></p>
+                                        <span>ON: <PrettyDate dateType="longDate" created_at={article.created_at}/></span></p>
                                     )
                                 })                            
                             :   <p>No articles found for topic: {slug}</p>}

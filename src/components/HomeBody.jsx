@@ -5,6 +5,7 @@ import {Dropdown, DropdownButton, Row, Col, Button} from 'react-bootstrap'
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
 import TopicsDropdown from './TopicsDropdown';
+import PrettyDate from './PrettyDate';
 //import MostActiveUsers from './MostActiveUsers';
 
 class HomeBody extends Component {
@@ -188,7 +189,7 @@ class HomeBody extends Component {
                                 return (
                                     <p key={idx}><Link to={`/topics/${article.topic}`}>{article.topic}</Link>: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
                                     <span> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
-                                    {article.created_at}
+                                    <PrettyDate dateType="longDate" created_at={article.created_at}/>
                                     </p>
                                 )
                             })}</div>

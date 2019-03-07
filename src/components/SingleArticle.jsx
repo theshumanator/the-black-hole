@@ -3,6 +3,7 @@ import {Link, navigate} from '@reach/router';
 import {Button, Breadcrumb} from 'react-bootstrap'
 import {getArticleById, updateVote, deleteArticle} from '../utils/APICalls';
 import ArticleComments from './ArticleComments';
+import PrettyDate from './PrettyDate';
 
 class SingleArticle extends Component {
 
@@ -59,7 +60,7 @@ class SingleArticle extends Component {
                                 <p>
                                     <span>{singleArticle.topic} </span> 
                                     <span>BY: <Link to={`/users/${singleArticle.author}`}> {singleArticle.author} </Link></span>
-                                    <span>ON: {singleArticle.created_at}</span>
+                                    <span>ON: <PrettyDate dateType="longDate" created_at={singleArticle.created_at}/></span>
                                 </p>
                                 <p>{singleArticle.body}</p>
                                 <span>Rating: {singleArticle.votes}</span>
