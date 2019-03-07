@@ -34,7 +34,7 @@ class App extends Component {
         <Header updateUser={this.updateUser}/>
         <Router>
           <HomeBody path='/' loggedUser={this.state.loggedUser}/>
-          <UserDashboard path='/users/:username' loggedUser={this.state.loggedUser}/>
+          <UserDashboard path='/users/:username' loggedUser={this.state.loggedUser} />
           <SingleArticle path='/articles/:articleId' loggedUser={this.state.loggedUser}/>          
           <SingleTopic path='/topics/:slug'/>
         </Router>        

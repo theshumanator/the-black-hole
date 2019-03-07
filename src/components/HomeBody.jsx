@@ -1,7 +1,7 @@
 import React, { Component, Fragment} from 'react';
 import {Link, navigate} from '@reach/router';
 import {getAllArticles, getAllTopics} from '../utils/APICalls';
-import {Dropdown, DropdownButton, Row, Col, Button} from 'react-bootstrap'
+import {Dropdown, DropdownButton, Row, Col, Button, Pagination} from 'react-bootstrap'
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
 import TopicsDropdown from './TopicsDropdown';
@@ -18,22 +18,27 @@ class HomeBody extends Component {
         sortByKey: 'created_at', //default
         sortOrder: 'desc', //default
         pageNum: 1, //default
-        reQuery: true,
+        reQuery: false,
         showNewTopicModal: false,
         showNewArticleModal: false,
-        topics: []
+        topics: [],
+        pageClicked: false,
+        totalCount: 0,
+        accumCount: 0,
+        prevClicked: false
     };
       
 
-    handleScroll = throttle((event) => {     
+/*     handleScroll = throttle((event) => {     
         let {pageNum} = this.state;   
         const { clientHeight, scrollTop, scrollHeight } = event.target.documentElement;        
         const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);        
-        if (distanceFromBottom < 200) {
+        if (distanceFromBottom < 200) {          
           this.setState({ pageNum: ++pageNum});
         }
       }, 500);
-
+ */
+      
 
     handleFilterSelect = (eventKey) => {
         navigate(`/topics/${eventKey}`);        
@@ -64,26 +69,60 @@ class HomeBody extends Component {
         this.setState({ showNewArticleModal: false, reQuery: true, articles:[], pageNum: 1 });
     } 
           
-    addScrollEventListener = () => {
+/*     addScrollEventListener = () => {
         document.querySelector('.homeArticlesList').addEventListener('scroll', this.handleScroll);
         window.addEventListener('scroll', this.handleScroll);
-    }
+    } */
 
     componentDidMount () {           
         this.fetchArticles();
         this.fetchTopics();
-        this.addScrollEventListener();
+        /* this.addScrollEventListener(); */
     }
 
     
     componentDidUpdate (prevProps, prevState) {   
-        const { pageNum, hasMore, reQuery } = this.state;        
+        /* let {pageNum}=this.state;        
+        const {hasMore, reQuery, isLoading, scrollChange } = this.state;        
         const hasPageChanged = prevState.pageNum !== pageNum;
-        if (hasPageChanged && hasMore) {
-            this.fetchArticles(pageNum);
-        } else if (reQuery) {
+        const hasRequeryChanged = prevState.reQuery !== reQuery;
+        console.log(hasMore, hasPageChanged, pageNum, isLoading)
+
+
+        const { clientHeight, scrollTop, scrollHeight } = document.documentElement;        
+        const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);        
+        
+        console.log(`Scroll Height: ${document.body.scrollHeight}`)
+        console.log(`Height of scren: ${window.innerHeight}`)
+        console.log(`Distance from bottom ${distanceFromBottom}`);
+
+        if (reQuery) {
+            this.setState({reQuery: false})            
+        } else if (hasRequeryChanged) {
             this.fetchArticles();
-        }     
+        } else if (hasPageChanged && hasMore && document.body.scrollHeight<window.innerHeight && distanceFromBottom===0) {
+         //&&     (!isLoading || (document.body.scrollHeight<window.innerHeight && distanceFromBottom===0))) {
+            console.log('in here')
+            //this.setState({pageNum: ++pageNum})
+            this.fetchArticles();
+        } else if(!hasPageChanged && hasMore && document.body.scrollHeight<window.innerHeight && distanceFromBottom===0){
+            console.log('Updating page num')
+            this.setState({pageNum: ++pageNum})
+        } else if (scrollChange) {
+            this.fetchArticles();
+        } */        
+        
+        const {reQuery, pageNum, pageClicked} = this.state;        
+        const hasPageChanged = prevState.pageNum !== pageNum;
+        //console.log('prev page' + prevState.pageNum +' and now ' + pageNum)
+        if (reQuery) {
+            this.setState({pageNum:1, reQuery: false}, () => this.fetchArticles());
+        } 
+        if (hasPageChanged && pageClicked) {
+            //console.log('page has changed from ' + prevState.pageNum +' to ' + pageNum)
+            this.fetchArticles();
+        }
+
     }
 
     fetchTopics () {
@@ -93,25 +132,66 @@ class HomeBody extends Component {
             })
             .catch(error => console.log('got : ' + error)) 
     }
-    fetchArticles (pageNum=1) {
+    fetchArticles = () => {        
+        let {pageNum, accumCount, prevClicked} = this.state;
+      
+        
         getAllArticles({sort_by: this.state.sortByKey, order: this.state.sortOrder, p: pageNum})
-                .then(({articles, total_count}) => {                    
-                    this.setState({
-                        hasMore: ((this.state.articles.length + articles.length)<total_count),         isLoading: false,
-                        articles: pageNum!==1?[...this.state.articles, ...articles]:articles,
-                        reQuery: false,
-                        pageNum: pageNum
-                    })
+                .then(({articles, total_count}) => {                        
+                    if (!Array.isArray(articles)) {
+                        this.setState({
+                            hasMore: false,                        
+                            isLoading: false,
+                            reQuery: false,
+                            pageNum: --pageNum,
+                            pageClicked: false,
+                            //numOfPages: Math.floor(total_count/10)+1
+                            prevClicked: true
+                        });
+                    } else {
+                        //console.log('accum count' + accumCount + ' with length: ' + articles.length)
+                        //only chnaging it if it wasnt the prev clicked
+                        if (!prevClicked) {
+                            accumCount+=articles.length
+                        }
+                        
+                        //console.log('New accum count' + accumCount)
+                        this.setState({
+                            //hasMore: ((this.state.articles.length + articles.length)<total_count),         
+                            hasMore: ((accumCount + articles.length)<total_count),         
+                            isLoading: false,
+                            //articles: pageNum!==1?[...this.state.articles, ...articles]:articles,
+                            articles,
+                            reQuery: false,
+                            pageClicked: false,
+                            //numOfPages: Math.floor(total_count/10)+1,
+                            accumCount: accumCount,
+                            totalCount: total_count,
+                            prevClicked: true
+                        })
+                    }
+                    
                 })
-                .catch(error => console.log('got : ' + error)) 
-            
+                .catch(error => console.log('got : ' + error))             
+    }
+
+    handlePageClick = (pageOffset) => {        
+        this.setState(({pageNum, accumCount, pageClicked, articles}) => ({
+            pageNum: pageNum + pageOffset,
+            pageClicked: true,
+            prevClicked: pageOffset===-1,
+            accumCount: pageOffset===-1?accumCount-articles.length:accumCount
+          }));
     }
 
     render() {        
         
         const articleArr = this.state.articles;   
-        const { hasMore, isLoading} = this.state;     
-        const loggedUser = this.props.loggedUser;        
+        const { hasMore, isLoading , accumCount, pageNum, totalCount} = this.state;     
+        const loggedUser = this.props.loggedUser;    
+        
+        //console.log(`Current page ${pageNum} and totalCount ${totalCount} hasMore is ${hasMore} accumCount is ${accumCount}`);
+
         return (    
             <div className="homeArticlesList">
             {                 
@@ -160,6 +240,12 @@ class HomeBody extends Component {
                         }
                     </Row>
                     <Row>
+                        <Col>
+                            <Button onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>
+                            <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
+                        </Col>                        
+                    </Row>
+                    <Row>
                         <Col xs={9}>
                             {articleArr && <div className="articlesList">
                             {articleArr.map((article, idx) => {                       
@@ -171,22 +257,8 @@ class HomeBody extends Component {
                                 )
                             })}</div>
                             
-                        }                
-                        {!hasMore &&
-                            <h3>You did it! You reached the end!</h3>
-                        }
+                            } 
                         </Col>
-                        {/* <Col>
-                            <Row>
-                                <h4>Most active users</h4>
-                                <MostActiveUsers/>
-                            </Row>
-                            <p></p>
-                            <Row>
-                                <h4>Most popular users</h4>
-                                <MostActiveUsers/>
-                            </Row>
-                        </Col> */}
                     </Row>                                        
                 </div>
             

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {getAllArticles, deleteArticle} from '../utils/APICalls';
 import {Link} from '@reach/router';
 import {Row, Col, Button, Breadcrumb} from 'react-bootstrap';
-import { throttle } from "lodash";
 import PrettyDate from './PrettyDate';
 
 class UserDashboard extends Component {
@@ -10,68 +9,76 @@ class UserDashboard extends Component {
     state = {
         requestedUser: null,
         articles: [],
-        articlesFound: true,
+        articlesFound: false,
         error: false,
         hasMore: true,
         isLoading: true,
+        pageClicked: false,
+        totalCount: 0,
+        accumCount: 0,
+        prevClicked: false,
         pageNum: 1, //default
+        articleDeleted: false
     }
     componentDidMount () {
         this.fetchArticles();
-        this.addScrollEventListener();
     }
 
     componentDidUpdate (prevProps, prevState) {
         let {pageNum} = this.state;   
-        const { hasMore, requestedUser, isLoading } = this.state;       
+        const { requestedUser, pageClicked, articleDeleted } = this.state;       
         const hasPageChanged = prevState.pageNum !== pageNum;
         const hasUserChanged = requestedUser!==this.props.username;
 
-
-        if (hasPageChanged && hasMore) {
-            this.fetchArticles(pageNum);
-        } else if (hasUserChanged) {
+        if (hasUserChanged) {                        
+            if (pageNum===1){
+                this.fetchArticles();
+            } else {
+                this.setState({pageNum: 1})                
+            }                         
+        } 
+        if (hasPageChanged && pageClicked) {
             this.fetchArticles();
-        } else if (hasMore && pageNum===1 && !isLoading) {
-            //load more to fill screen
-            this.setState({ pageNum: ++pageNum});
+        } 
+
+        if(articleDeleted) {
+            this.fetchArticles();
         }
+
+
     }
 
-    addScrollEventListener = () => {
-        document.querySelector('.articlesList').addEventListener('scroll', this.handleScroll);
-        window.addEventListener('scroll', this.handleScroll);
-    }
-
-    handleScroll = throttle((event) => {     
-        let {pageNum} = this.state;   
-        const { clientHeight, scrollTop, scrollHeight } = event.target.documentElement;        
-        const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);             
-        if (distanceFromBottom < 200) {
-          this.setState({ pageNum: ++pageNum});
-        }
-    }, 500);
-
-    fetchArticles (pageNum=1) {
+    fetchArticles () {
+        let {pageNum, accumCount, prevClicked} = this.state;
         getAllArticles({author: this.props.username, p: pageNum})
             .then(({articles, total_count}) => { 
                 if (!Array.isArray(articles)) {
                     this.setState({
                         hasMore: false,                        
                         isLoading: false,
-                        pageNum,
-                        articles: [], 
+                        //pageNum,
+                        //articles: [], 
                         requestedUser: this.props.username, 
-                        articlesFound: false});
+                        pageClicked: false,
+                        prevClicked: true,
+                        articlesFound: false,
+                        articleDeleted: false
+                    });
                 } else {
+                    if (!prevClicked) {
+                        accumCount+=articles.length
+                    }
                     this.setState({                        
                         hasMore: ((this.state.articles.length + articles.length)<total_count),
-                        isLoading: false,
-                        //if it's the not the first page then just concat the 2 arrays
-                        articles: pageNum!==1?[...this.state.articles, ...articles]:articles, 
+                        isLoading: false,                        
+                        articles,
                         requestedUser: this.props.username,
                         articlesFound: true,
-                        //pageNum: pageNum===1?pageNum
+                        pageClicked: false,
+                        accumCount: accumCount,
+                        totalCount: total_count,
+                        prevClicked: true,
+                        articleDeleted: false
                     })
                 } 
             })
@@ -82,27 +89,45 @@ class UserDashboard extends Component {
         deleteArticle(articleId)
             .then((status) => {
                 if(status===204) {
-                    this.setState({ pageNum: 1, articles: [], hasMore: true, isLoading: true});                    
+                    this.setState({ articleDeleted: true});                    
                 }
             })
             .catch(error => console.log('got : ' + error))
     }
 
+
+    handlePageClick = (pageOffset) => {        
+        this.setState(({pageNum, accumCount, pageClicked, articles}) => ({
+            pageNum: pageNum + pageOffset,
+            pageClicked: true,
+            prevClicked: pageOffset===-1,
+            accumCount: pageOffset===-1?accumCount-articles.length:accumCount
+          }));
+    }
+
+
     render() {        
         const {username, loggedUser} = this.props;
         const articleArr = this.state.articles;
-        const {articlesFound, hasMore, isLoading} = this.state;     
+        const {articlesFound, pageNum, accumCount, totalCount, isLoading} = this.state;  
+                
+        //console.log(`In render article arr size: ${articleArr.length}`)
         return (
             <div className="articlesList">
-                {/* <h3>Articles by {username}</h3> */}
                 <Breadcrumb>
                     <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    
                     <Breadcrumb.Item active>Articles by {username}</Breadcrumb.Item>
                 </Breadcrumb>
-                {                    
+                {
                     isLoading
                     ?   <h3>Loading...</h3>
                     :   <div>
+                        <Row>
+                            <Col>
+                                <Button onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>
+                                <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
+                            </Col>                        
+                        </Row>
                         {
                             articlesFound
                                 ? articleArr &&
@@ -125,16 +150,14 @@ class UserDashboard extends Component {
                                                 </Row>                                                
                                             )
                                         })                            
-                                :   <p>No articles found for {username}</p>                                
-                            }
-                            {!hasMore && articlesFound &&
-                                <h3>You did it! You reached the end!</h3>
-                            }
+                                :   <p>No articles found for {username}</p> 
+                        } 
                         </div>
-                    
-                }                
+                }                                      
             </div>
         )
     }
 }
 export default UserDashboard;
+
+
