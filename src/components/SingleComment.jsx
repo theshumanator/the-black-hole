@@ -7,15 +7,17 @@ class SingleComment extends Component {
 
     state = {
         comment: null,
-        userVoted: false,        
+        userVoted: false
     }
 
-    componentDidMount () {
+    componentDidMount() {        
+        console.log('component did mount')
         this.setState({comment: this.props.comment})
     }
 
-    handleVote = (voteVal) => {                
-        updateCommentVote(this.state.comment.comment_id, {inc_votes: voteVal})
+
+    handleVote = (voteVal) => {                        
+        updateCommentVote(this.props.comment.comment_id, {inc_votes: voteVal})
             .then((comment) => { 
                 this.setState({comment, userVoted: true})
                  
@@ -23,8 +25,8 @@ class SingleComment extends Component {
             .catch(error => console.log('got : ' + error))
     }
 
-    handleDelete = () => {
-        deleteComment(this.state.comment.comment_id)
+    handleDelete = () => {        
+        deleteComment(this.props.comment.comment_id)
             .then((status) => {
                 if(status===204) {
                     this.setState({comment: null}, () => this.props.handleDeleteDone())                    
@@ -34,14 +36,17 @@ class SingleComment extends Component {
     }
 
     render() {
-        const {comment, userVoted} = this.state;        
+        console.log('render')
+        const { userVoted} = this.state;  
+        const {comment} = this.props
+        
         return (
             comment && <Card key={comment.comment_id}>                            
                 <Card.Body>
                     <p>User: <span>{comment.author}</span></p>
                     <p>Date: <span><PrettyDate dateType="fromNow" created_at={comment.created_at}/></span></p>
                     <p>{comment.body}</p>
-                    <span>Rating: {comment.votes}</span>
+                    <span>Rating: {userVoted && this.state.comment?this.state.comment.votes:comment.votes}</span>
                     <p>
                     <Button disabled={userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>Awesome</Button>
                         <span> What do you think of this comment? </span>
