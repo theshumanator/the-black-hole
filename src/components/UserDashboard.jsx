@@ -3,6 +3,7 @@ import {getAllArticles, deleteArticle} from '../utils/APICalls';
 import {Link} from '@reach/router';
 import {Row, Col, Button, Breadcrumb} from 'react-bootstrap';
 import PrettyDate from './PrettyDate';
+import ArticleListItem from './ArticleListItem';
 
 class UserDashboard extends Component {
 
@@ -52,13 +53,12 @@ class UserDashboard extends Component {
         let {pageNum, accumCount, prevClicked} = this.state;
         getAllArticles({author: this.props.username, p: pageNum})
             .then(({articles, total_count}) => {                 
-                if (!Array.isArray(articles)) {
+                if (!Array.isArray(articles)) {                    
                     this.setState({
                         hasMore: false,                        
                         isLoading: false,
                         pageClicked: pageNum>1?true:false,
-                        pageNum: pageNum>1?--pageNum:1,
-                        //articles: [], 
+                        pageNum: pageNum>1?--pageNum:1,    
                         requestedUser: this.props.username,                         
                         prevClicked: true,
                         articlesFound: false,
@@ -132,30 +132,18 @@ class UserDashboard extends Component {
                                 <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
                             </Col>                        
                         </Row>
-                        {
-                            articlesFound
-                                ? articleArr &&
-                                        articleArr.map(article => {                        
-                                            return (
-                                                <Row key={article.article_id}>
-                                                    <Col>
-                                                        <p key={article.article_id}>{article.topic}: 
-                                                            <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
-                                                            
-                                                            <PrettyDate dateType="longDate" created_at={article.created_at}/>
-                                                        </p>
-                                                    </Col>
-                                                    {   loggedUser === username &&
-                                                        <Col>
-                                                            <Button variant="danger" size="sm" onClick={()=>this.handleDelete(article.article_id)}>Delete article</Button>
-                                                        </Col>
-                                                    }
-                                                    
-                                                </Row>                                                
-                                            )
-                                        })                            
-                                :   <p>No articles found for {username}</p> 
-                        } 
+                        <Row>
+                            <Col xs={9}>
+                            {
+                                articlesFound
+                                    ? articleArr &&
+                                            articleArr.map((article, idx) => {  
+                                                return <ArticleListItem key={idx} article={article} idx={idx} loggedUser={loggedUser} username={username} handleDelete={this.handleDelete}/>
+                                            })                            
+                                    :   <p>No articles found for {username}</p> 
+                            }                             
+                            </Col>
+                        </Row>
                         </div>
                 }                                      
             </div>

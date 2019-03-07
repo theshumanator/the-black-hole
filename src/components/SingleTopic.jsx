@@ -3,6 +3,7 @@ import {getAllArticles} from '../utils/APICalls';
 import {Link} from '@reach/router';
 import {Breadcrumb, Button, Col, Row} from 'react-bootstrap'
 import PrettyDate from './PrettyDate';
+import ArticleListItem from './ArticleListItem';
 /* import { throttle } from "lodash";
 import { render } from "react-dom";
 import InfiniteScroll from "react-infinite-scroll-component"; */
@@ -141,16 +142,17 @@ class SingleTopic extends Component {
                             <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
                         </Col>                        
                         </Row>
-                        {articlesFound
-                            ? articleArr &&
-                                articleArr.map(article => {                        
-                                    return (
-                                        <p key={article.article_id}> <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
-                                        <span> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
-                                        <span>ON: <PrettyDate dateType="longDate" created_at={article.created_at}/></span></p>
-                                    )
-                                })                            
-                            :   <p>No articles found for topic: {slug}</p>}                             
+                        <Row>
+                            <Col xs={9}>
+                                {articlesFound
+                                ? articleArr &&
+                                    articleArr.map((article, idx) => { 
+                                        return <ArticleListItem key={idx} article={article} idx={idx}/>
+                                    })                            
+                                :   <p>No articles found for topic: {slug}</p>}   
+                            </Col>
+                        </Row>
+                                                  
                     </div>   
                                     
                 }

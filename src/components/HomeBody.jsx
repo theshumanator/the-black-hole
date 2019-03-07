@@ -7,6 +7,7 @@ import NewArticleForm from './NewArticleForm';
 import TopicsDropdown from './TopicsDropdown';
 import PrettyDate from './PrettyDate';
 import { throttle } from "lodash";
+import ArticleListItem from './ArticleListItem';
 
 class HomeBody extends Component {
       
@@ -250,15 +251,10 @@ class HomeBody extends Component {
                         </Col>                        
                     </Row>
                     <Row>
-                        <Col xs={9}>
+                        <Col xs={9} className="articleListItem">                            
                             {articleArr && <div className="articlesList">
                             {articleArr.map((article, idx) => {                       
-                                return (
-                                    <p key={idx}><Link to={`/topics/${article.topic}`}>{article.topic}</Link>: <Link to={`/articles/${article.article_id}`}>{article.title}</Link> 
-                                    <span> BY: <Link to={`/users/${article.author}`}>{article.author}</Link></span> 
-                                    <PrettyDate dateType="longDate" created_at={article.created_at}/>
-                                    </p>
-                                )
+                                return <ArticleListItem key={idx} article={article} idx={idx}/>
                             })}</div>
                             
                             } 
