@@ -16,7 +16,7 @@ const LoginForm = (props) => {
                                 onChange={props.handleChange}/>
                             </Col>
                             <Col>
-                                <Button variant="primary" type="submit">Login</Button>
+                                <Button variant="primary" type="submit" disabled={props.userInput===''}>Login</Button>
                             </Col>
                         </Row>                                                
                     </FormGroup>

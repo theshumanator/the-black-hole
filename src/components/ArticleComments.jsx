@@ -16,6 +16,10 @@ class ArticleComments extends Component {
         error: false,
         hasMore: true,
         isLoading: true,    
+        pageClicked: false,
+        totalCount: 0,
+        accumCount: 0,
+        prevClicked: false,
         pageNum: 1, //default
     }
 
@@ -41,37 +45,25 @@ class ArticleComments extends Component {
         this.setState({sortByKey: sortArr[0], sortOrder: sortArr[1], reQuery: true});
     }
 
-    handleScroll = throttle((event) => {     
-        let {pageNum} = this.state;   
-        const { clientHeight, scrollTop, scrollHeight } = event.target.documentElement;        
-        const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);        
-        if (distanceFromBottom < 200) {
-          this.setState({ pageNum: ++pageNum});
-        }
-      }, 500);
-
-
-    addScrollEventListener = () => {
-        document.querySelector('.commentList').addEventListener('scroll', this.handleScroll);
-        window.addEventListener('scroll', this.handleScroll);
-    }
     componentDidMount () {         
        this.fetchComments();
-       this.addScrollEventListener();
     }
 
     componentDidUpdate (prevProps, prevState) {
-        const { pageNum, hasMore, reQuery } = this.state;        
+        const {reQuery, pageNum, pageClicked} = this.state;        
         const hasPageChanged = prevState.pageNum !== pageNum;
-        if (hasPageChanged && hasMore) {
-            this.fetchComments(pageNum);
-        } else if (reQuery) {
+        if (reQuery) {
+            this.setState({pageNum:1, reQuery: false}, () => this.fetchComments());
+        } 
+        if (hasPageChanged && pageClicked) {
             this.fetchComments();
         }
+
     }
 
     
-    fetchComments (pageNum=1) {
+    fetchComments () {
+        let {pageNum, accumCount, prevClicked} = this.state;
         getArticleComments(this.props.article.article_id, {sort_by: this.state.sortByKey, order: this.state.sortOrder, p:pageNum})
             .then(({comments, total_count}) => {                    
                 if (!Array.isArray(comments)) {
@@ -79,13 +71,23 @@ class ArticleComments extends Component {
                         isLoading: false,
                         hasMore: false,
                         comments: [], 
-                        reQuery: false})
-                } else {                 
-                    this.setState({
-                        hasMore: ((this.state.comments.length + comments.length)<total_count),         isLoading: false,
-                        comments: pageNum!==1?[...this.state.comments, ...comments]:comments,
                         reQuery: false,
-                        pageNum: pageNum
+                        pageNum: --pageNum,
+                        pageClicked: false,
+                        prevClicked: true})
+                } else {        
+                    if (!prevClicked) {
+                        accumCount+=comments.length
+                    }         
+                    this.setState({
+                        hasMore: ((accumCount + comments.length)<total_count),         
+                        isLoading: false,
+                        comments,
+                        reQuery: false,                        
+                        pageClicked: false,
+                        accumCount: accumCount,
+                        totalCount: total_count,
+                        prevClicked: true
                     })
 
                 }            
@@ -93,9 +95,18 @@ class ArticleComments extends Component {
             .catch(error => console.log('got : ' + error))                  
     }
 
+    handlePageClick = (pageOffset) => {        
+        this.setState(({pageNum, accumCount, pageClicked, comments}) => ({
+            pageNum: pageNum + pageOffset,
+            pageClicked: true,
+            prevClicked: pageOffset===-1,
+            accumCount: pageOffset===-1?accumCount-comments.length:accumCount
+          }));
+    }
+
     render () {
         const {article, loggedUser} = this.props;
-        const {comments, showNewCommentModal, hasMore, isLoading} = this.state;                
+        const {comments, showNewCommentModal, isLoading, accumCount, pageNum, totalCount} = this.state;                
         
         return (
             <div className="commentList">
@@ -122,7 +133,13 @@ class ArticleComments extends Component {
                                         loggedUser && <Button variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
                                     }
                                 </Col>                    
-                            </Row>            
+                            </Row>  
+                            <Row>
+                                <Col>
+                                    <Button onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || comments.length===0}>Previous</Button>
+                                    <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
+                                </Col>                        
+                            </Row>          
                             {
                                 showNewCommentModal && loggedUser && <AddNewComment articleId={article.article_id} loggedUser={this.props.loggedUser} showNewCommentModal={showNewCommentModal} handleNewCommentClose={this.handleNewCommentClose}/>
                             }
@@ -133,9 +150,6 @@ class ArticleComments extends Component {
                                 })
                             }
                             </div>
-                            {!hasMore && comments.length>0 &&
-                                <h3>You did it! You reached the end!</h3>
-                            }
                         </div>
                 }
 

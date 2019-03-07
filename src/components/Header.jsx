@@ -71,7 +71,7 @@ class Header extends Component {
                             {
                                 localStorage.getItem('userLoggedIn')
                                     ? <WelcomeUser handleLogout={this.handleLogout}/>
-                                    : <LoginForm handleChange={this.handleChange}  handleLogin={this.handleLogin}/>
+                                    : <LoginForm handleChange={this.handleChange}  handleLogin={this.handleLogin} userInput={this.state.userInput}/>
                             }                           
                         </Col>
                         <Col>

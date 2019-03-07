@@ -6,7 +6,7 @@ import {Form, Button, FormControl, Modal, Alert, Row, Col} from 'react-bootstrap
 
 class NewArticleForm extends Component {
     state = {
-        articlePostError: 'none',
+        articlePostError: '',
         articlePosted: false,
         inputTitle: '',
         inputBody: '',
@@ -14,21 +14,21 @@ class NewArticleForm extends Component {
         availableTopics: [],
         selectTopicEnable: false, 
         createTopicEnable: false,
-        topicAddError: 'none',
+        topicAddError: '',
         topicAdded: false,
         newArticleId: null
     }
 
     handleTitleChange = (event) => {
-        this.setState({ inputTitle: event.target.value, topicAddError: 'none', articlePostError: 'none'});
+        this.setState({ inputTitle: event.target.value, topicAddError: '', articlePostError: ''});
     }
 
     handleBodyChange = (event) => {
-        this.setState({ inputBody: event.target.value, topicAddError: 'none', articlePostError: 'none'});
+        this.setState({ inputBody: event.target.value, topicAddError: '', articlePostError: ''});
     }
 
     handleTopicChange = (event) => {        
-        this.setState({ inputTopic: event.target.value, topicAddError: 'none', articlePostError: 'none'});
+        this.setState({ inputTopic: event.target.value, topicAddError: '', articlePostError: ''});
     }
 
     handleRadioChange = (event) => {
@@ -72,7 +72,7 @@ class NewArticleForm extends Component {
         postNewArticle(articleObj)
             .then((data) => {                
                 if ('article' in data) {
-                    this.setState({articlePosted: true, articlePostError:'none', newArticleId: data.article.article_id})
+                    this.setState({articlePosted: true, articlePostError:'', newArticleId: data.article.article_id})
                 } else {
                     this.setState({articlePosted: false, articlePostError: data.msg})
                 }
@@ -126,14 +126,14 @@ class NewArticleForm extends Component {
                     </Form.Group>
                 </Form>
                 {
-                    (!this.state.topicAdded && this.state.topicAddError!=='none')
+                    (!this.state.topicAdded && this.state.topicAddError!=='')
                     ?   <Alert variant='danger'>Topic could not be added: {this.state.topicAddError}</Alert>
                     :   this.state.topicAdded
                         ?   <Alert variant='success'>Topic has been added</Alert>
                         :   <Fragment/>                            
                 } 
                 {
-                    (!this.state.articlePosted && this.state.articlePostError!=='none')
+                    (!this.state.articlePosted && this.state.articlePostError!=='')
                     ?   <Alert variant='danger'>Article could not be added: {this.state.articlePostError}</Alert>
                     :   this.state.articlePosted
                         ?   <Alert variant='success'>Article has been posted. You can find it <Link to={`/articles/${this.state.newArticleId}`}>here</Link> or close to return to main page.</Alert>
@@ -141,7 +141,7 @@ class NewArticleForm extends Component {
                 }                                    
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="primary" onClick={this.handlePostNewArticle}>
+                <Button variant="primary" disabled={this.state.topicAddError!=='' ||  this.state.articlePostError!=='' || this.state.inputTitle==='' || this.state.inputBody==='' || this.state.inputTopic===''} onClick={this.handlePostNewArticle}>
                     Post article
                 </Button>
                 <Button variant="secondary" onClick={this.props.handleNewArticleClose}>

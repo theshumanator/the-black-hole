@@ -19,6 +19,7 @@ class HomeBody extends Component {
         sortOrder: 'desc', //default
         pageNum: 1, //default
         reQuery: false,
+        reQueryTopics: false,
         showNewTopicModal: false,
         showNewArticleModal: false,
         topics: [],
@@ -56,7 +57,7 @@ class HomeBody extends Component {
 
     handleNewTopicClose = () => {
         //console.log('Closing new topic modal')
-        this.setState({ showNewTopicModal: false, reQuery: false });
+        this.setState({ showNewTopicModal: false, reQuery: false, reQueryTopics: true });
     } 
 
     handleShowNewArticle = () => {
@@ -112,12 +113,15 @@ class HomeBody extends Component {
             this.fetchArticles();
         } */        
         
-        const {reQuery, pageNum, pageClicked} = this.state;        
+        const {reQuery, pageNum, pageClicked, reQueryTopics} = this.state;        
         const hasPageChanged = prevState.pageNum !== pageNum;
         //console.log('prev page' + prevState.pageNum +' and now ' + pageNum)
         if (reQuery) {
             this.setState({pageNum:1, reQuery: false}, () => this.fetchArticles());
         } 
+        if (reQueryTopics) {
+            this.setState({reQueryTopics: false}, () => this.fetchTopics());
+        }
         if (hasPageChanged && pageClicked) {
             //console.log('page has changed from ' + prevState.pageNum +' to ' + pageNum)
             this.fetchArticles();

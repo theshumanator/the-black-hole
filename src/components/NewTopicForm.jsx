@@ -9,12 +9,12 @@ import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
     state = {
         inputTopic: '',
         inputTopicDesc: '',
-        topicAddError: 'none',
+        topicAddError: '',
         topicAdded: false
     }
 
     handleTopicSlugChange = (event) => {
-        this.setState({ inputTopic: event.target.value});
+        this.setState({ inputTopic: event.target.value, topicAddError: ''});
     }
     handleTopicDescriptionChange = (event) => {
         this.setState({ inputTopicDesc: event.target.value});
@@ -48,7 +48,7 @@ import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
                         </Form.Group>
                     </Form>
                     {
-                        (!this.state.topicAdded && this.state.topicAddError!=='none')
+                        (!this.state.topicAdded && this.state.topicAddError!=='')
                         ?   <Alert variant='danger'>Topic could not be added: {this.state.topicAddError}</Alert>
                         :   this.state.topicAdded
                             ?   <Alert variant='success'>Topic has been added</Alert>
@@ -56,7 +56,7 @@ import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
                     }                    
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={this.handleAddNewTopic}>
+                    <Button variant="primary" disabled={this.state.inputTopic==='' || this.state.topicAddError!==''} onClick={this.handleAddNewTopic}>
                         Create new Topic
                     </Button>
                     <Button variant="secondary" onClick={this.props.handleNewTopicClose}>

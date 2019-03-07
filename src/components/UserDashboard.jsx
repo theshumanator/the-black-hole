@@ -51,15 +51,15 @@ class UserDashboard extends Component {
     fetchArticles () {
         let {pageNum, accumCount, prevClicked} = this.state;
         getAllArticles({author: this.props.username, p: pageNum})
-            .then(({articles, total_count}) => { 
+            .then(({articles, total_count}) => {                 
                 if (!Array.isArray(articles)) {
                     this.setState({
                         hasMore: false,                        
                         isLoading: false,
-                        //pageNum,
+                        pageClicked: pageNum>1?true:false,
+                        pageNum: pageNum>1?--pageNum:1,
                         //articles: [], 
-                        requestedUser: this.props.username, 
-                        pageClicked: false,
+                        requestedUser: this.props.username,                         
                         prevClicked: true,
                         articlesFound: false,
                         articleDeleted: false
@@ -89,7 +89,11 @@ class UserDashboard extends Component {
         deleteArticle(articleId)
             .then((status) => {
                 if(status===204) {
-                    this.setState({ articleDeleted: true});                    
+                    this.setState(({totalCount, accumCount, articleDeleted}) => ({
+                        totalCount: --totalCount,                                                
+                        accumCount: --accumCount,
+                        articleDeleted: true
+                      }));                    
                 }
             })
             .catch(error => console.log('got : ' + error))
@@ -111,7 +115,7 @@ class UserDashboard extends Component {
         const articleArr = this.state.articles;
         const {articlesFound, pageNum, accumCount, totalCount, isLoading} = this.state;  
                 
-        //console.log(`In render article arr size: ${articleArr.length}`)
+        console.log(`In render article arr size: ${articleArr.length}, accumCount ${accumCount} totalCount ${totalCount}`)
         return (
             <div className="articlesList">
                 <Breadcrumb>
@@ -124,7 +128,7 @@ class UserDashboard extends Component {
                     :   <div>
                         <Row>
                             <Col>
-                                <Button onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>
+                                <Button onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 && totalCount>0 || articleArr.length===0}>Previous</Button>
                                 <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
                             </Col>                        
                         </Row>
