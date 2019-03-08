@@ -2,6 +2,7 @@
 
 This is a social news [website](https://the-black-hole.netlify.com/) serving as the frontend to the NC-Knews [API](https://shumanator-nc-knews.herokuapp.com/api) for which the git can be found [here](https://github.com/theshumanator/BE2-NC-Knews). 
 
+The application allows you to post articles to new or existing topics and comment + vote on the articles.
 
 ## Getting Started
 
@@ -9,7 +10,7 @@ This is a social news [website](https://the-black-hole.netlify.com/) serving as 
 
 It is assumed that VS code (or another appropriate alternative) runs on your machine. 
 
-You also need node and npm installed on your machine.
+You also need node (at least v11.0.0) and npm (at least version 6.4.1) installed on your machine.
 
 ### Installing
 

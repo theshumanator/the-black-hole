@@ -25,7 +25,7 @@ class Header extends Component {
         event.preventDefault()
         getUserDetails(this.state.userInput)
             .then((user) => {                
-                if (user['status']) {
+                if (user.status) {
                     this.setState({userInput: '', loginError: true, isActionLoginOut: false});
                 } else {
                     localStorage.setItem('userLoggedIn', this.state.userInput);
