@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {getAllArticles} from '../utils/APICalls';
-import {Breadcrumb, Button, Col, Row} from 'react-bootstrap'
+import { Button, Col, Row} from 'react-bootstrap'
 import ArticleListItem from './ArticleListItem';
+import BreadCrumb from './BreadCrumb';
 
 
 class SingleTopic extends Component {
@@ -97,11 +98,8 @@ class SingleTopic extends Component {
         const {screenSize, articlesFound, isLoading , accumCount, pageNum, totalCount} = this.state;             
         return (
             <div className="articlesByTopic">
-                <Breadcrumb>
-                    <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    
-                    <Breadcrumb.Item active>Articles on topic: {slug}</Breadcrumb.Item>
-                </Breadcrumb>
-
+                <BreadCrumb currentPage={`Articles on: ${slug}`}/>
+                
                 {
                     isLoading
                     ? <h3>Loading...</h3>

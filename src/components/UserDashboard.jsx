@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {getAllArticles, deleteArticle} from '../utils/APICalls';
-import {Row, Col, Button, Breadcrumb} from 'react-bootstrap';
+import {Row, Col, Button} from 'react-bootstrap';
 import ArticleListItem from './ArticleListItem';
+import BreadCrumb from './BreadCrumb';
 
 class UserDashboard extends Component {
 
@@ -123,10 +124,8 @@ class UserDashboard extends Component {
         console.log(`Total count ${totalCount} accumCount ${accumCount} pageNum ${pageNum}`)        
         return (
             <div className="articlesList">
-                <Breadcrumb>
-                    <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    
-                    <Breadcrumb.Item active>Articles by {username}</Breadcrumb.Item>
-                </Breadcrumb>
+                <BreadCrumb currentPage={`Articles by: ${username}`}/>
+                
                 {
                     isLoading
                     ?   <h3>Loading...</h3>

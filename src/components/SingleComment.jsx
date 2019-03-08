@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import {updateCommentVote, deleteComment} from '../utils/APICalls';
 import PrettyDate from './PrettyDate';
+import VotingButtons from './VotingButtons';
 
 class SingleComment extends Component {
 
@@ -45,8 +46,7 @@ class SingleComment extends Component {
                     <p className="commentBody">{comment.body}</p>
                     <p><span className="likesItem">(Dis)Likes: </span><span>{userVoted && this.state.comment?this.state.comment.votes:comment.votes}</span></p>                    
                      <p>
-                        {loggedUser && <Button size={size} disabled={userVoted} variant="outline-success" className = "commentLikeButton" onClick={()=>this.handleVote(1)}>Agree</Button> }
-                        {loggedUser && <Button size={size} disabled={userVoted} variant="outline-danger" className = "prevNextGap commentLikeButton" onClick={()=>this.handleVote(-1)}>Infuriating</Button>}                    
+                         {loggedUser && <VotingButtons size={size} userVoted={userVoted} upVote="Agree" downVote="Infuriating" handleVote={this.handleVote}/>}    
                     </p>
                     <p>
                         {

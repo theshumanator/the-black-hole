@@ -1,11 +1,13 @@
 import React, { Component, Fragment} from 'react';
 import {navigate} from '@reach/router';
 import {getAllArticles, getAllTopics} from '../utils/APICalls';
-import {Dropdown, DropdownButton, Row, Col, Button} from 'react-bootstrap'
+import {Row, Col, Button} from 'react-bootstrap'
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
 import TopicsDropdown from './TopicsDropdown';
 import ArticleListItem from './ArticleListItem';
+import {homeSortDropdowns} from '../utils/dropdowns';
+import SortDropdown from './SortDropdown';
 
 class HomeBody extends Component {
       
@@ -177,7 +179,7 @@ class HomeBody extends Component {
                     </Row>
                     <Row className="sortFilterRow">
                         <TopicsDropdown size={screenSize} className="filterDropdown" topics={this.state.topics} handleFilterSelect={this.handleFilterSelect}/>
-                        <DropdownButton size={screenSize} className="sortDropdown" id="dropdown-basic-button" title="Sort By" variant='primary'>
+                        {/* <DropdownButton size={screenSize} className="sortDropdown" id="dropdown-basic-button" title="Sort By" variant='primary'>
                                 <Dropdown.Item eventKey="created_at desc" onSelect={this.handleSortSelect}>Newest (Default)</Dropdown.Item>
                                 <Dropdown.Item eventKey="created_at asc" onSelect={this.handleSortSelect}>Oldest</Dropdown.Item>
                                 <Dropdown.Item eventKey="votes desc" onSelect={this.handleSortSelect}>Highest rated</Dropdown.Item>
@@ -186,7 +188,9 @@ class HomeBody extends Component {
                                 <Dropdown.Item eventKey="topic desc" onSelect={this.handleSortSelect}>Topic (Z-A)</Dropdown.Item>
                                 <Dropdown.Item eventKey="comment_count desc" onSelect={this.handleSortSelect}>Highest comment count</Dropdown.Item>
                                 <Dropdown.Item eventKey="comment_count asc" onSelect={this.handleSortSelect}>Lowest comment count</Dropdown.Item>
-                            </DropdownButton>                                                                 
+                        </DropdownButton>   */}    
+
+                        <SortDropdown sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
                     </Row>
 
                     <Row className="browseFuncsRow">     

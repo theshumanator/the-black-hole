@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import {Link, navigate} from '@reach/router';
-import {Button, Breadcrumb} from 'react-bootstrap'
+import {Button} from 'react-bootstrap'
 import {getArticleById, updateVote, deleteArticle} from '../utils/APICalls';
 import ArticleComments from './ArticleComments';
 import PrettyDate from './PrettyDate';
+import BreadCrumb from './BreadCrumb';
+import VotingButtons from './VotingButtons';
 
 class SingleArticle extends Component {
 
@@ -57,10 +59,7 @@ class SingleArticle extends Component {
         }                     
         return (
             <div>  
-                <Breadcrumb>
-                    <Breadcrumb.Item href="/">Home</Breadcrumb.Item>                    
-                    <Breadcrumb.Item active>Article Details</Breadcrumb.Item>
-                </Breadcrumb>                          
+                <BreadCrumb currentPage="Article Details"/>                
                 {
                     !singleArticle
                     ?   <p>Could not fetch article</p>
@@ -76,8 +75,7 @@ class SingleArticle extends Component {
                                 }
                                 <p className="voteRequest">Tell us what you think of this article</p>
                                 <p><span className="likesItem">(Dis)Likes: </span><span>{singleArticle.votes}</span></p>
-                                {loggedUser && <Button size={screenSize} className = "commentLikeButton" disabled={userVoted} variant="outline-success" onClick={()=>this.handleVote(1)}>I like it</Button>}
-                                {loggedUser && <Button size={screenSize} className = "commentLikeButton prevNextGap" disabled={userVoted} variant="outline-danger" onClick={()=>this.handleVote(-1)}>I loathe it</Button> }                                 
+                                {loggedUser && <VotingButtons size={screenSize} userVoted={userVoted} upVote="I like it" downVote="I loathe it" handleVote={this.handleVote}/>}                           
                                 <ArticleComments size={screenSize} article={singleArticle} loggedUser={loggedUser}/>                                                   
                             </div>                                    
                         :   <p>{singleArticle.msg}</p>                        

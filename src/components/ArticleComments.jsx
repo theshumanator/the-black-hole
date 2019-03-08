@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import {Row, Button, Dropdown, DropdownButton} from 'react-bootstrap';
+import {Row, Button} from 'react-bootstrap';
 import {getArticleComments} from '../utils/APICalls'
 import SingleComment from './SingleComment';
 import AddNewComment from './AddNewComment';
+import {commentsSortDropdowns} from '../utils/dropdowns';
+import SortDropdown from './SortDropdown';
 
 class ArticleComments extends Component {
 
@@ -126,15 +128,16 @@ class ArticleComments extends Component {
                                     loggedUser && <Button className="addButton" size={size} variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
                                 }
                                 {
-                                        <DropdownButton  size={size} id="dropdown-basic-button" title="Sort By" variant='secondary'>
+                                        /* <DropdownButton  size={size} id="dropdown-basic-button" title="Sort By" variant='secondary'>
                                             <Dropdown.Item eventKey="created_at desc" onSelect={this.handleSortSelect}>Newest (Default)</Dropdown.Item>
                                             <Dropdown.Item eventKey="created_at asc" onSelect={this.handleSortSelect}>Oldest</Dropdown.Item>
                                             <Dropdown.Item eventKey="votes desc" onSelect={this.handleSortSelect}>Highest rated</Dropdown.Item>
                                             <Dropdown.Item eventKey="votes asc" onSelect={this.handleSortSelect}>Lowest rated</Dropdown.Item>
                                             <Dropdown.Item eventKey="author asc" onSelect={this.handleSortSelect}>Author (A-Z)</Dropdown.Item>
                                             <Dropdown.Item eventKey="author desc" onSelect={this.handleSortSelect}>Author (Z-A)</Dropdown.Item>                        
-                                        </DropdownButton>
-                                }            
+                                        </DropdownButton> */
+                                }      
+                                <SortDropdown sortDropdowns={commentsSortDropdowns} handleSortSelect={this.handleSortSelect} size={size}/>                                                                 
                              
 
                                 <div className="commentPrevNext">                                
