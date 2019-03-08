@@ -11,7 +11,6 @@ class SingleComment extends Component {
     }
 
     componentDidMount() {        
-        console.log('component did mount')
         this.setState({comment: this.props.comment})
     }
 
@@ -35,8 +34,7 @@ class SingleComment extends Component {
             .catch(error => console.log('got : ' + error))
     }
 
-    render() {
-        console.log('render')
+    render() {        
         const { userVoted} = this.state;  
         const {comment, size} = this.props
         
