@@ -48,24 +48,19 @@ class NewArticleForm extends Component {
             body: inputBody,
             topic: inputTopic
         }
-        if (inputTopic==='') {
-            //TODO alert
+       if (createTopicEnable) {
+            createNewTopic({slug: inputTopic, description: inputTopic})
+                .then((data) => {
+                    if ('topic' in data) {
+                        this.doPostNewArticle(articleObj);
+                    } else {
+                        this.setState({topicAdded: false, topicAddError: data.msg})
+                    }
+                })
+                .catch(error => console.log('got : ' + error))       
         } else {
-            if (createTopicEnable) {
-                createNewTopic({slug: inputTopic, description: inputTopic})
-                    .then((data) => {
-                        if ('topic' in data) {
-                            this.doPostNewArticle(articleObj);
-                        } else {
-                            this.setState({topicAdded: false, topicAddError: data.msg})
-                        }
-                    })
-                    .catch(error => console.log('got : ' + error))       
-            } else {
-                this.doPostNewArticle(articleObj);
-            }
-        }        
-              
+            this.doPostNewArticle(articleObj);
+        }
     }
 
     doPostNewArticle = (articleObj)=> {

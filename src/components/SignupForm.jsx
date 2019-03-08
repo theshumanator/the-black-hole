@@ -42,9 +42,7 @@ class SignupForm extends Component {
                     localStorage.setItem('userAvatar', data.user.avatar_url);
                     this.setState({newUserAdded: true});                         
                 } else {
-                    console.log('User couldnt be added : ' + data.msg)
-                    //TODO alert user.msg                        
-                    this.setState({newUserAdded: false, userAddError: data.msg})
+                    console.log('User couldnt be added : ' + data.msg);                            this.setState({newUserAdded: false, userAddError: data.msg})
                 }
             })
             .catch(error => console.log('got : ' + error))

@@ -24,14 +24,14 @@ class Header extends Component {
     handleLogin = (event) => {
         event.preventDefault()
         getUserDetails(this.state.userInput)
-            .then((user) => {
-                if (!user) {
+            .then((user) => {                
+                if (user['status']) {
                     this.setState({userInput: '', loginError: true, isActionLoginOut: false});
                 } else {
                     localStorage.setItem('userLoggedIn', this.state.userInput);
                     localStorage.setItem('userName', user.name);
                     localStorage.setItem('userAvatar', user.avatar_url);
-                    this.setState({loginError: false, isActionLoginOut: true});                    
+                    this.setState({loginError: false, isActionLoginOut: true, userInput: ''});                    
                 }
             })
             .catch(error => console.log('got : ' + error))
@@ -77,7 +77,7 @@ class Header extends Component {
             <div className="header">               
                 <Container className="headerContainer">
                     <Row>
-                        <Col /* xs={6} */ className="headerTitleCol">
+                        <Col className="headerTitleCol">
                         <Link to={`/`}><h1>The Black Hole</h1></Link>
                         </Col>
                         <Col className="headerLoginCol">

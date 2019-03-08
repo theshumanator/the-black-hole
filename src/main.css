@@ -1,15 +1,15 @@
 * {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    font-size: 14px;
+    font-size: 14px;    
 }
 
-.header {
-    border: 5px dashed black;    
+.header {    
+    background-color: black;    
 }
 .header h1 {
     font-family: 'Cinzel Decorative', cursive;
     font-size: 48px;
-    color: black;
+    color: white;
 }
 .articleListItemCard {
     margin: 20px;   
@@ -19,12 +19,6 @@
 .articleListItem {        
     text-align: left;
     justify-content: space-around;
-    /* padding: 20px; */
-
-/*     align-items: center;
-    justify-content: center;
-    overflow-y: scroll; */
-
 }
 
 .articleListItemAuthor{
@@ -46,8 +40,6 @@
 .singleArticle {
     margin: 20px;
     padding: 20px;
-    /* text-align: justify; */
-    
 }
 
 .singleCommentItem {
@@ -108,7 +100,6 @@
 }
 
 .addButton{
-/*     margin-left: 10px; */
     margin-top: 10px;
     margin-right: 10px;    
 }
@@ -149,10 +140,6 @@
 .homeBodyNewTopic, .homeBodyNewArticle {    
     flex: 1 0px;
 }
-
-/* .homeBodyFilter {
-    margin-left: 20px
-} */
 
 .articleListRow {
     align-items: center;

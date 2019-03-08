@@ -6,9 +6,9 @@ const getUserDetails = ( username ) => {
         .then( ( { data: { user } } ) => {
             return user;
         } )
-        .catch( ( { response: { data } } ) => {               
+        .catch( ( { response: { data } } ) => {                           
             console.error( data );
-            return null;
+            return data;
         } );
 };
 
@@ -53,7 +53,7 @@ const getAllArticles = ( requestedQuery ) => {
         url += `?${ queryClause }`;
     }
     
-    console.log( url );
+    //console.log( url );
     
     return axios.get( url )
         .then( ( { data } ) => {            
@@ -182,33 +182,3 @@ const deleteComment = ( commentId ) => {
 };
 
 module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics, updateVote , getArticleComments, updateCommentVote, createNewComment, deleteArticle, deleteComment };
-
-/* 
-getArticlesByUser
-`
-http://localhost:3000/
-GET /api/topics
-POST /api/topics
-
-GET /api/articles
-POST /api/articles
-
-GET /api/articles/:article_id
-PATCH /api/articles/:article_id
-DELETE /api/articles/:article_id
-
-GET /api/articles/:article_id/comments
-POST /api/articles/:article_id/comments
-
-PATCH /api/comments/:comment_id
-DELETE /api/comments/:comment_id
-
-GET /api/users
-
-Done:
-GET /api/users/:username
-POST /api/users
-
-No need:
-GET /api
-*/
