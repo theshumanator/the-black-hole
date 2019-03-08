@@ -11,6 +11,10 @@
     font-size: 48px;
     color: white;
 }
+
+.welcomeTxt {
+    color: white;
+}
 .articleListItemCard {
     margin: 20px;   
    

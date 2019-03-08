@@ -141,11 +141,7 @@ class ArticleComments extends Component {
                                     <Button size={size} className = "prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || comments.length===0}>Previous</Button>
                                     <Button size={size} className = "prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>                                 
                                 </div>                                                
-                            </Row> 
-                            {/* <Row className="commentPrevNext">                                
-                                    <Button size={size} className = "prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || comments.length===0}>Previous</Button>
-                                    <Button size={size} className = "prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>                                 
-                            </Row>  */}         
+                            </Row>         
                             {
                                 showNewCommentModal && loggedUser && <AddNewComment articleId={article.article_id} loggedUser={this.props.loggedUser} showNewCommentModal={showNewCommentModal} handleNewCommentClose={this.handleNewCommentClose}/>
                             }
