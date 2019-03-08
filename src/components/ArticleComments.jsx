@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Row, Col, Button, Dropdown, DropdownButton} from 'react-bootstrap';
+import {Row, Button, Dropdown, DropdownButton} from 'react-bootstrap';
 import {getArticleComments} from '../utils/APICalls'
 import SingleComment from './SingleComment';
 import AddNewComment from './AddNewComment';
@@ -74,10 +74,16 @@ class ArticleComments extends Component {
                         pageNum: --pageNum,
                         pageClicked: false,
                         prevClicked: true})
-                } else {        
-                    if (!prevClicked) {
+                } else {      
+                    if (pageNum===1) {
+                        accumCount=comments.length;
+                    } else if (!prevClicked) {
                         accumCount+=comments.length
-                    }         
+                    }  
+                    /* if (!prevClicked) {
+                        accumCount+=comments.length
+                    }   */
+                           
                     this.setState({
                         hasMore: ((accumCount + comments.length)<total_count),         
                         isLoading: false,
@@ -86,7 +92,7 @@ class ArticleComments extends Component {
                         pageClicked: false,
                         accumCount: accumCount,
                         totalCount: total_count,
-                        prevClicked: true
+                        prevClicked: false
                     })
 
                 }            
@@ -104,7 +110,7 @@ class ArticleComments extends Component {
     }
 
     render () {
-        const {article, loggedUser} = this.props;
+        const {article, loggedUser, size} = this.props;
         const {comments, showNewCommentModal, isLoading, accumCount, pageNum, totalCount} = this.state;                
         
         return (
@@ -112,19 +118,15 @@ class ArticleComments extends Component {
                 {
                     isLoading
                     ?   <h3>Loading...</h3>
-                    :   <div>
-                            <h4 className="commentsHeader">Comments</h4>
-                            <Row>
-                                <Col className="addCommentButton">
+                    :   <div>              
+                            <h3 className="articleCommentHeader">Article Comments</h3>      
+                            <Row className="addSortComment">    
+                                                                
                                 {
-                                    loggedUser && <Button variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
+                                    loggedUser && <Button className="addButton" size={size} variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
                                 }
-                                </Col> 
-                            </Row>
-                            <Row>
-                                <Col className="commentsSort">
-                                    {
-                                        <DropdownButton id="dropdown-basic-button" title="Sort By" variant='secondary'>
+                                {
+                                        <DropdownButton  size={size} id="dropdown-basic-button" title="Sort By" variant='secondary'>
                                             <Dropdown.Item eventKey="created_at desc" onSelect={this.handleSortSelect}>Newest (Default)</Dropdown.Item>
                                             <Dropdown.Item eventKey="created_at asc" onSelect={this.handleSortSelect}>Oldest</Dropdown.Item>
                                             <Dropdown.Item eventKey="votes desc" onSelect={this.handleSortSelect}>Highest rated</Dropdown.Item>
@@ -132,27 +134,25 @@ class ArticleComments extends Component {
                                             <Dropdown.Item eventKey="author asc" onSelect={this.handleSortSelect}>Author (A-Z)</Dropdown.Item>
                                             <Dropdown.Item eventKey="author desc" onSelect={this.handleSortSelect}>Author (Z-A)</Dropdown.Item>                        
                                         </DropdownButton>
-                                    }
-                                </Col>
-                                {/* <Col>
-                                    {
-                                        loggedUser && <Button variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
-                                    }
-                                </Col>  */}                   
-                            </Row>  
-                            <Row>
-                                <Col>
-                                    <Button className = "prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || comments.length===0}>Previous</Button>
-                                    <Button className = "prevNextButton" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
-                                </Col>                        
-                            </Row>          
+                                }            
+                             
+
+                                <div className="commentPrevNext">                                
+                                    <Button size={size} className = "prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || comments.length===0}>Previous</Button>
+                                    <Button size={size} className = "prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>                                 
+                                </div>                                                
+                            </Row> 
+                            {/* <Row className="commentPrevNext">                                
+                                    <Button size={size} className = "prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || comments.length===0}>Previous</Button>
+                                    <Button size={size} className = "prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>                                 
+                            </Row>  */}         
                             {
                                 showNewCommentModal && loggedUser && <AddNewComment articleId={article.article_id} loggedUser={this.props.loggedUser} showNewCommentModal={showNewCommentModal} handleNewCommentClose={this.handleNewCommentClose}/>
                             }
                             <div>                            
                             {
                                 comments && comments.map((comment, idx) => {                                
-                                return <SingleComment key={idx} articleId={article.article_id} comment={comment} loggedUser={this.props.loggedUser} handleDeleteDone={this.handleDeleteDone}/>
+                                return <SingleComment size={size} key={idx} articleId={article.article_id} comment={comment} loggedUser={this.props.loggedUser} handleDeleteDone={this.handleDeleteDone}/>
                                 })
                             }
                             </div>

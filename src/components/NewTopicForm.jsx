@@ -34,17 +34,17 @@ import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
     }
     render() {
         return (
-            <Modal show={this.props.showNewTopicModal} onHide={this.props.handleNewTopicClose}>
-                <Modal.Header>
+            <Modal show={this.props.showNewTopicModal} onHide={this.props.handleNewTopicClose} size={this.props.size}>
+                <Modal.Header size={this.props.size}>
                     <Modal.Title>Add a new Topic</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
+                    <Form size={this.props.size}>
                         <Form.Group controlId="formTopic">
-                            <FormControl type="text" placeholder="Enter a new topic" onChange={this.handleTopicSlugChange}/>
+                            <FormControl size={this.props.size} type="text" placeholder="Enter a new topic" onChange={this.handleTopicSlugChange}/>
                         </Form.Group>
                         <Form.Group controlId="formDesc">
-                            <FormControl type="text" placeholder="Enter a description" onChange={this.handleTopicDescriptionChange}/>
+                            <FormControl size={this.props.size} type="text" placeholder="Enter a description" onChange={this.handleTopicDescriptionChange}/>
                         </Form.Group>
                     </Form>
                     {
@@ -56,10 +56,10 @@ import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
                     }                    
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" disabled={this.state.inputTopic==='' || this.state.topicAddError!==''} onClick={this.handleAddNewTopic}>
+                    <Button size={this.props.size} variant="primary" disabled={this.state.inputTopic==='' || this.state.topicAddError!==''} onClick={this.handleAddNewTopic}>
                         Create new Topic
                     </Button>
-                    <Button variant="secondary" onClick={this.props.handleNewTopicClose}>
+                    <Button size={this.props.size} variant="secondary" onClick={this.props.handleNewTopicClose}>
                         Close
                     </Button>            
                 </Modal.Footer>

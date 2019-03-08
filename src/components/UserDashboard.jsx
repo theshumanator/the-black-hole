@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {getAllArticles, deleteArticle} from '../utils/APICalls';
-import {Link} from '@reach/router';
 import {Row, Col, Button, Breadcrumb} from 'react-bootstrap';
-import PrettyDate from './PrettyDate';
 import ArticleListItem from './ArticleListItem';
 
 class UserDashboard extends Component {
@@ -19,18 +17,20 @@ class UserDashboard extends Component {
         accumCount: 0,
         prevClicked: false,
         pageNum: 1, //default
-        articleDeleted: false
+        articleDeleted: false,
+        screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''
     }
     componentDidMount () {
+        window.addEventListener('resize', this.handleScreenResize, false);
         this.fetchArticles();
     }
 
     componentDidUpdate (prevProps, prevState) {
         let {pageNum} = this.state;   
-        const { requestedUser, pageClicked, articleDeleted } = this.state;       
+        const { requestedUser, pageClicked, articleDeleted, screenSize } = this.state;       
         const hasPageChanged = prevState.pageNum !== pageNum;
-        const hasUserChanged = requestedUser!==this.props.username;
-
+        const hasScreenChanged = prevState.screenSize !== screenSize;
+        const hasUserChanged = requestedUser!==this.props.username;        
         if (hasUserChanged) {                        
             if (pageNum===1){
                 this.fetchArticles();
@@ -42,11 +42,15 @@ class UserDashboard extends Component {
             this.fetchArticles();
         } 
 
-        if(articleDeleted) {
+        if(articleDeleted || hasScreenChanged) {
             this.fetchArticles();
         }
+    }
 
-
+    handleScreenResize = () => {        
+        this.setState({
+            screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''
+        });
     }
 
     fetchArticles () {
@@ -65,7 +69,9 @@ class UserDashboard extends Component {
                         articleDeleted: false
                     });
                 } else {
-                    if (!prevClicked) {
+                    if (pageNum===1) {
+                        accumCount=articles.length;
+                    } else if (!prevClicked) {
                         accumCount+=articles.length
                     }
                     this.setState({                        
@@ -77,7 +83,7 @@ class UserDashboard extends Component {
                         pageClicked: false,
                         accumCount: accumCount,
                         totalCount: total_count,
-                        prevClicked: true,
+                        prevClicked: false,
                         articleDeleted: false
                     })
                 } 
@@ -89,7 +95,7 @@ class UserDashboard extends Component {
         deleteArticle(articleId)
             .then((status) => {
                 if(status===204) {
-                    this.setState(({totalCount, accumCount, articleDeleted}) => ({
+                    this.setState(({totalCount, accumCount}) => ({
                         totalCount: --totalCount,                                                
                         accumCount: --accumCount,
                         articleDeleted: true
@@ -113,9 +119,8 @@ class UserDashboard extends Component {
     render() {        
         const {username, loggedUser} = this.props;
         const articleArr = this.state.articles;
-        const {articlesFound, pageNum, accumCount, totalCount, isLoading} = this.state;  
-                
-        console.log(`In render article arr size: ${articleArr.length}, accumCount ${accumCount} totalCount ${totalCount}`)
+        const {articlesFound, pageNum, accumCount, totalCount, isLoading, screenSize} = this.state;  
+        console.log(`Total count ${totalCount} accumCount ${accumCount} pageNum ${pageNum}`)        
         return (
             <div className="articlesList">
                 <Breadcrumb>
@@ -125,26 +130,23 @@ class UserDashboard extends Component {
                 {
                     isLoading
                     ?   <h3>Loading...</h3>
-                    :   <div>
-                        <Row>
-                            <Col>
-                                <Button className="prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={(pageNum===1 && totalCount>0) || (articleArr.length===0)}>Previous</Button>
-                                <Button className="prevNextButton" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
-                            </Col>                        
-                        </Row>
-                        <Row className="articleListRow">
-                            <Col xs={9}>
-                            {
-                                articlesFound
-                                    ? articleArr &&
-                                            articleArr.map((article, idx) => {  
-                                                return <ArticleListItem key={idx} article={article} idx={idx} loggedUser={loggedUser} username={username} handleDelete={this.handleDelete}/>
-                                            })                            
-                                    :   <p>No articles found for {username}</p> 
-                            }                             
-                            </Col>
-                        </Row>
-                        </div>
+                    :   articlesFound && articleArr
+                        ?   <div>                            
+                                <Row className="browseFuncsRow">     
+                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>                                        
+                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>                       
+                                </Row>
+                                <Row className="articleListRow">
+                                    <Col xs={9}>
+                                    {
+                                        articleArr.map((article, idx) => {  
+                                            return <ArticleListItem size={screenSize} key={idx} article={article} idx={idx} loggedUser={loggedUser} username={username} handleDelete={this.handleDelete}/>
+                                        })                                                                    
+                                    }                             
+                                    </Col>
+                                </Row>
+                            </div>
+                        :   <h3 className="noResults">No articles found for {username}</h3>                                         
                 }                                      
             </div>
         )

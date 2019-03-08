@@ -1,12 +1,10 @@
 import React, { Component, Fragment} from 'react';
-import {Link, navigate} from '@reach/router';
+import {navigate} from '@reach/router';
 import {getAllArticles, getAllTopics} from '../utils/APICalls';
-import {Dropdown, DropdownButton, Row, Col, Button, Pagination} from 'react-bootstrap'
+import {Dropdown, DropdownButton, Row, Col, Button} from 'react-bootstrap'
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
 import TopicsDropdown from './TopicsDropdown';
-import PrettyDate from './PrettyDate';
-import { throttle } from "lodash";
 import ArticleListItem from './ArticleListItem';
 
 class HomeBody extends Component {
@@ -27,19 +25,9 @@ class HomeBody extends Component {
         pageClicked: false,
         totalCount: 0,
         accumCount: 0,
-        prevClicked: false
+        prevClicked: false,
+        screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''
     };
-      
-
-/*     handleScroll = throttle((event) => {     
-        let {pageNum} = this.state;   
-        const { clientHeight, scrollTop, scrollHeight } = event.target.documentElement;        
-        const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);        
-        if (distanceFromBottom < 200) {          
-          this.setState({ pageNum: ++pageNum});
-        }
-      }, 500);
- */
       
 
     handleFilterSelect = (eventKey) => {
@@ -52,71 +40,36 @@ class HomeBody extends Component {
     }
 
     handleShowNewTopic = () => {
-        //console.log('bringing up new modal')
         this.setState({ showNewTopicModal: true, reQuery: false });
     }
 
     handleNewTopicClose = () => {
-        //console.log('Closing new topic modal')
         this.setState({ showNewTopicModal: false, reQuery: false, reQueryTopics: true });
     } 
 
     handleShowNewArticle = () => {
-        //console.log('bringing up new modal')
         this.setState({ showNewArticleModal: true, reQuery: false });
     }
 
     handleNewArticleClose = () => {
-        //console.log('Closing new articl modal')
         this.setState({ showNewArticleModal: false, reQuery: true, articles:[], pageNum: 1 });
     } 
-          
-/*     addScrollEventListener = () => {
-        document.querySelector('.homeArticlesList').addEventListener('scroll', this.handleScroll);
-        window.addEventListener('scroll', this.handleScroll);
-    } */
-
-    componentDidMount () {           
+       
+    handleScreenResize = () => {        
+        this.setState({
+            screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''            
+        });
+    }
+    componentDidMount () {         
+        window.addEventListener('resize', this.handleScreenResize, false);
         this.fetchArticles();
-        this.fetchTopics();
-        /* this.addScrollEventListener(); */
+        this.fetchTopics();                    
     }
 
     
     componentDidUpdate (prevProps, prevState) {   
-        /* let {pageNum}=this.state;        
-        const {hasMore, reQuery, isLoading, scrollChange } = this.state;        
-        const hasPageChanged = prevState.pageNum !== pageNum;
-        const hasRequeryChanged = prevState.reQuery !== reQuery;
-        console.log(hasMore, hasPageChanged, pageNum, isLoading)
-
-
-        const { clientHeight, scrollTop, scrollHeight } = document.documentElement;        
-        const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);        
-        
-        console.log(`Scroll Height: ${document.body.scrollHeight}`)
-        console.log(`Height of scren: ${window.innerHeight}`)
-        console.log(`Distance from bottom ${distanceFromBottom}`);
-
-        if (reQuery) {
-            this.setState({reQuery: false})            
-        } else if (hasRequeryChanged) {
-            this.fetchArticles();
-        } else if (hasPageChanged && hasMore && document.body.scrollHeight<window.innerHeight && distanceFromBottom===0) {
-         //&&     (!isLoading || (document.body.scrollHeight<window.innerHeight && distanceFromBottom===0))) {
-            console.log('in here')
-            //this.setState({pageNum: ++pageNum})
-            this.fetchArticles();
-        } else if(!hasPageChanged && hasMore && document.body.scrollHeight<window.innerHeight && distanceFromBottom===0){
-            console.log('Updating page num')
-            this.setState({pageNum: ++pageNum})
-        } else if (scrollChange) {
-            this.fetchArticles();
-        } */        
-        
         const {reQuery, pageNum, pageClicked, reQueryTopics} = this.state;        
         const hasPageChanged = prevState.pageNum !== pageNum;
-        //console.log('prev page' + prevState.pageNum +' and now ' + pageNum)
         if (reQuery) {
             this.setState({pageNum:1, reQuery: false}, () => this.fetchArticles());
         } 
@@ -124,10 +77,8 @@ class HomeBody extends Component {
             this.setState({reQueryTopics: false}, () => this.fetchTopics());
         }
         if (hasPageChanged && pageClicked) {
-            //console.log('page has changed from ' + prevState.pageNum +' to ' + pageNum)
             this.fetchArticles();
         }
-
     }
 
     fetchTopics () {
@@ -192,20 +143,41 @@ class HomeBody extends Component {
     render() {        
         
         const articleArr = this.state.articles;   
-        const { hasMore, isLoading , accumCount, pageNum, totalCount} = this.state;     
-        const loggedUser = this.props.loggedUser;    
-        
-        //console.log(`Current page ${pageNum} and totalCount ${totalCount} hasMore is ${hasMore} accumCount is ${accumCount}`);
-
+        const { isLoading , accumCount, pageNum, totalCount, screenSize} = this.state;     
+        const loggedUser = this.props.loggedUser;                           
         return (    
             <div className="homeArticlesList">
             {                 
                 isLoading
                 ?  <h3>Loading...</h3>
-                : <div>
-                    <Row>
-                        <Col className="homeBodyFilter" lg={2}>
-                            <DropdownButton id="dropdown-basic-button" title="Sort By" variant='primary'>
+                : <div>  
+                    <Row className="loggedInFuncsRow">
+                        {
+                            loggedUser
+                            ?   <Fragment>
+                                        <Button size={screenSize} variant="primary" onClick={this.handleShowNewTopic}>Create a new topic</Button>
+                                        {
+                                            this.state.showNewTopicModal && <NewTopicForm
+                                            showNewTopicModal={this.state.showNewTopicModal}
+                                            handleNewTopicClose={this.handleNewTopicClose}
+                                            size={screenSize}
+                                        />
+                                        }
+                                    
+                                        <Button size={screenSize} variant="primary" onClick={this.handleShowNewArticle}>Create a new article</Button>
+                                        {
+                                            this.state.showNewArticleModal && <NewArticleForm
+                                            showNewArticleModal={this.state.showNewArticleModal}
+                                            handleNewArticleClose={this.handleNewArticleClose}
+                                            size={screenSize}/>
+                                        }
+                                </Fragment>
+                            :   <Fragment/>
+                        }
+                    </Row>
+                    <Row className="sortFilterRow">
+                        <TopicsDropdown size={screenSize} className="filterDropdown" topics={this.state.topics} handleFilterSelect={this.handleFilterSelect}/>
+                        <DropdownButton size={screenSize} className="sortDropdown" id="dropdown-basic-button" title="Sort By" variant='primary'>
                                 <Dropdown.Item eventKey="created_at desc" onSelect={this.handleSortSelect}>Newest (Default)</Dropdown.Item>
                                 <Dropdown.Item eventKey="created_at asc" onSelect={this.handleSortSelect}>Oldest</Dropdown.Item>
                                 <Dropdown.Item eventKey="votes desc" onSelect={this.handleSortSelect}>Highest rated</Dropdown.Item>
@@ -214,46 +186,14 @@ class HomeBody extends Component {
                                 <Dropdown.Item eventKey="topic desc" onSelect={this.handleSortSelect}>Topic (Z-A)</Dropdown.Item>
                                 <Dropdown.Item eventKey="comment_count desc" onSelect={this.handleSortSelect}>Highest comment count</Dropdown.Item>
                                 <Dropdown.Item eventKey="comment_count asc" onSelect={this.handleSortSelect}>Lowest comment count</Dropdown.Item>
-                            </DropdownButton>
-                        </Col>{
-                        <Col className="homeBodySort" lg={3}>
-                            <TopicsDropdown topics={this.state.topics} handleFilterSelect={this.handleFilterSelect}/>
-                        </Col>}
+                            </DropdownButton>                                                                 
+                    </Row>
 
-                        {
-                            loggedUser
-                            ?   <Fragment>
-                                    <Col className="homeBodyNewTopic">
-                                        <Button variant="primary" onClick={this.handleShowNewTopic}>Create a new topic</Button>
-                                        {
-                                            this.state.showNewTopicModal && <NewTopicForm
-                                            showNewTopicModal={this.state.showNewTopicModal}
-                                            handleNewTopicClose={this.handleNewTopicClose}
-                                        />
-                                        }
-                                    </Col>
-                                    <Col className="homeBodyNewArticle">
-                                        <Button variant="primary" onClick={this.handleShowNewArticle}>Create a new article</Button>
-                                        {
-                                            this.state.showNewArticleModal && <NewArticleForm
-                                            showNewArticleModal={this.state.showNewArticleModal}
-                                            handleNewArticleClose={this.handleNewArticleClose}/>
-                                        }
-                                    </Col>
-                                </Fragment>
-                            :   <Fragment/>
-                        }
+                    <Row className="browseFuncsRow">     
+                        <Button size={screenSize} className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>                          
+                        <Button size={screenSize} className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>                       
                     </Row>
-                    <Row>
-                        <Col>
-                            <Button className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>
-                            <Button className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
-                        </Col>                        
-                    </Row>
-                    <Row className="articleListRow">
-                        {/* <Col className="permButton">                         
-                            <Button onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>                            
-                        </Col> */}
+                    <Row className="articleListRow">                        
                         <Col xs={9} className="articleListItem">                            
                             {articleArr && <div className="articlesList">
                             {articleArr.map((article, idx) => {                       
@@ -262,9 +202,6 @@ class HomeBody extends Component {
                             
                             } 
                         </Col>
-                        {/* <Col className="permButton">                         
-                            <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
-                        </Col> */}
                     </Row>                                        
                 </div>
             

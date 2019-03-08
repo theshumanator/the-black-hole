@@ -9,16 +9,24 @@ class SingleArticle extends Component {
 
     state = {
         article: null,
-        userVoted: false
+        userVoted: false,
+        screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''
     }
 
     componentDidMount () {
+        window.addEventListener('resize', this.handleScreenResize, false);
         getArticleById(this.props.articleId)
             .then((article) => { 
                 this.setState({article: JSON.stringify(article)});
                 
             })
             .catch(error => console.log('got : ' + error))
+    }
+
+    handleScreenResize = () => {        
+        this.setState({
+            screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''            
+        });
     }
 
     handleVote = (voteVal) => {        
@@ -40,7 +48,8 @@ class SingleArticle extends Component {
     }
 
     render() {
-        const articleStr = this.state.article;           
+        const articleStr = this.state.article;  
+        const {userVoted, screenSize} = this.state;          
         let singleArticle={};
         if (articleStr) {
             singleArticle=JSON.parse(articleStr);
@@ -62,14 +71,13 @@ class SingleArticle extends Component {
                                 <p><PrettyDate dateType="longDate" created_at={singleArticle.created_at}/></p>                                
                                 <p>{singleArticle.body}</p>                                
                                 {
-                                    this.props.loggedUser === singleArticle.author && <Button variant="danger" size="sm" onClick={this.handleDelete} className="deleteArticleButton">Delete article</Button>
+                                    this.props.loggedUser === singleArticle.author && <Button size={screenSize} variant="danger"  onClick={this.handleDelete} className="deleteArticleButton">Delete article</Button>
                                 }
                                 <p className="voteRequest">Tell us what you think of this article</p>
                                 <p><span className="likesItem">(Dis)Likes: </span><span>{singleArticle.votes}</span></p>
-                                <Button disabled={this.state.userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>I like it</Button>
-                                <span> What do you think this article? </span>
-                                <Button disabled={this.state.userVoted} variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>I loathe it</Button>                                  
-                                <ArticleComments article={singleArticle} loggedUser={this.props.loggedUser}/>                                                   
+                                <Button size={screenSize} className = "commentLikeButton" disabled={userVoted} variant="outline-success" onClick={()=>this.handleVote(1)}>I like it</Button>
+                                <Button size={screenSize} className = "commentLikeButton prevNextGap" disabled={userVoted} variant="outline-danger" onClick={()=>this.handleVote(-1)}>I loathe it</Button>                                  
+                                <ArticleComments size={screenSize} article={singleArticle} loggedUser={this.props.loggedUser}/>                                                   
                             </div>                                    
                         :   <p>{singleArticle.msg}</p>                        
                 }

@@ -1,8 +1,8 @@
-import React , {Fragment} from 'react';
-import {Link, navigate} from '@reach/router';
+import React from 'react';
+import {Link} from '@reach/router';
 import PrettyDate from './PrettyDate';
 import '../main.css';
-import { Card, Button, Row } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 
 const ArticleListItem = (props) => {
     const {idx, article, loggedUser, username} = props;
@@ -20,7 +20,7 @@ const ArticleListItem = (props) => {
                     <PrettyDate dateType="longDate" created_at={props.article.created_at}/>
               </Card.Text>
                 {   loggedUser && username && loggedUser === username &&                        
-                    <Button variant="danger" size="sm" onClick={()=>props.handleDelete(article.article_id)}>Delete article</Button>
+                    <Button size={props.size} variant="danger" onClick={()=>props.handleDelete(article.article_id)}>Delete article</Button>
                 }
             </Card.Body>
         </Card>

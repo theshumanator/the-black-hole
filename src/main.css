@@ -4,11 +4,11 @@
 }
 
 .header {
-    border: 5px dashed black;
+    border: 5px dashed black;    
 }
 .header h1 {
     font-family: 'Cinzel Decorative', cursive;
-    font-size: 52px;
+    font-size: 48px;
     color: black;
 }
 .articleListItemCard {
@@ -19,7 +19,7 @@
 .articleListItem {        
     text-align: left;
     justify-content: space-around;
-    padding: 20px;
+    /* padding: 20px; */
 
 /*     align-items: center;
     justify-content: center;
@@ -76,22 +76,83 @@
     margin-top: 10px;    
 }
 
-.prevNextButton, .addCommentButton {
-    margin-top: 10px;   
-    width: 100px;
+.addCommentButton {
+    margin-top: 10px;  
+    width: 100px;     
+}
+
+.commentLikeButton {
+    max-width: 200px;
+}
+
+
+.prevNextButton {
+    width: 100px; 
 }
 
 .prevNextGap {
     margin-left: 20px
 }
 
-.homeBodyFilter, .homeBodySort, .homeBodyNewTopic, .homeBodyNewArticle {
+.homeArticlesList {
     margin-top: 20px;
 }
 
-.homeBodyFilter {
-    margin-left: 20px
+.homeBodyFilter, .homeBodySort {
+    flex: 3 0px;    
 }
+
+.addSortComment {
+    margin-top: 10px;    
+    justify-content: center;      
+}
+
+.addButton{
+/*     margin-left: 10px; */
+    margin-top: 10px;
+    margin-right: 10px;    
+}
+
+.articleCommentHeader {
+    margin-top: 20px;   
+}
+
+#dropdown-basic-button {
+    margin-top: 10px;
+}
+
+.commentPrevNext {
+    justify-content: center;
+    margin-left: 20px;   
+    margin-top: 10px; 
+}
+
+
+
+.browseFuncsRow {
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.sortFilterRow {
+    justify-content: space-evenly;
+    margin-top: 20px;    
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+
+.loggedInFuncsRow {
+    justify-content: space-around;
+}
+
+.homeBodyNewTopic, .homeBodyNewArticle {    
+    flex: 1 0px;
+}
+
+/* .homeBodyFilter {
+    margin-left: 20px
+} */
 
 .articleListRow {
     align-items: center;
@@ -100,4 +161,40 @@
 
 .breadcrumb {
     background-color:rgba(0,0,0,.04);
+}
+
+
+.headerLoginCol {
+    flex: 2 0px;
+    margin-top: 10px;
+}
+
+.headerTitleCol {
+    flex: 3 0px;    
+}
+
+.headerSignupCol {
+    margin-top: 10px;
+}
+
+.headerContainer {
+    margin-top: 10px;
+    justify-content: center;  
+}
+
+.headerInfo {
+    margin-top: 10px;     
+}
+
+.headerInfoCol {
+    flex: 3 0px;
+}
+
+
+.headerErrorBlankCol {
+    flex: 2.5 0px;
+}
+
+.noResults {
+    margin-left: 20px;
 }

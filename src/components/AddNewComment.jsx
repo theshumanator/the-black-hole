@@ -56,7 +56,7 @@ class AddNewComment extends Component {
                     }                   
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={this.handleAddNewComment}>
+                    <Button disabled={this.state.commentBody===''} variant="primary" onClick={this.handleAddNewComment}>
                         Post comment
                     </Button>
                     <Button variant="secondary" onClick={this.props.handleNewCommentClose}>

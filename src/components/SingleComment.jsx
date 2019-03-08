@@ -38,7 +38,7 @@ class SingleComment extends Component {
     render() {
         console.log('render')
         const { userVoted} = this.state;  
-        const {comment} = this.props
+        const {comment, size} = this.props
         
         return (
             comment && <Card key={comment.comment_id} className="singleCommentItem">                            
@@ -47,13 +47,12 @@ class SingleComment extends Component {
                     <p className="commentBody">{comment.body}</p>
                     <p><span className="likesItem">(Dis)Likes: </span><span>{userVoted && this.state.comment?this.state.comment.votes:comment.votes}</span></p>                    
                      <p>
-                    <Button disabled={userVoted} variant="outline-success" size="sm" onClick={()=>this.handleVote(1)}>I agree with it</Button>
-                    <span> What do you think of this comment? </span>
-                    <Button disabled={userVoted} variant="outline-danger" size="sm" onClick={()=>this.handleVote(-1)}>It is infuriating</Button>
+                    <Button size={size} disabled={userVoted} variant="outline-success" className = "commentLikeButton" onClick={()=>this.handleVote(1)}>Agree</Button>                    
+                    <Button size={size} disabled={userVoted} variant="outline-danger" className = "prevNextGap commentLikeButton" onClick={()=>this.handleVote(-1)}>Infuriating</Button>
                     </p>
                     <p>
                         {
-                            this.props.loggedUser === comment.author && <Button variant="danger" size="sm" onClick={this.handleDelete}>Delete my comment</Button>
+                            this.props.loggedUser === comment.author && <Button size={size} variant="danger" onClick={this.handleDelete}>Delete my comment</Button>
                         }
                     </p>
                 </Card.Body>

@@ -91,7 +91,7 @@ class NewArticleForm extends Component {
     render () {        
         const {availableTopics, selectTopicEnable, createTopicEnable} = this.state;        
         return(
-            <Modal show={this.props.showNewArticleModal} onHide={this.props.handleNewArticleClose}>
+            <Modal show={this.props.showNewArticleModal} onHide={this.props.handleNewArticleClose} size={this.props.size}>
             <Modal.Header>
                 <Modal.Title>Post a new article</Modal.Title>
             </Modal.Header>
@@ -141,10 +141,10 @@ class NewArticleForm extends Component {
                 }                                    
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="primary" disabled={this.state.topicAddError!=='' ||  this.state.articlePostError!=='' || this.state.inputTitle==='' || this.state.inputBody==='' || this.state.inputTopic===''} onClick={this.handlePostNewArticle}>
+                <Button size={this.props.size} variant="primary" disabled={this.state.topicAddError!=='' ||  this.state.articlePostError!=='' || this.state.inputTitle==='' || this.state.inputBody==='' || this.state.inputTopic===''} onClick={this.handlePostNewArticle}>
                     Post article
                 </Button>
-                <Button variant="secondary" onClick={this.props.handleNewArticleClose}>
+                <Button size={this.props.size} variant="secondary" onClick={this.props.handleNewArticleClose}>
                     Close
                 </Button>            
             </Modal.Footer>

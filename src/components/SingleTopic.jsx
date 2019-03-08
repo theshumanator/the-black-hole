@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
 import {getAllArticles} from '../utils/APICalls';
-import {Link} from '@reach/router';
 import {Breadcrumb, Button, Col, Row} from 'react-bootstrap'
-import PrettyDate from './PrettyDate';
 import ArticleListItem from './ArticleListItem';
-/* import { throttle } from "lodash";
-import { render } from "react-dom";
-import InfiniteScroll from "react-infinite-scroll-component"; */
 
 
 class SingleTopic extends Component {
@@ -21,21 +16,21 @@ class SingleTopic extends Component {
         totalCount: 0,
         accumCount: 0,
         prevClicked: false,
-        pageNum: 1 //default
-        
+        pageNum: 1, //default
+        screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''
     }
 
     componentDidMount () {
+        window.addEventListener('resize', this.handleScreenResize, false);
         this.fetchArticles();
-        //this.addScrollEventListener();
     }
 
     componentDidUpdate(prevProps, prevState) {        
-        const { pageNum, topic, pageClicked } = this.state;        
+        const { pageNum, topic, pageClicked,screenSize } = this.state;        
         const hasPageChanged = prevState.pageNum !== pageNum;
+        const hasScreenChanged = prevState.screenSize !== screenSize;
         const hasTopicChanged = topic !== this.props.slug;
          
-        //console.log(`pageNum is ${pageNum} hasMore ${hasMore}  isLoading ${isLoading} `)
         if (hasTopicChanged && topic!==null) {            
             if (pageNum===1) {
                 this.fetchArticles();
@@ -43,36 +38,17 @@ class SingleTopic extends Component {
                 this.setState({pageNum: 1})
             }            
         }
-        if (hasPageChanged && pageClicked) {
+        if ((hasPageChanged && pageClicked) || hasScreenChanged) {
             this.fetchArticles();
         }       
     }
 
-/*     addScrollEventListener = () => {
-        document.querySelector('.articlesByTopic').addEventListener('scroll', this.handleScroll);
-        window.addEventListener('scroll', this.handleScroll);
-    } */
+    handleScreenResize = () => {        
+        this.setState({
+            screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''
+        });
+    }
 
-/*     handleScroll = throttle((event) => {     
-        let {pageNum} = this.state;   
-        const { clientHeight, scrollTop, scrollHeight } = event.target.documentElement;        
-        const distanceFromBottom = scrollHeight - (clientHeight + scrollTop);   
-        
-        console.log(`Scroll Height: ${scrollHeight}`)
-        console.log(`Scroll Top: ${scrollTop}`)
-        console.log(`Client Height: ${clientHeight}`)
-        console.log(`Height of scren: ${window.innerHeight}`)
-        console.log(`Distance from bottom ${distanceFromBottom}`);
-
-        if (distanceFromBottom < 200) {
-            console.log('scrolling')
-          this.setState({ pageNum: ++pageNum});
-          //this.setState({scrollChange: true})
-        }
-      }, 500);
-
-
- */
     fetchArticles = () => {
         let {pageNum, accumCount, prevClicked} = this.state;
         
@@ -82,8 +58,6 @@ class SingleTopic extends Component {
                         this.setState({
                             isLoading: false,
                             hasMore: false,
-                            //articles: [], 
-                            //pageNum: --pageNum,
                             topic: this.props.slug,
                             pageClicked: false,
                             prevClicked: true,
@@ -95,11 +69,9 @@ class SingleTopic extends Component {
                         this.setState({
                             hasMore: ((accumCount + articles.length)<total_count), 
                             isLoading: false,
-                            //articles: pageNum!==1?[...this.state.articles, ...articles]:articles,
                             articles,
                             topic: this.props.slug,                            
-                            articlesFound: true,                         
-                            //pageNum: ++pageNum
+                            articlesFound: true,    
                             pageClicked: false,
                             accumCount: accumCount,
                             totalCount: total_count,
@@ -122,9 +94,7 @@ class SingleTopic extends Component {
     render () {
         const slug = this.props.slug;
         const articleArr = this.state.articles;
-        const {hasMore, articlesFound, isLoading , accumCount, pageNum, totalCount} = this.state;     
-        console.log(`Array length is ${articleArr.length}`);
-        console.log(window.innerHeight);
+        const {screenSize, articlesFound, isLoading , accumCount, pageNum, totalCount} = this.state;             
         return (
             <div className="articlesByTopic">
                 <Breadcrumb>
@@ -135,28 +105,27 @@ class SingleTopic extends Component {
                 {
                     isLoading
                     ? <h3>Loading...</h3>
-                    : <div>
-                        <Row>
-                        <Col>
-                            <Button className="prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>
-                            <Button className="prevNextButton" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
-                        </Col>                        
-                        </Row>
-                        <Row className="articleListRow">
-                            <Col xs={9}>
-                                {articlesFound
-                                ? articleArr &&
-                                    articleArr.map((article, idx) => { 
-                                        return <ArticleListItem key={idx} article={article} idx={idx}/>
-                                    })                            
-                                :   <p>No articles found for topic: {slug}</p>}   
-                            </Col>
-                        </Row>
-                                                  
-                    </div>   
-                                    
-                }
-                
+
+                    :   articlesFound && articleArr
+                        ?   <div>                            
+                                <Row className="browseFuncsRow">     
+                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>                               <Button size={screenSize} className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>                       
+                                </Row>
+
+                                
+
+                                <Row className="articleListRow">
+                                    <Col xs={9}>
+                                    {
+                                        articleArr.map((article, idx) => {  
+                                            return <ArticleListItem size={screenSize} key={idx} article={article} idx={idx}/>
+                                        })                                                                    
+                                    }                             
+                                    </Col>
+                                </Row>
+                            </div>
+                        :   <h3 className="noResults">No articles found for topic: {slug}</h3>                                      
+                }                
             </div>
         )
     }

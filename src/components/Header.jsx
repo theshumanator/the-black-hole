@@ -13,7 +13,8 @@ class Header extends Component {
         userInput : '',
         loginError: false,
         showSignupModal: false,
-        isActionLoginOut: false
+        isActionLoginOut: false,
+        screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''
     };
 
     handleChange = (event) => {
@@ -51,6 +52,16 @@ class Header extends Component {
         console.log('Closing signup')
         this.setState({ showSignupModal: false, isActionLoginOut: true });
     } 
+
+    handleScreenResize = () => {        
+        this.setState({
+            screenSize: window.innerHeight<600?'sm':window.innerHeight>1200?'lg':''
+        });
+    }
+
+    componentDidMount () {
+        window.addEventListener('resize', this.handleScreenResize, false);
+    }
     componentDidUpdate () {
         if(this.state.isActionLoginOut) {
             this.setState({isActionLoginOut: false}, () => {
@@ -59,44 +70,53 @@ class Header extends Component {
         }
     }
 
-    render () {        
+    render () {    
+        const {screenSize, userInput, showSignupModal, loginError} = this.state;   
+        
         return(
             <div className="header">               
-                <Container>
+                <Container className="headerContainer">
                     <Row>
-                        <Col xs={6}>
+                        <Col /* xs={6} */ className="headerTitleCol">
                         <Link to={`/`}><h1>The Black Hole</h1></Link>
                         </Col>
-                        <Col>
+                        <Col className="headerLoginCol">
                             {
                                 localStorage.getItem('userLoggedIn')
-                                    ? <WelcomeUser handleLogout={this.handleLogout}/>
-                                    : <LoginForm handleChange={this.handleChange}  handleLogin={this.handleLogin} userInput={this.state.userInput}/>
+                                    ? <WelcomeUser size={screenSize} handleLogout={this.handleLogout}/>
+                                    : <LoginForm size={screenSize} handleChange={this.handleChange}  handleLogin={this.handleLogin} userInput={userInput}/>
                             }                           
                         </Col>
-                        <Col>
-                            {this.state.loginError && <Alert variant='danger' dismissible>Invalid username. Try again.</Alert>}                            
-                        </Col>                        
-                    </Row> 
-                    {
-                        !localStorage.getItem('userLoggedIn')
-                        ?<Row>
-                            <Col xs={6}/>
-                            <Col>
-                                <Button variant="success" onClick={this.handleShowSignup}>Sign Up</Button>
+                        {
+                            !localStorage.getItem('userLoggedIn')
+                            ? <Col className="headerSignupCol">
+                                <Button size={screenSize} variant="success" onClick={this.handleShowSignup}>Sign Up</Button>
                                 {
-                                    this.state.showSignupModal && <SignupForm 
-                                    showSignupModal={this.state.showSignupModal} 
+                                    showSignupModal && <SignupForm 
+                                    showSignupModal={showSignupModal} 
                                     handleSignupClose={this.handleSignupClose}/>
                                 }          
-                            </Col>                        
-                        </Row> 
-                        :<Row/>
-                    } 
-                    <Row>
-                        <Col>
+                            </Col> 
+                            :<Col/>
+                        }                      
+                        
+                    </Row> 
+                    {
+                        loginError &&                     
+                            <Row>
+                                <Col className="headerErrorBlankCol"/>
+                                <Col className="headerErrorCol">
+                                        <Alert variant='danger' dismissible>Invalid username. Try again.</Alert>                          
+                                </Col>
+                                <Col className="headerErrorBlankCol"/>
+                            </Row>
+                    }
+                    <Row className="headerInfo">
+                        <Col/>
+                        <Col className="headerInfoCol">
                             {!localStorage.getItem('userLoggedIn') && <Alert variant='primary'>Signup or login to get full functionality (like posting articles and commenting)</Alert>}
                         </Col>
+                        <Col/>
                     </Row>                                                               
                 </Container>
             </div>

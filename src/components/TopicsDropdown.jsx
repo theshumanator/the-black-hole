@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {Dropdown, DropdownButton} from 'react-bootstrap'
-import { getAllTopics } from '../utils/APICalls';
 
 class TopicsDropdown extends Component {
     
     render () {
-        const {topics} = this.props;        
+        const {topics, size} = this.props;        
         return (      
-            <DropdownButton id="dropdown-filter-button" title="Filter articles by topic" variant='primary'>
+            <DropdownButton size={size} id="dropdown-filter-button" title="Filter articles by topic" variant='primary'>
             {topics &&
                     topics.map((topic) => {
                         return (
