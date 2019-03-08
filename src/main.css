@@ -20,6 +20,11 @@
     text-align: left;
     justify-content: space-around;
     padding: 20px;
+
+/*     align-items: center;
+    justify-content: center;
+    overflow-y: scroll; */
+
 }
 
 .articleListItemAuthor{
@@ -78,4 +83,21 @@
 
 .prevNextGap {
     margin-left: 20px
+}
+
+.homeBodyFilter, .homeBodySort, .homeBodyNewTopic, .homeBodyNewArticle {
+    margin-top: 20px;
+}
+
+.homeBodyFilter {
+    margin-left: 20px
+}
+
+.articleListRow {
+    align-items: center;
+  justify-content: center;
+}
+
+.breadcrumb {
+    background-color:rgba(0,0,0,.04);
 }

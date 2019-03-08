@@ -3,7 +3,6 @@ import {Row, Col, Button, Dropdown, DropdownButton} from 'react-bootstrap';
 import {getArticleComments} from '../utils/APICalls'
 import SingleComment from './SingleComment';
 import AddNewComment from './AddNewComment';
-import { throttle } from "lodash";
 
 class ArticleComments extends Component {
 

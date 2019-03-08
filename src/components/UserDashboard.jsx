@@ -128,11 +128,11 @@ class UserDashboard extends Component {
                     :   <div>
                         <Row>
                             <Col>
-                                <Button className="prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 && totalCount>0 || articleArr.length===0}>Previous</Button>
+                                <Button className="prevNextButton" onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={(pageNum===1 && totalCount>0) || (articleArr.length===0)}>Previous</Button>
                                 <Button className="prevNextButton" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
                             </Col>                        
                         </Row>
-                        <Row>
+                        <Row className="articleListRow">
                             <Col xs={9}>
                             {
                                 articlesFound

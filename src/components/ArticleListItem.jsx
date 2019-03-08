@@ -1,4 +1,4 @@
-import React from 'react';
+import React , {Fragment} from 'react';
 import {Link, navigate} from '@reach/router';
 import PrettyDate from './PrettyDate';
 import '../main.css';
@@ -14,8 +14,10 @@ const ArticleListItem = (props) => {
             <Card.Body>
                 <Card.Title className="articleListItemTitle"><Link className="articleListItemTitle" to={`/articles/${article.article_id}`}>{article.title}</Link></Card.Title>
                 <Card.Text>
-                    <span className="articleListItemAuthor"><Link to={`/users/${article.author}`}>{article.author}</Link></span> 
-                    <p><PrettyDate dateType="longDate" created_at={props.article.created_at}/></p>
+                    <span className="articleListItemAuthor"><Link to={`/users/${article.author}`}>{article.author}</Link></span>                     
+              </Card.Text>
+              <Card.Text>                    
+                    <PrettyDate dateType="longDate" created_at={props.article.created_at}/>
               </Card.Text>
                 {   loggedUser && username && loggedUser === username &&                        
                     <Button variant="danger" size="sm" onClick={()=>props.handleDelete(article.article_id)}>Delete article</Button>

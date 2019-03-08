@@ -204,7 +204,7 @@ class HomeBody extends Component {
                 ?  <h3>Loading...</h3>
                 : <div>
                     <Row>
-                        <Col>
+                        <Col className="homeBodyFilter" lg={2}>
                             <DropdownButton id="dropdown-basic-button" title="Sort By" variant='primary'>
                                 <Dropdown.Item eventKey="created_at desc" onSelect={this.handleSortSelect}>Newest (Default)</Dropdown.Item>
                                 <Dropdown.Item eventKey="created_at asc" onSelect={this.handleSortSelect}>Oldest</Dropdown.Item>
@@ -216,14 +216,14 @@ class HomeBody extends Component {
                                 <Dropdown.Item eventKey="comment_count asc" onSelect={this.handleSortSelect}>Lowest comment count</Dropdown.Item>
                             </DropdownButton>
                         </Col>{
-                        <Col>
+                        <Col className="homeBodySort" lg={3}>
                             <TopicsDropdown topics={this.state.topics} handleFilterSelect={this.handleFilterSelect}/>
                         </Col>}
 
                         {
                             loggedUser
                             ?   <Fragment>
-                                    <Col>
+                                    <Col className="homeBodyNewTopic">
                                         <Button variant="primary" onClick={this.handleShowNewTopic}>Create a new topic</Button>
                                         {
                                             this.state.showNewTopicModal && <NewTopicForm
@@ -232,7 +232,7 @@ class HomeBody extends Component {
                                         />
                                         }
                                     </Col>
-                                    <Col>
+                                    <Col className="homeBodyNewArticle">
                                         <Button variant="primary" onClick={this.handleShowNewArticle}>Create a new article</Button>
                                         {
                                             this.state.showNewArticleModal && <NewArticleForm
@@ -250,7 +250,10 @@ class HomeBody extends Component {
                             <Button className="prevNextButton prevNextGap" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
                         </Col>                        
                     </Row>
-                    <Row>
+                    <Row className="articleListRow">
+                        {/* <Col className="permButton">                         
+                            <Button onClick={()=>this.handlePageClick(-1)} variant="outline-primary" disabled={pageNum===1 || articleArr.length===0}>Previous</Button>                            
+                        </Col> */}
                         <Col xs={9} className="articleListItem">                            
                             {articleArr && <div className="articlesList">
                             {articleArr.map((article, idx) => {                       
@@ -259,6 +262,9 @@ class HomeBody extends Component {
                             
                             } 
                         </Col>
+                        {/* <Col className="permButton">                         
+                            <Button onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
+                        </Col> */}
                     </Row>                                        
                 </div>
             

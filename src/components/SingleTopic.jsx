@@ -142,7 +142,7 @@ class SingleTopic extends Component {
                             <Button className="prevNextButton" onClick={()=>this.handlePageClick(1)} variant="outline-primary" disabled={accumCount===totalCount}>Next</Button>
                         </Col>                        
                         </Row>
-                        <Row>
+                        <Row className="articleListRow">
                             <Col xs={9}>
                                 {articlesFound
                                 ? articleArr &&

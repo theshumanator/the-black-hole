@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {Link, navigate} from '@reach/router';
 import {Button, Breadcrumb} from 'react-bootstrap'
 import {getArticleById, updateVote, deleteArticle} from '../utils/APICalls';
