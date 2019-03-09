@@ -175,6 +175,7 @@ class HomeBody extends Component {
                             </Row>
                             <Row className="sortFilterRow">
                                 <TopicsDropdown size={screenSize} className="filterDropdown" topics={this.state.topics} handleFilterSelect={this.handleFilterSelect}/>                          
+                                <Button size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
                                 <SortDropdown sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
                             </Row>
 

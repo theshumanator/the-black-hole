@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
-import { getAllArticles, deleteArticle } from '../utils/APICalls';
+import { getAllArticles, deleteArticle , getUserDetails } from '../utils/APICalls';
 import { Row, Col, Button } from 'react-bootstrap';
 import ArticleListItem from './ArticleListItem';
 import BreadCrumb from './BreadCrumb';
+import SingleUserCard from './SingleUserCard';
 
 class UserDashboard extends Component {
 
     state = {
         requestedUser: null,
+        userStr: '',
         articles: [],
         articlesFound: false,
         error: false,
@@ -23,6 +25,7 @@ class UserDashboard extends Component {
     }
     componentDidMount () {
         window.addEventListener( 'resize', this.handleScreenResize, false );
+        this.fetchUserDetails( );
         this.fetchArticles();
     }
 
@@ -46,6 +49,18 @@ class UserDashboard extends Component {
         if ( articleDeleted || hasScreenChanged ) {
             this.fetchArticles();
         }
+    }
+
+    fetchUserDetails = ( ) => {        
+        getUserDetails( this.props.username )
+            .then( ( user ) => {                
+                if ( user.status ) {
+                    this.setState( { userStr: '' } );
+                } else {                    
+                    this.setState( { userStr: JSON.stringify( user ) } );                    
+                }
+            } )
+            .catch( error => console.log( 'got : ' + error ) );
     }
 
     handleScreenResize = () => {        
@@ -118,12 +133,13 @@ class UserDashboard extends Component {
     render() {        
         const { username, loggedUser } = this.props;
         const articleArr = this.state.articles;
-        const { articlesFound, pageNum, accumCount, totalCount, isLoading, screenSize } = this.state;  
+        const { articlesFound, pageNum, accumCount, totalCount, isLoading, screenSize, userStr } = this.state;  
+        const user = userStr === '' ? {} : JSON.parse( userStr );
         
         return (
             <div className="articlesList">
-                <BreadCrumb currentPage={`Articles by: ${ username }`}/>
-                
+                <BreadCrumb currentPage={`User dashboard: ${ username }`}/>
+                <SingleUserCard user={user}/>
                 {
                     isLoading
                         ? <h3>Loading...</h3>

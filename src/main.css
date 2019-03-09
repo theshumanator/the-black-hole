@@ -15,6 +15,14 @@
 .welcomeTxt {
     color: white;
 }
+.welcomeName {
+    color: #3396ff;
+}
+
+.welcomeName:hover {
+    color: white;
+}
+
 .articleListItemCard {
     margin: 20px;   
    
@@ -122,7 +130,31 @@
     margin-top: 10px; 
 }
 
+.userListDiv {
+    margin: 20px;
+}
 
+.userListHeader {
+    margin-left: 20px;
+}
+.userListGroup {
+    flex-flow: row wrap;    
+    justify-content: flex-start;    
+}
+
+.userListItem {
+    margin: 10px;
+    height: 50px;    
+}
+
+.userCard {
+    max-width: 300px;    
+}
+
+.userCardDiv {
+    display: flex;
+    justify-content: center;    
+}
 
 .browseFuncsRow {
     justify-content: space-around;
@@ -130,10 +162,16 @@
 }
 
 .sortFilterRow {
-    justify-content: space-evenly;
+    flex-flow: row wrap;    
+    justify-content: center;
     margin-top: 20px;    
-    margin-left: 40px;
-    margin-right: 40px;
+    margin-left: 45px;
+    margin-right: 45px;
+}
+
+.allUsersButton {
+    margin-right: 20px;
+    margin-left: 20px;
 }
 
 

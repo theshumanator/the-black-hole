@@ -12,6 +12,16 @@ const getUserDetails = ( username ) => {
         } );
 };
 
+const getAllUsers = () => {
+    return axios.get( `${ BASE_URL }/${ USERS_EP }` )
+        .then( ( { data: { users } } ) => {            
+            return users;
+        } )
+        .catch( ( { response: { data } } ) => {                                                   
+            throw new Error( data );
+        } );
+};
+
 const createNewUser = ( newUser ) => {
     return axios.post( `${ BASE_URL }/${ USERS_EP }`, newUser )
         .then( ( { data } ) => {
@@ -181,4 +191,4 @@ const deleteComment = ( commentId ) => {
         } );
 };
 
-module.exports = { getUserDetails, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics, updateVote , getArticleComments, updateCommentVote, createNewComment, deleteArticle, deleteComment };
+module.exports = { getUserDetails, getAllUsers, createNewUser, getAllArticles, getArticleById, createNewTopic, postNewArticle, getAllTopics, updateVote , getArticleComments, updateCommentVote, createNewComment, deleteArticle, deleteComment };

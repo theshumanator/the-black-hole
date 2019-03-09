@@ -48,8 +48,7 @@ class Header extends Component {
         this.setState( { loginError: false, showSignupModal: true, isActionLoginOut: false } );
     }
 
-    handleSignupClose = () => {
-        console.log( 'Closing signup' );
+    handleSignupClose = () => {        
         this.setState( { showSignupModal: false, isActionLoginOut: true } );
     } 
 
@@ -58,7 +57,7 @@ class Header extends Component {
             screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''
         } );
     }
-
+    
     componentDidMount () {
         window.addEventListener( 'resize', this.handleScreenResize, false );
     }
@@ -94,6 +93,7 @@ class Header extends Component {
                                     {
                                         showSignupModal && <SignupForm 
                                             showSignupModal={showSignupModal} 
+                                            handleNewUserAdded={this.props.handleNewUserAdded}
                                             handleSignupClose={this.handleSignupClose}/>
                                     }          
                                 </Col> 

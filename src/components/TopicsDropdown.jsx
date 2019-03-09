@@ -6,7 +6,7 @@ class TopicsDropdown extends Component {
     render () {
         const { topics, size } = this.props;        
         return (      
-            <DropdownButton size={size} id="dropdown-filter-button" title="Filter articles by topic" variant='primary'>
+            <DropdownButton size={size} id="dropdown-filter-button" title="Filter by topic" variant='primary'>
                 {topics &&
                     topics.map( ( topic ) => {
                         return (
