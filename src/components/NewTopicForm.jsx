@@ -12,13 +12,11 @@ class NewTopicForm extends Component {
         topicAdded: false
     }
 
-    handleTopicSlugChange = ( event ) => {
-        this.setState( { inputTopic: event.target.value, topicAddError: '' } );
+    handleTextChange = ( event ) => {
+        const { id, value } = event.target;
+        this.setState( { [ id ]: value, topicAddError: '' } );
     }
-    handleTopicDescriptionChange = ( event ) => {
-        this.setState( { inputTopicDesc: event.target.value } );
-    }
-
+        
     handleAddNewTopic = () => {
         const { inputTopicDesc, inputTopic } = this.state;
         const data = { slug: inputTopic, description: inputTopicDesc };
@@ -41,11 +39,11 @@ class NewTopicForm extends Component {
                 </Modal.Header>
                 <Modal.Body>
                     <Form size={this.props.size}>
-                        <Form.Group controlId="formTopic">
-                            <FormControl size={this.props.size} type="text" placeholder="Enter a new topic" onChange={this.handleTopicSlugChange}/>
+                        <Form.Group controlId="inputTopic">
+                            <FormControl size={this.props.size} type="text" placeholder="Enter a new topic" onChange={this.handleTextChange}/>
                         </Form.Group>
-                        <Form.Group controlId="formDesc">
-                            <FormControl size={this.props.size} type="text" placeholder="Enter a description" onChange={this.handleTopicDescriptionChange}/>
+                        <Form.Group controlId="inputTopicDesc">
+                            <FormControl size={this.props.size} type="text" placeholder="Enter a description" onChange={this.handleTextChange}/>
                         </Form.Group>
                     </Form>
                     {

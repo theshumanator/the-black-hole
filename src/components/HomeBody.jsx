@@ -116,11 +116,7 @@ class HomeBody extends Component {
                         pageClicked: false,
                         prevClicked: true
                     } );
-                } else {                    
-                    //only chnaging it if it wasnt the prev clicked
-                    /* if ( !prevClicked ) {
-                        accumCount += articles.length;
-                    }  */                       
+                } else {                                                             
                     if ( pageNum === 1 ) {
                         accumCount = articles.length;
                     } else if ( !prevClicked ) {
@@ -134,7 +130,7 @@ class HomeBody extends Component {
                         pageClicked: false,                        
                         accumCount: accumCount,
                         totalCount: total_count,
-                        prevClicked: false //true
+                        prevClicked: false 
                     } );
                 }
                     

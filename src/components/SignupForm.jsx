@@ -11,16 +11,9 @@ class SignupForm extends Component {
       inputAvatar: 'https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg' //setting a default avatar
   }
 
-  handleUsernameChange = ( event ) => {
-      this.setState( { inputUsername: event.target.value, userAddError: '' } );
-  }
-
-  handleNameChange = ( event ) => {
-      this.setState( { inputName: event.target.value, userAddError: '' } );   
-  }
-
-  handleAvatarChange = ( event ) => {
-      this.setState( { inputAvatar: event.target.value, userAddError: '' } );
+  handleTextChange = ( event ) => {
+      const { id, value } = event.target;
+      this.setState( { [ id ]: value, userAddError: '' } );
   }
 
   handleSignup = () => {      
@@ -60,14 +53,14 @@ class SignupForm extends Component {
               </Modal.Header>
               <Modal.Body>
                   <Form>
-                      <Form.Group controlId="formUsername">
-                          <FormControl type="text" placeholder="Enter your username (mandatory)" onChange={this.handleUsernameChange}/>
+                      <Form.Group controlId="inputUsername">
+                          <FormControl type="text" placeholder="Enter your username (mandatory)" onChange={this.handleTextChange}/>
                       </Form.Group>
-                      <Form.Group controlId="formName">
-                          <FormControl type="text" placeholder="Enter your name (mandatory)" onChange={this.handleNameChange}/>
+                      <Form.Group controlId="inputName">
+                          <FormControl type="text" placeholder="Enter your name (mandatory)" onChange={this.handleTextChange}/>
                       </Form.Group >
-                      <Form.Group controlId="formAvatar">
-                          <FormControl type="text" placeholder="Enter your avatar url (optional)" onChange={this.handleAvatarChange}/>
+                      <Form.Group controlId="inputAvatar">
+                          <FormControl type="text" placeholder="Enter your avatar url (optional)" onChange={this.handleTextChange}/>
                       </Form.Group >
                   </Form>
                   {

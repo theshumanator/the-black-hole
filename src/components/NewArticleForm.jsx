@@ -18,17 +18,10 @@ class NewArticleForm extends Component {
         topicAdded: false,
         newArticleId: null
     }
-
-    handleTitleChange = ( event ) => {
-        this.setState( { inputTitle: event.target.value, topicAddError: '', articlePostError: '' } );
-    }
-
-    handleBodyChange = ( event ) => {
-        this.setState( { inputBody: event.target.value, topicAddError: '', articlePostError: '' } );
-    }
-
-    handleTopicChange = ( event ) => {        
-        this.setState( { inputTopic: event.target.value, topicAddError: '', articlePostError: '' } );
+   
+    handleTextChange = ( event ) => {      
+        const { id, value } = event.target;
+        this.setState( { [ id ]: value, topicAddError: '', articlePostError: '' } );
     }
 
     handleRadioChange = ( event ) => {
@@ -105,11 +98,11 @@ class NewArticleForm extends Component {
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
-                        <Form.Group controlId="formTopics">
+                        <Form.Group controlId="inputTopic">
                             <Row>
                                 <Col>
                                     <Form.Check inline label="Select a topic" name="formTopicRadio" type="radio" id="selectTopicEnable" value="true" onChange={this.handleRadioChange}/>                                
-                                    <Form.Control as="select" disabled={!selectTopicEnable} onChange={this.handleTopicChange}>     
+                                    <Form.Control as="select" disabled={!selectTopicEnable} onChange={this.handleTextChange}>     
                                         <option value="placeholder">Choose a topic</option>
                                         {
                                             topics && topics.map( topic => {                     
@@ -122,15 +115,15 @@ class NewArticleForm extends Component {
                                 </Col>
                                 <Col>
                                     <Form.Check inline label="Create a new topic" name="formTopicRadio" type="radio" id="createTopicEnable" value="true" onChange={this.handleRadioChange}/>
-                                    <FormControl type="text" placeholder="Enter a new topic" disabled={!createTopicEnable} onChange={this.handleTopicChange}/>
+                                    <FormControl type="text" placeholder="Enter a new topic" disabled={!createTopicEnable} onChange={this.handleTextChange}/>
                                 </Col>
                             </Row>                        
                         </Form.Group>
-                        <Form.Group controlId="formTitle">
-                            <FormControl type="text" placeholder="Enter article title" onChange={this.handleTitleChange}/>
+                        <Form.Group controlId="inputTitle">
+                            <FormControl type="text" placeholder="Enter article title" onChange={this.handleTextChange}/>
                         </Form.Group>
-                        <Form.Group controlId="formBody">
-                            <FormControl as="textarea" rows="3" placeholder="Enter article body" onChange={this.handleBodyChange}/>
+                        <Form.Group controlId="inputBody">
+                            <FormControl as="textarea" rows="3" placeholder="Enter article body" onChange={this.handleTextChange}/>
                         </Form.Group>
                     </Form>
                     {
