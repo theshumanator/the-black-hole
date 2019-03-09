@@ -34,7 +34,8 @@ class AddNewComment extends Component {
         this.setState( { commentBody: event.target.value, commentAdded: false, commentAddError: 'none', newCommentId: null } );
     }
     componentDidUpdate(){
-        if ( this.state.newCommentId !== null && this.state.commentAdded && this.state.commentAddError === 'none' ) {
+        const { newCommentId, commentAdded, commentAddError } = this.state;
+        if ( newCommentId !== null && commentAdded && commentAddError === 'none' ) {
             this.props.handleNewCommentClose();
         }
     }

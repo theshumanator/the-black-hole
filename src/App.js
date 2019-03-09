@@ -32,15 +32,16 @@ class App extends Component {
       this.setState( { newUserAdded: true } , () => this.updateUser() );
   }
   
-  render () {            
-      return (
+  render () { 
+      const { loggedUser, newUserAdded } = this.state;           
+      return (          
           <div className="appDiv">
               <Header updateUser={this.updateUser} handleNewUserAdded={this.handleNewUserAdded}/>
               <Router>
-                  <HomeBody path='/' loggedUser={this.state.loggedUser}/>
-                  <UserDashboard path='/users/:username' loggedUser={this.state.loggedUser} />
-                  <UsersList path='/users' newUserAdded={this.state.newUserAdded}/>
-                  <SingleArticle path='/articles/:articleId' loggedUser={this.state.loggedUser}/>          
+                  <HomeBody path='/' loggedUser={loggedUser}/>
+                  <UserDashboard path='/users/:username' loggedUser={loggedUser} />
+                  <UsersList path='/users' newUserAdded={newUserAdded}/>
+                  <SingleArticle path='/articles/:articleId' loggedUser={loggedUser}/>          
                   <SingleTopic path='/topics/:slug'/>
               </Router>        
           </div>

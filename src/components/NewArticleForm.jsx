@@ -90,9 +90,15 @@ class NewArticleForm extends Component {
     }
 
     render () {        
-        const { topics, selectTopicEnable, createTopicEnable } = this.state;        
+        const { topics, selectTopicEnable, createTopicEnable, topicAddError, articlePostError,
+            inputTitle, inputBody, inputTopic, topicAdded, articlePosted, newArticleId } = this.state;   
+        
+        const { showNewArticleModal, handleNewArticleClose, size } = this.props;
+        const disablePostNewArticle = ( topicAddError !== '' || articlePostError !== '' 
+            || inputTitle === '' || inputBody === '' || inputTopic === '' );
+
         return (
-            <Modal show={this.props.showNewArticleModal} onHide={this.props.handleNewArticleClose} size={this.props.size}>
+            <Modal show={showNewArticleModal} onHide={handleNewArticleClose} size={size}>
                 <Modal.Header>
                     <Modal.Title>Post a new article</Modal.Title>
                 </Modal.Header>
@@ -127,25 +133,26 @@ class NewArticleForm extends Component {
                         </Form.Group>
                     </Form>
                     {
-                        ( !this.state.topicAdded && this.state.topicAddError !== '' )
-                            ? <Alert variant='danger'>Topic could not be added: {this.state.topicAddError}</Alert>
-                            : this.state.topicAdded
+                        ( !topicAdded && topicAddError !== '' )
+                            ? <Alert variant='danger'>Topic could not be added: {topicAddError}</Alert>
+                            : topicAdded
                                 ? <Alert variant='success'>Topic has been added</Alert>
                                 : <Fragment/>                            
                     } 
                     {
-                        ( !this.state.articlePosted && this.state.articlePostError !== '' )
-                            ? <Alert variant='danger'>Article could not be added: {this.state.articlePostError}</Alert>
-                            : this.state.articlePosted
-                                ? <Alert variant='success'>Article has been posted. You can find it <Link to={`/articles/${ this.state.newArticleId }`}>here</Link> or close to return to main page.</Alert>
+                        ( !articlePosted && articlePostError !== '' )
+                            ? <Alert variant='danger'>Article could not be added: {articlePostError}</Alert>
+                            : articlePosted
+                                ? <Alert variant='success'>Article has been posted. You can find it 
+                                    <Link to={`/articles/${ newArticleId }`}>here</Link> or close to return to main page.</Alert>
                                 : <Fragment/>                            
                     }                                    
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button size={this.props.size} variant="primary" disabled={this.state.topicAddError !== '' || this.state.articlePostError !== '' || this.state.inputTitle === '' || this.state.inputBody === '' || this.state.inputTopic === ''} onClick={this.handlePostNewArticle}>
+                    <Button size={size} variant="primary" disabled={disablePostNewArticle} onClick={this.handlePostNewArticle}>
                     Post article
                     </Button>
-                    <Button size={this.props.size} variant="secondary" onClick={this.props.handleNewArticleClose}>
+                    <Button size={size} variant="secondary" onClick={handleNewArticleClose}>
                     Close
                     </Button>            
                 </Modal.Footer>

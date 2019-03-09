@@ -16,11 +16,12 @@ class SignupForm extends Component {
       this.setState( { [ id ]: value, userAddError: '' } );
   }
 
-  handleSignup = () => {      
+  handleSignup = () => {   
+      const { inputUsername, inputName, inputAvatar } = this.state;   
       const data = {
-          username: this.state.inputUsername, 
-          name: this.state.inputName, 
-          avatar_url: this.state.inputAvatar
+          username: inputUsername, 
+          name: inputName, 
+          avatar_url: inputAvatar
       };
 
       const apiObj = {

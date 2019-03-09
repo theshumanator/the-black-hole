@@ -157,7 +157,7 @@ class HomeBody extends Component {
 
     render() {
         const articleArr = this.state.articles;   
-        const { isLoading , accumCount, pageNum, totalCount, screenSize, showNewTopicModal, showNewArticleModal } = this.state;     
+        const { isLoading , accumCount, pageNum, totalCount, screenSize, showNewTopicModal, showNewArticleModal, topics } = this.state;     
         const loggedUser = this.props.loggedUser;        
         return (    
             <div className="homeArticlesList">
@@ -176,7 +176,7 @@ class HomeBody extends Component {
                                 }
                             </Row>
                             <Row className="sortFilterRow">
-                                <TopicsDropdown size={screenSize} className="filterDropdown" topics={this.state.topics} handleFilterSelect={this.handleFilterSelect}/>                          
+                                <TopicsDropdown size={screenSize} className="filterDropdown" topics={topics} handleFilterSelect={this.handleFilterSelect}/>                          
                                 <Button size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
                                 <SortDropdown sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
                             </Row>
