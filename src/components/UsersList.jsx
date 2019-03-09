@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { Link } from '@reach/router';
-import { getAllUsers } from '../utils/APICalls';
+import { makeAPICalls } from '../utils/APICalls';
 import BreadCrumb from './BreadCrumb';
 
 class UsersList extends Component {
@@ -19,7 +19,12 @@ class UsersList extends Component {
     }
 
     fetchAllUsers = () => {
-        getAllUsers()
+        const obj = {
+            url: '/users',
+            reqObjectKey: 'users',
+            method: 'get'
+        };
+        makeAPICalls( obj )
             .then( ( users ) => {
                 this.setState( { users, error: null, hasError: false } );
             } )

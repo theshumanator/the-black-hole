@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getAllArticles, deleteArticle , getUserDetails } from '../utils/APICalls';
+import { makeAPICalls } from '../utils/APICalls';
 import { Row, Col, Button } from 'react-bootstrap';
 import ArticleListItem from './ArticleListItem';
 import BreadCrumb from './BreadCrumb';
@@ -51,16 +51,18 @@ class UserDashboard extends Component {
         }
     }
 
-    fetchUserDetails = ( ) => {        
-        getUserDetails( this.props.username )
+    fetchUserDetails = ( ) => {   
+        const { username } = this.props;  
+        const apiObj = {
+            url: `/users/${ username }`,
+            reqObjectKey: 'user',
+            method: 'get'
+        };
+        makeAPICalls( apiObj )
             .then( ( user ) => {                
-                if ( user.status ) {
-                    this.setState( { userStr: '' } );
-                } else {                    
-                    this.setState( { userStr: JSON.stringify( user ) } );                    
-                }
+                this.setState( { userStr: JSON.stringify( user ) } );
             } )
-            .catch( error => console.log( 'got : ' + error ) );
+            .catch( () => this.setState( { userStr: '' } ) );
     }
 
     handleScreenResize = () => {        
@@ -71,15 +73,25 @@ class UserDashboard extends Component {
 
     fetchArticles () {
         let { pageNum, accumCount, prevClicked } = this.state;
-        getAllArticles( { author: this.props.username, p: pageNum } )
-            .then( ( { articles, total_count } ) => {                 
+        const { username } = this.props;
+        const params = { author: username, p: pageNum };
+        const apiObj = {
+            url: '/articles',
+            reqObjectKey: 'data',
+            method: 'get',
+            params,
+            multiRes: true
+        };
+
+        makeAPICalls( apiObj )
+            .then( ( { articles, total_count } ) => {
                 if ( !Array.isArray( articles ) ) {                    
                     this.setState( {
                         hasMore: false,                        
                         isLoading: false,
                         pageClicked: pageNum > 1 ? true : false,
                         pageNum: pageNum > 1 ? --pageNum : 1,    
-                        requestedUser: this.props.username,                         
+                        requestedUser: username,                         
                         prevClicked: true,
                         articlesFound: false,
                         articleDeleted: false
@@ -94,7 +106,7 @@ class UserDashboard extends Component {
                         hasMore: ( ( this.state.articles.length + articles.length ) < total_count ),
                         isLoading: false,                        
                         articles,
-                        requestedUser: this.props.username,
+                        requestedUser: username,
                         articlesFound: true,
                         pageClicked: false,
                         accumCount: accumCount,
@@ -104,11 +116,27 @@ class UserDashboard extends Component {
                     } );
                 } 
             } )
-            .catch( error => console.log( 'got : ' + error ) ); 
+            .catch( ( ) => {
+                this.setState( {
+                    hasMore: false,                        
+                    isLoading: false,
+                    pageClicked: pageNum > 1 ? true : false,
+                    pageNum: pageNum > 1 ? --pageNum : 1,    
+                    requestedUser: username,                         
+                    prevClicked: true,
+                    articlesFound: false,
+                    articleDeleted: false
+                } );
+            } ); 
     }
 
     handleDelete = ( articleId ) => {                          
-        deleteArticle( articleId )
+        const apiObj = {
+            url: `/articles/${ articleId }`,
+            reqObjectKey: 'status',
+            method: 'delete'            
+        };
+        makeAPICalls( apiObj )
             .then( ( status ) => {
                 if ( status === 204 ) {
                     this.setState( ( { totalCount, accumCount } ) => ( {
@@ -118,7 +146,7 @@ class UserDashboard extends Component {
                     } ) );                    
                 }
             } )
-            .catch( error => console.log( 'got : ' + error ) );
+            .catch( () => this.setState( { articleDeleted: false } ) );
     }
 
     handlePageClick = ( pageOffset ) => {        
@@ -139,7 +167,10 @@ class UserDashboard extends Component {
         return (
             <div className="articlesList">
                 <BreadCrumb currentPage={`User dashboard: ${ username }`}/>
-                <SingleUserCard user={user}/>
+                {userStr
+                    ? <SingleUserCard user={user}/>
+                    : <h3 className="noResults">Username {username} does not exist.</h3>                 
+                }
                 {
                     isLoading
                         ? <h3>Loading...</h3>
@@ -159,7 +190,7 @@ class UserDashboard extends Component {
                                     </Col>
                                 </Row>
                             </div>
-                            : <h3 className="noResults">No articles found for {username}</h3>                                         
+                            : userStr && <h3 className="noResults">No articles found for {username}</h3>                                         
                 }                                      
             </div>
         );

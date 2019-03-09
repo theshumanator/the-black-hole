@@ -5,7 +5,7 @@ const SingleUserCard = ( { user } ) => {
     return (
         <div className="userCardDiv">
             <Card className="userCard">
-                <Card.Img variant="top" src={user.avatar_url} />
+                <Card.Img variant="top" src={user.avatar_url} alt="user image"/>
                 <Card.Body>
                     <Card.Title>Name: {user.name}</Card.Title>
                     <Card.Text> Username: {user.username}</Card.Text>                

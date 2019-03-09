@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { navigate } from '@reach/router';
-import { getAllArticles, getAllTopics } from '../utils/APICalls';
+import { makeAPICalls } from '../utils/APICalls';
 import { Row, Col, Button } from 'react-bootstrap';
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
@@ -53,7 +53,7 @@ class HomeBody extends Component {
     }
 
     handleNewArticleClose = () => {
-        this.setState( { showNewArticleModal: false, reQuery: true, articles: [], pageNum: 1 } );
+        this.setState( { showNewArticleModal: false, reQuery: true, reQueryTopics: true, articles: [], pageNum: 1 } );
     } 
        
     handleScreenResize = () => {        
@@ -82,16 +82,30 @@ class HomeBody extends Component {
     }
 
     fetchTopics () {
-        getAllTopics()
+        const apiObj = {
+            url: '/topics/',
+            reqObjectKey: 'topics',
+            method: 'get'
+        };
+        makeAPICalls( apiObj )
             .then( ( topics ) => {
                 this.setState( { topics } );
             } )
-            .catch( error => console.log( 'got : ' + error ) ); 
+            .catch( ( ) => this.setState( { topics: [] } ) ); 
     }
     fetchArticles = () => {        
         let { pageNum, accumCount, prevClicked } = this.state;
+        const { sortByKey, sortOrder } = this.state;
+        const params = { sort_by: sortByKey, order: sortOrder, p: pageNum } ;
+        const apiObj = {
+            url: '/articles',
+            reqObjectKey: 'data',
+            method: 'get',
+            params,
+            multiRes: true
+        };
         
-        getAllArticles( { sort_by: this.state.sortByKey, order: this.state.sortOrder, p: pageNum } )
+        makeAPICalls( apiObj )
             .then( ( { articles, total_count } ) => {                        
                 if ( !Array.isArray( articles ) ) {
                     this.setState( {
@@ -100,34 +114,41 @@ class HomeBody extends Component {
                         reQuery: false,
                         pageNum: --pageNum,
                         pageClicked: false,
-                        //numOfPages: Math.floor(total_count/10)+1
                         prevClicked: true
                     } );
-                } else {
-                    //console.log('accum count' + accumCount + ' with length: ' + articles.length)
+                } else {                    
                     //only chnaging it if it wasnt the prev clicked
-                    if ( !prevClicked ) {
+                    /* if ( !prevClicked ) {
+                        accumCount += articles.length;
+                    }  */                       
+                    if ( pageNum === 1 ) {
+                        accumCount = articles.length;
+                    } else if ( !prevClicked ) {
                         accumCount += articles.length;
                     }
-                        
-                    //console.log('New accum count' + accumCount)
-                    this.setState( {
-                        //hasMore: ((this.state.articles.length + articles.length)<total_count),         
+                    this.setState( {                        
                         hasMore: ( ( accumCount + articles.length ) < total_count ),         
-                        isLoading: false,
-                        //articles: pageNum!==1?[...this.state.articles, ...articles]:articles,
+                        isLoading: false,                        
                         articles,
                         reQuery: false,
-                        pageClicked: false,
-                        //numOfPages: Math.floor(total_count/10)+1,
+                        pageClicked: false,                        
                         accumCount: accumCount,
                         totalCount: total_count,
-                        prevClicked: true
+                        prevClicked: false //true
                     } );
                 }
                     
             } )
-            .catch( error => console.log( 'got : ' + error ) );             
+            .catch( ( ) => {
+                this.setState( {
+                    hasMore: false,                        
+                    isLoading: false,
+                    reQuery: false,
+                    pageNum: --pageNum,
+                    pageClicked: false,
+                    prevClicked: true
+                } );
+            } );             
     }
 
     handlePageClick = ( pageOffset ) => {        

@@ -1,10 +1,9 @@
-import React , {Component, Fragment} from 'react';
-import {createNewTopic} from '../utils/APICalls';
+import React , { Component, Fragment } from 'react';
+import { makeAPICalls } from '../utils/APICalls';
 import '../main.css';
-import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
+import { Form, Button, FormControl, Modal, Alert } from 'react-bootstrap';
 
-
- class NewTopicForm extends Component {    
+class NewTopicForm extends Component {    
 
     state = {
         inputTopic: '',
@@ -13,24 +12,26 @@ import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
         topicAdded: false
     }
 
-    handleTopicSlugChange = (event) => {
-        this.setState({ inputTopic: event.target.value, topicAddError: ''});
+    handleTopicSlugChange = ( event ) => {
+        this.setState( { inputTopic: event.target.value, topicAddError: '' } );
     }
-    handleTopicDescriptionChange = (event) => {
-        this.setState({ inputTopicDesc: event.target.value});
+    handleTopicDescriptionChange = ( event ) => {
+        this.setState( { inputTopicDesc: event.target.value } );
     }
-
 
     handleAddNewTopic = () => {
-        createNewTopic({slug: this.state.inputTopic, description: this.state.inputTopicDesc})
-            .then((data) => {                    
-                if ('topic' in data) {
-                    this.setState({topicAdded: true})
-                } else {
-                    this.setState({topicAdded: false, topicAddError: data.msg})
-                }                                        
-            })
-            .catch(error => console.log('got : ' + error))       
+        const { inputTopicDesc, inputTopic } = this.state;
+        const data = { slug: inputTopic, description: inputTopicDesc };
+        const apiObj = {
+            url: '/topics',
+            reqObjectKey: 'topics',
+            method: 'post',
+            data
+        };
+        
+        makeAPICalls( apiObj )
+            .then( ( ) => this.setState( { topicAdded: true } ) )
+            .catch( ( error ) => this.setState( { topicAdded: false, topicAddError: error } ) );       
     }
     render() {
         return (
@@ -48,15 +49,15 @@ import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
                         </Form.Group>
                     </Form>
                     {
-                        (!this.state.topicAdded && this.state.topicAddError!=='')
-                        ?   <Alert variant='danger'>Topic could not be added: {this.state.topicAddError}</Alert>
-                        :   this.state.topicAdded
-                            ?   <Alert variant='success'>Topic has been added</Alert>
-                            :   <Fragment/>                            
+                        ( !this.state.topicAdded && this.state.topicAddError !== '' )
+                            ? <Alert variant='danger'>Topic could not be added: {this.state.topicAddError}</Alert>
+                            : this.state.topicAdded
+                                ? <Alert variant='success'>Topic has been added</Alert>
+                                : <Fragment/>                            
                     }                    
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button size={this.props.size} variant="primary" disabled={this.state.inputTopic==='' || this.state.topicAddError!==''} onClick={this.handleAddNewTopic}>
+                    <Button size={this.props.size} variant="primary" disabled={this.state.inputTopic === '' || this.state.topicAddError !== ''} onClick={this.handleAddNewTopic}>
                         Create new Topic
                     </Button>
                     <Button size={this.props.size} variant="secondary" onClick={this.props.handleNewTopicClose}>
@@ -64,7 +65,7 @@ import {Form, Button, FormControl, Modal, Alert} from 'react-bootstrap';
                     </Button>            
                 </Modal.Footer>
             </Modal>
-        )  
+        );  
     }
   
 }

@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Modal, Button, FormControl, Form, Alert } from 'react-bootstrap';
-import { createNewUser } from '../utils/APICalls';
+import { makeAPICalls } from '../utils/APICalls';
 
 class SignupForm extends Component {
   state = {
@@ -23,33 +23,33 @@ class SignupForm extends Component {
       this.setState( { inputAvatar: event.target.value, userAddError: '' } );
   }
 
-  handleSignup = () => {
-      if ( this.state.inputUsername === '' || this.state.inputName === '' ) {
-          console.log( 'either username or name are blank' );
-          //TODO alert
-      } else {
-          const newUser = {
-              username: this.state.inputUsername, 
-              name: this.state.inputName, 
-              avatar_url: this.state.inputAvatar
-          };
+  handleSignup = () => {      
+      const data = {
+          username: this.state.inputUsername, 
+          name: this.state.inputName, 
+          avatar_url: this.state.inputAvatar
+      };
 
-          createNewUser( newUser )
-              .then( ( data ) => {
-                  if ( 'user' in data ) {
-                      localStorage.setItem( 'userLoggedIn', data.user.username );
-                      localStorage.setItem( 'userName', data.user.name );
-                      localStorage.setItem( 'userAvatar', data.user.avatar_url );
-                      this.setState( { newUserAdded: true }, () => {
-                          this.props.handleNewUserAdded();
-                      } );                         
-                  } else {
-                      console.log( 'User couldnt be added : ' + data.msg ); 
-                      this.setState( { newUserAdded: false, userAddError: data.msg } );
-                  }
-              } )
-              .catch( error => console.log( 'got : ' + error ) );
-      }
+      const apiObj = {
+          url: '/users',
+          reqObjectKey: 'user',
+          method: 'post',
+          data
+      };
+
+      makeAPICalls( apiObj )
+          .then( ( user ) => {
+              localStorage.setItem( 'userLoggedIn', user.username );
+              localStorage.setItem( 'userName', user.name );
+              localStorage.setItem( 'userAvatar', user.avatar_url );
+              this.setState( { newUserAdded: true }, () => {
+                  this.props.handleNewUserAdded();
+              } );  
+          } )
+          .catch( ( error ) => {                            
+              this.setState( { newUserAdded: false, userAddError: error } );
+          } );
+      
   }
 
   render () {

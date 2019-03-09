@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, Button } from 'react-bootstrap';
-import {updateCommentVote, deleteComment} from '../utils/APICalls';
+import { makeAPICalls } from '../utils/APICalls';
 import PrettyDate from './PrettyDate';
 import VotingButtons from './VotingButtons';
 
@@ -8,54 +8,69 @@ class SingleComment extends Component {
 
     state = {
         comment: null,
-        userVoted: false
+        userVoted: false,
+        deleteError: false
     }
 
     componentDidMount() {        
-        this.setState({comment: this.props.comment})
+        this.setState( { comment: this.props.comment } );
     }
 
+    handleVote = ( voteVal ) => {  
+        const data = { inc_votes: voteVal };
+        const { comment_id } = this.props.comment;
+        const apiObj = {
+            url: `/comments/${ comment_id }`,
+            reqObjectKey: 'comment',
+            method: 'patch',
+            data
+        };
 
-    handleVote = (voteVal) => {                        
-        updateCommentVote(this.props.comment.comment_id, {inc_votes: voteVal})
-            .then((comment) => { 
-                this.setState({comment, userVoted: true})
-                 
-            })
-            .catch(error => console.log('got : ' + error))
+        makeAPICalls( apiObj )
+            .then( ( comment ) => this.setState( { comment, userVoted: true, deleteError: false } ) )
+            .catch( () => this.setState( { comment: null, userVoted: false, deleteError: false } ) );
     }
 
-    handleDelete = () => {        
-        deleteComment(this.props.comment.comment_id)
-            .then((status) => {
-                if(status===204) {
-                    this.setState({comment: null}, () => this.props.handleDeleteDone())                    
+    handleDelete = () => {     
+        const { comment_id } = this.props.comment;   
+        const apiObj = {
+            url: `/comments/${ comment_id }`,
+            reqObjectKey: 'status',
+            method: 'delete'            
+        };
+        makeAPICalls( apiObj )
+            .then( ( status ) => {
+                if ( status === 204 ) {
+                    this.setState( { comment: null, deleteError: false }, () => this.props.handleDeleteDone() );                    
                 }
-            })
-            .catch(error => console.log('got : ' + error))
+            } )
+            .catch( () => this.setState( { comment: null, deleteError: true }, () => this.props.handleDeleteDone() ) );
     }
 
     render() {        
-        const { userVoted} = this.state;  
-        const {comment, size, loggedUser} = this.props
+        const { userVoted, deleteError } = this.state;  
+        const { comment, size, loggedUser } = this.props;
         
         return (
             comment && <Card key={comment.comment_id} className="singleCommentItem">                            
                 <Card.Body>
                     <p className="commentTitle">{comment.author} comment on this <PrettyDate dateType="fromNow" created_at={comment.created_at}/>: </p>                    
                     <p className="commentBody">{comment.body}</p>
-                    <p><span className="likesItem">(Dis)Likes: </span><span>{userVoted && this.state.comment?this.state.comment.votes:comment.votes}</span></p>                    
-                     <p>
-                         {loggedUser && <VotingButtons size={size} userVoted={userVoted} upVote="Agree" downVote="Infuriating" handleVote={this.handleVote}/>}    
+                    <p><span className="likesItem">(Dis)Likes: </span><span>{userVoted && this.state.comment ? this.state.comment.votes : comment.votes}</span></p>                    
+                    <p>
+                        {loggedUser && <VotingButtons size={size} userVoted={userVoted} upVote="Agree" downVote="Infuriating" handleVote={this.handleVote}/>}    
                     </p>
                     <p>
                         {
-                            loggedUser === comment.author && <Button size={size} variant="danger" onClick={this.handleDelete}>Delete my comment</Button>
+                            loggedUser === comment.author && <Button size={size} variant="danger" onClick={this.handleDelete}>Delete my comment</Button>                            
+                        }
+                        {
+                            deleteError && <span>Comment could not be deleted</span>
                         }
                     </p>
                 </Card.Body>
             </Card>
-        )
+        );
     }
 }
 export default SingleComment;

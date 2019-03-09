@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Alert, Container, Row, Col, Button } from 'react-bootstrap';
-import { getUserDetails } from '../utils/APICalls';
+import { makeAPICalls } from '../utils/APICalls';
 import { Link } from '@reach/router';
 import LoginForm from './LoginForm';
 import WelcomeUser from './WelcomeUser';
@@ -11,7 +11,7 @@ class Header extends Component {
 
     state = {
         userInput: '',
-        loginError: false,
+        loginError: false,        
         showSignupModal: false,
         isActionLoginOut: false,
         screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''
@@ -22,19 +22,23 @@ class Header extends Component {
     }
 
     handleLogin = ( event ) => {
-        event.preventDefault();
-        getUserDetails( this.state.userInput )
-            .then( ( user ) => {                
-                if ( user.status ) {
-                    this.setState( { userInput: '', loginError: true, isActionLoginOut: false } );
-                } else {
-                    localStorage.setItem( 'userLoggedIn', this.state.userInput );
-                    localStorage.setItem( 'userName', user.name );
-                    localStorage.setItem( 'userAvatar', user.avatar_url );
-                    this.setState( { loginError: false, isActionLoginOut: true, userInput: '' } );                    
-                }
+        event.preventDefault();   
+        const { userInput } = this.state;    
+        const apiObj = {
+            url: `/users/${ userInput }`,
+            reqObjectKey: 'user',
+            method: 'get'
+        }; 
+        makeAPICalls( apiObj )
+            .then( ( user ) => {        
+                localStorage.setItem( 'userLoggedIn', userInput );
+                localStorage.setItem( 'userName', user.name );
+                localStorage.setItem( 'userAvatar', user.avatar_url );
+                this.setState( { loginError: false, isActionLoginOut: true, userInput: '' } );           
             } )
-            .catch( error => console.log( 'got : ' + error ) );
+            .catch( () => {                          
+                this.setState( { userInput: '', loginError: true, isActionLoginOut: false } );
+            } );
     }
 
     handleLogout = () => {
@@ -56,6 +60,10 @@ class Header extends Component {
         this.setState( {
             screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''
         } );
+    }
+
+    handleNewUserAdded = () => {
+        this.setState( { showSignupModal: false }, this.props.handleNewUserAdded() );
     }
     
     componentDidMount () {
@@ -93,7 +101,7 @@ class Header extends Component {
                                     {
                                         showSignupModal && <SignupForm 
                                             showSignupModal={showSignupModal} 
-                                            handleNewUserAdded={this.props.handleNewUserAdded}
+                                            handleNewUserAdded={this.handleNewUserAdded}
                                             handleSignupClose={this.handleSignupClose}/>
                                     }          
                                 </Col> 
