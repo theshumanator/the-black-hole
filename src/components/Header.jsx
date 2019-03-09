@@ -6,6 +6,7 @@ import LoginForm from './LoginForm';
 import WelcomeUser from './WelcomeUser';
 import SignupForm from './SignupForm';
 import '../main.css';
+import LoginError from './LoginError';
 
 class Header extends Component {
 
@@ -30,7 +31,7 @@ class Header extends Component {
             method: 'get'
         }; 
         makeAPICalls( apiObj )
-            .then( ( user ) => {        
+            .then( ( user ) => {                      
                 localStorage.setItem( 'userLoggedIn', userInput );
                 localStorage.setItem( 'userName', user.name );
                 localStorage.setItem( 'userAvatar', user.avatar_url );
@@ -63,7 +64,7 @@ class Header extends Component {
     }
 
     handleNewUserAdded = () => {
-        this.setState( { showSignupModal: false }, this.props.handleNewUserAdded() );
+        this.setState( { showSignupModal: false }, () => this.props.handleNewUserAdded() );
     }
     
     componentDidMount () {
@@ -106,26 +107,17 @@ class Header extends Component {
                                     }          
                                 </Col> 
                                 : <Col/>
-                        }                      
-                        
+                        }
                     </Row> 
-                    {
-                        loginError &&                     
-                            <Row>
-                                <Col className="headerErrorBlankCol"/>
-                                <Col className="headerErrorCol">
-                                    <Alert variant='danger' dismissible>Invalid username. Try again.</Alert>                          
-                                </Col>
-                                <Col className="headerErrorBlankCol"/>
-                            </Row>
-                    }
+                    <LoginError loginError={loginError}/>
                     <Row className="headerInfo">
                         <Col/>
                         <Col className="headerInfoCol">
-                            {!localStorage.getItem( 'userLoggedIn' ) && <Alert variant='primary'>Signup or login to be able to create new topics, post articles, comment and vote.</Alert>}
+                            {!localStorage.getItem( 'userLoggedIn' ) && <Alert variant='primary'>
+                                Signup or login to be able to create new topics, post articles, comment and vote.</Alert>}
                         </Col>
                         <Col/>
-                    </Row>                                                               
+                    </Row>
                 </Container>
             </div>
         );

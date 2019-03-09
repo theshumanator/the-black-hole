@@ -107,7 +107,7 @@
 }
 
 .addSortComment {
-    margin-top: 10px;    
+    margin-top: 20px;    
     justify-content: center;      
 }
 
@@ -121,6 +121,10 @@
 }
 
 #dropdown-basic-button {
+    margin-top: 10px;
+}
+
+.commentSort {
     margin-top: 10px;
 }
 

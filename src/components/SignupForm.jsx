@@ -31,7 +31,7 @@ class SignupForm extends Component {
       };
 
       makeAPICalls( apiObj )
-          .then( ( user ) => {
+          .then( ( user ) => {               
               localStorage.setItem( 'userLoggedIn', user.username );
               localStorage.setItem( 'userName', user.name );
               localStorage.setItem( 'userAvatar', user.avatar_url );

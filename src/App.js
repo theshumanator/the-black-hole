@@ -29,10 +29,10 @@ class App extends Component {
   }
 
   handleNewUserAdded = () => {
-      this.setState( { newUserAdded: true } );
+      this.setState( { newUserAdded: true } , () => this.updateUser() );
   }
   
-  render () {      
+  render () {            
       return (
           <div className="appDiv">
               <Header updateUser={this.updateUser} handleNewUserAdded={this.handleNewUserAdded}/>

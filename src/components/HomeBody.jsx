@@ -2,12 +2,11 @@ import React, { Component, Fragment } from 'react';
 import { navigate } from '@reach/router';
 import { makeAPICalls } from '../utils/APICalls';
 import { Row, Col, Button } from 'react-bootstrap';
-import NewTopicForm from './NewTopicForm';
-import NewArticleForm from './NewArticleForm';
 import TopicsDropdown from './TopicsDropdown';
 import ArticleListItem from './ArticleListItem';
 import { homeSortDropdowns } from '../utils/dropdowns';
 import SortDropdown from './SortDropdown';
+import LoggedInButtons from './LoggedInButtons';
 
 class HomeBody extends Component {
       
@@ -148,7 +147,7 @@ class HomeBody extends Component {
     }
 
     handlePageClick = ( pageOffset ) => {        
-        this.setState( ( { pageNum, accumCount, pageClicked, articles } ) => ( {
+        this.setState( ( { pageNum, accumCount, articles } ) => ( {
             pageNum: pageNum + pageOffset,
             pageClicked: true,
             prevClicked: pageOffset === -1,
@@ -158,8 +157,8 @@ class HomeBody extends Component {
 
     render() {
         const articleArr = this.state.articles;   
-        const { isLoading , accumCount, pageNum, totalCount, screenSize } = this.state;     
-        const loggedUser = this.props.loggedUser;
+        const { isLoading , accumCount, pageNum, totalCount, screenSize, showNewTopicModal, showNewArticleModal } = this.state;     
+        const loggedUser = this.props.loggedUser;        
         return (    
             <div className="homeArticlesList">
                 {                 
@@ -169,24 +168,10 @@ class HomeBody extends Component {
                             <Row className="loggedInFuncsRow">
                                 {
                                     loggedUser
-                                        ? <Fragment>
-                                            <Button size={screenSize} variant="primary" onClick={this.handleShowNewTopic}>Create a new topic</Button>
-                                            {
-                                                this.state.showNewTopicModal && <NewTopicForm
-                                                    showNewTopicModal={this.state.showNewTopicModal}
-                                                    handleNewTopicClose={this.handleNewTopicClose}
-                                                    size={screenSize}
-                                                />
-                                            }
-                                    
-                                            <Button size={screenSize} variant="primary" onClick={this.handleShowNewArticle}>Create a new article</Button>
-                                            {
-                                                this.state.showNewArticleModal && <NewArticleForm
-                                                    showNewArticleModal={this.state.showNewArticleModal}
-                                                    handleNewArticleClose={this.handleNewArticleClose}
-                                                    size={screenSize}/>
-                                            }
-                                        </Fragment>
+                                        ? <LoggedInButtons screenSize={screenSize} handleShowNewTopic={this.handleShowNewTopic}
+                                            showNewTopicModal={showNewTopicModal} handleNewTopicClose={this.handleNewTopicClose}
+                                            handleShowNewArticle={this.handleShowNewArticle} handleNewArticleClose={this.handleNewArticleClose}
+                                            showNewArticleModal={showNewArticleModal} />
                                         : <Fragment/>
                                 }
                             </Row>
@@ -195,10 +180,11 @@ class HomeBody extends Component {
                                 <Button size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
                                 <SortDropdown sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
                             </Row>
-
                             <Row className="browseFuncsRow">     
-                                <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( -1 )} variant="outline-primary" disabled={pageNum === 1 || articleArr.length === 0}>Previous</Button>                          
-                                <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} variant="outline-primary" disabled={accumCount === totalCount}>Next</Button>                       
+                                <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( -1 )} 
+                                    variant="outline-primary" disabled={pageNum === 1 || articleArr.length === 0}>Previous</Button>                          
+                                <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} 
+                                    variant="outline-primary" disabled={accumCount === totalCount}>Next</Button>                       
                             </Row>
                             <Row className="articleListRow">                        
                                 <Col xs={9} className="articleListItem">                            
@@ -206,12 +192,10 @@ class HomeBody extends Component {
                                         {articleArr.map( ( article, idx ) => {                       
                                             return <ArticleListItem key={idx} article={article} idx={idx}/>;
                                         } )}</div>
-                            
                                     } 
                                 </Col>
-                            </Row>                                        
+                            </Row> 
                         </div>
-            
                 }
             </div>
         );

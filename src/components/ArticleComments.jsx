@@ -5,6 +5,7 @@ import SingleComment from './SingleComment';
 import AddNewComment from './AddNewComment';
 import { commentsSortDropdowns } from '../utils/dropdowns';
 import SortDropdown from './SortDropdown';
+import AddNewCommentForm from './AddNewCommentForm';
 
 class ArticleComments extends Component {
 
@@ -100,7 +101,7 @@ class ArticleComments extends Component {
 
                 }            
             } )
-            .catch( ( error ) => {
+            .catch( ( ) => {
                 this.setState( {
                     isLoading: false,
                     hasMore: false,
@@ -113,7 +114,7 @@ class ArticleComments extends Component {
     }
 
     handlePageClick = ( pageOffset ) => {        
-        this.setState( ( { pageNum, accumCount, pageClicked, comments } ) => ( {
+        this.setState( ( { pageNum, accumCount, comments } ) => ( {
             pageNum: pageNum + pageOffset,
             pageClicked: true,
             prevClicked: pageOffset === -1,
@@ -123,7 +124,7 @@ class ArticleComments extends Component {
 
     render () {
         const { article, loggedUser, size } = this.props;
-        const { comments, showNewCommentModal, isLoading, accumCount, pageNum, totalCount } = this.state;                
+        const { comments, showNewCommentModal, isLoading, accumCount, pageNum, totalCount } = this.state;
         
         return (
             <div className="commentList">
@@ -131,32 +132,31 @@ class ArticleComments extends Component {
                     isLoading
                         ? <h3>Loading...</h3>
                         : <div>              
-                            <h3 className="articleCommentHeader">Article Comments</h3>      
-                            <Row className="addSortComment">    
-                                                                
+                            <h3 className="articleCommentHeader">Article Comments</h3>
+                            <Row className="addSortComment">
                                 {
                                     loggedUser && <Button className="addButton" size={size} variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
                                 }    
-                                <SortDropdown sortDropdowns={commentsSortDropdowns} handleSortSelect={this.handleSortSelect} size={size}/>                                                                 
-
-                                <div className="commentPrevNext">                                
-                                    <Button size={size} className = "prevNextButton" onClick={() => this.handlePageClick( -1 )} variant="outline-primary" disabled={pageNum === 1 || comments.length === 0}>Previous</Button>
-                                    <Button size={size} className = "prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} variant="outline-primary" disabled={accumCount === totalCount}>Next</Button>                                 
-                                </div>                                                
-                            </Row>         
-                            {
-                                showNewCommentModal && loggedUser && <AddNewComment articleId={article.article_id} loggedUser={this.props.loggedUser} showNewCommentModal={showNewCommentModal} handleNewCommentClose={this.handleNewCommentClose}/>
-                            }
-                            <div>                            
+                                <SortDropdown className="commentSort" sortDropdowns={commentsSortDropdowns} handleSortSelect={this.handleSortSelect} size={size}/>
+                                <div className="commentPrevNext">
+                                    <Button size={size} className = "prevNextButton" onClick={() => this.handlePageClick( -1 )} variant="outline-primary"
+                                        disabled={pageNum === 1 || comments.length === 0}>Previous</Button>
+                                    <Button size={size} className = "prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} variant="outline-primary" 
+                                        disabled={accumCount === totalCount}>Next</Button>
+                                </div>
+                            </Row>
+                            <AddNewCommentForm showNewCommentModal={showNewCommentModal} loggedUser={loggedUser} articleId={article.article_id} 
+                                handleNewCommentClose={this.handleNewCommentClose}/>                           
+                            <div>
                                 {
                                     comments && comments.map( ( comment, idx ) => {                                
-                                        return <SingleComment size={size} key={idx} articleId={article.article_id} comment={comment} loggedUser={this.props.loggedUser} handleDeleteDone={this.handleDeleteDone}/>;
+                                        return <SingleComment size={size} key={idx} articleId={article.article_id} comment={comment} loggedUser={loggedUser} 
+                                            handleDeleteDone={this.handleDeleteDone}/>;
                                     } )
                                 }
                             </div>
                         </div>
                 }
-                
             </div>
             
         );
