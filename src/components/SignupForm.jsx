@@ -46,8 +46,13 @@ class SignupForm extends Component {
   }
 
   render () {
+      const { showSignupModal, handleSignupClose } = this.props;
+      const { newUserAdded, userAddError, inputUsername,inputName } = this.state;
+      const hasSignupError = !newUserAdded && userAddError !== '' ;
+      const disabledSignup = ( inputUsername === '' || inputName === '' );
+
       return (
-          <Modal show={this.props.showSignupModal} onHide={this.props.handleSignupClose}>
+          <Modal show={showSignupModal} onHide={handleSignupClose}>
               <Modal.Header>
                   <Modal.Title>Sign up</Modal.Title>
               </Modal.Header>
@@ -64,18 +69,18 @@ class SignupForm extends Component {
                       </Form.Group >
                   </Form>
                   {
-                      ( !this.state.newUserAdded && this.state.userAddError !== '' )
-                          ? <Alert variant='danger'>Could not sign you up: {this.state.userAddError}</Alert>
-                          : this.state.newUserAdded
+                      hasSignupError
+                          ? <Alert variant='danger'>Could not sign you up: {userAddError}</Alert>
+                          : newUserAdded
                               ? <Alert variant='success'>Sign up successful! You have also been logged in.</Alert>
                               : <Fragment/>                            
                   } 
               </Modal.Body>
               <Modal.Footer>
-                  <Button variant="primary" onClick={this.handleSignup} disabled={this.state.inputUsername === '' || this.state.inputName === ''}>
+                  <Button variant="primary" onClick={this.handleSignup} disabled={disabledSignup}>
            Sign up
                   </Button>
-                  <Button variant="secondary" onClick={this.props.handleSignupClose}>
+                  <Button variant="secondary" onClick={handleSignupClose}>
            Close
                   </Button>            
               </Modal.Footer>

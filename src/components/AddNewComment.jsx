@@ -42,8 +42,11 @@ class AddNewComment extends Component {
         this.setState( { username: this.props.loggedUser } );        
     }
     render () {
+        const { showNewCommentModal, handleNewCommentClose, } = this.props;
+        const { commentAdded, commentAddError, commentBody } = this.state;
+
         return (
-            <Modal show={this.props.showNewCommentModal} onHide={this.props.handleNewCommentClose}>
+            <Modal show={showNewCommentModal} onHide={handleNewCommentClose}>
                 <Modal.Header>
                     <Modal.Title>Post a comment</Modal.Title>
                 </Modal.Header>
@@ -54,18 +57,18 @@ class AddNewComment extends Component {
                         </Form.Group>
                     </Form>
                     { 
-                        ( !this.state.commentAdded && this.state.commentAddError !== 'none' )
-                            ? <Alert variant='danger'>Comment could not be added: {this.state.commentAddError}</Alert>
-                            : this.state.commentAdded
+                        ( !commentAdded && commentAddError !== 'none' )
+                            ? <Alert variant='danger'>Comment could not be added: {commentAddError}</Alert>
+                            : commentAdded
                                 ? <Alert variant='success'>Comment has been added</Alert>
                                 : <Fragment/>                            
                     }                   
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button disabled={this.state.commentBody === ''} variant="primary" onClick={this.handleAddNewComment}>
+                    <Button disabled={commentBody === ''} variant="primary" onClick={this.handleAddNewComment}>
                         Post comment
                     </Button>
-                    <Button variant="secondary" onClick={this.props.handleNewCommentClose}>
+                    <Button variant="secondary" onClick={handleNewCommentClose}>
                         Close
                     </Button>            
                 </Modal.Footer>

@@ -32,33 +32,37 @@ class NewTopicForm extends Component {
             .catch( ( error ) => this.setState( { topicAdded: false, topicAddError: error } ) );       
     }
     render() {
+        const { inputTopic, topicAddError,topicAdded } = this.state;    
+        const { showNewTopicModal, handleNewTopicClose, size } = this.props;
+        const disableAddTopic = ( inputTopic === '' || topicAddError !== '' );
+        const hasAddTopicError = ( !topicAdded && topicAddError !== '' );
         return (
-            <Modal show={this.props.showNewTopicModal} onHide={this.props.handleNewTopicClose} size={this.props.size}>
-                <Modal.Header size={this.props.size}>
+            <Modal show={showNewTopicModal} onHide={handleNewTopicClose} size={size}>
+                <Modal.Header size={size}>
                     <Modal.Title>Add a new Topic</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form size={this.props.size}>
+                    <Form size={size}>
                         <Form.Group controlId="inputTopic">
-                            <FormControl size={this.props.size} type="text" placeholder="Enter a new topic" onChange={this.handleTextChange}/>
+                            <FormControl size={size} type="text" placeholder="Enter a new topic" onChange={this.handleTextChange}/>
                         </Form.Group>
                         <Form.Group controlId="inputTopicDesc">
-                            <FormControl size={this.props.size} type="text" placeholder="Enter a description" onChange={this.handleTextChange}/>
+                            <FormControl size={size} type="text" placeholder="Enter a description" onChange={this.handleTextChange}/>
                         </Form.Group>
                     </Form>
                     {
-                        ( !this.state.topicAdded && this.state.topicAddError !== '' )
-                            ? <Alert variant='danger'>Topic could not be added: {this.state.topicAddError}</Alert>
-                            : this.state.topicAdded
+                        hasAddTopicError
+                            ? <Alert variant='danger'>Topic could not be added: {topicAddError}</Alert>
+                            : topicAdded
                                 ? <Alert variant='success'>Topic has been added</Alert>
                                 : <Fragment/>                            
                     }                    
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button size={this.props.size} variant="primary" disabled={this.state.inputTopic === '' || this.state.topicAddError !== ''} onClick={this.handleAddNewTopic}>
+                    <Button size={size} variant="primary" disabled={disableAddTopic} onClick={this.handleAddNewTopic}>
                         Create new Topic
                     </Button>
-                    <Button size={this.props.size} variant="secondary" onClick={this.props.handleNewTopicClose}>
+                    <Button size={size} variant="secondary" onClick={handleNewTopicClose}>
                         Close
                     </Button>            
                 </Modal.Footer>

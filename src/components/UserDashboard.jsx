@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { makeAPICalls } from '../utils/APICalls';
-import { Row, Col, Button } from 'react-bootstrap';
-import ArticleListItem from './ArticleListItem';
 import BreadCrumb from './BreadCrumb';
 import SingleUserCard from './SingleUserCard';
+import UserDashboardArticleList from './UserDashboardArticleList';
 
 class UserDashboard extends Component {
 
@@ -163,7 +162,8 @@ class UserDashboard extends Component {
         const articleArr = this.state.articles;
         const { articlesFound, pageNum, accumCount, totalCount, isLoading, screenSize, userStr } = this.state;  
         const user = userStr === '' ? {} : JSON.parse( userStr );
-        
+        const articleProps = { articlesFound, username, screenSize, pageNum, articleArr, accumCount, totalCount, 
+            userStr, loggedUser };
         return (
             <div className="articlesList">
                 <BreadCrumb currentPage={`User dashboard: ${ username }`}/>
@@ -174,23 +174,8 @@ class UserDashboard extends Component {
                 {
                     isLoading
                         ? <h3>Loading...</h3>
-                        : articlesFound && articleArr
-                            ? <div>                            
-                                <Row className="browseFuncsRow">     
-                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( -1 )} variant="outline-primary" disabled={pageNum === 1 || articleArr.length === 0}>Previous</Button>                                        
-                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} variant="outline-primary" disabled={accumCount === totalCount}>Next</Button>                       
-                                </Row>
-                                <Row className="articleListRow">
-                                    <Col xs={9}>
-                                        {
-                                            articleArr.map( ( article, idx ) => {  
-                                                return <ArticleListItem size={screenSize} key={idx} article={article} idx={idx} loggedUser={loggedUser} username={username} handleDelete={this.handleDelete}/>;
-                                            } )                                                                    
-                                        }                             
-                                    </Col>
-                                </Row>
-                            </div>
-                            : userStr && <h3 className="noResults">No articles found for {username}</h3>                                         
+                        : <UserDashboardArticleList articleProps={articleProps} handleDelete={this.handleDelete} 
+                            handlePageClick={this.handlePageClick}/> 
                 }                                      
             </div>
         );

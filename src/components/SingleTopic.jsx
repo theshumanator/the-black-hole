@@ -114,16 +114,17 @@ class SingleTopic extends Component {
         const { screenSize, articlesFound, isLoading , accumCount, pageNum, totalCount } = this.state;             
         return (
             <div className="articlesByTopic">
-                <BreadCrumb currentPage={`Articles on: ${ slug }`}/>
-                
+                <BreadCrumb currentPage={`Articles on: ${ slug }`}/>                
                 {
                     isLoading
                         ? <h3>Loading...</h3>
-
                         : articlesFound && articleArr
                             ? <div>                            
                                 <Row className="browseFuncsRow">     
-                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( -1 )} variant="outline-primary" disabled={pageNum === 1 || articleArr.length === 0}>Previous</Button>                               <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} variant="outline-primary" disabled={accumCount === totalCount}>Next</Button>                       
+                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( -1 )} 
+                                        variant="outline-primary" disabled={pageNum === 1 || articleArr.length === 0}>Previous</Button>                               
+                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} 
+                                        variant="outline-primary" disabled={accumCount === totalCount}>Next</Button>                       
                                 </Row>
 
                                 <Row className="articleListRow">
