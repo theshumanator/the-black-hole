@@ -7,13 +7,20 @@
         "jest": true
     },
 
-    "extends": "eslint:recommended",
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
+
+    "parser": "babel-eslint",
+
     
     "parserOptions": {
         "sourceType": "module",
         "allowImportExportEverywhere": true
     },
-
+    
+    "plugins": [
+      "react"
+    ],
+    
     "rules": {
         "indent": [ 2, 4 ],
         "space-in-parens": [ 2, "always" ],
@@ -26,7 +33,9 @@
         "key-spacing": [2, { "beforeColon": false, "afterColon": true }],
         "keyword-spacing": [2, { "before": true, "after": true }],
         "space-infix-ops": [2, {"int32Hint": false}],
-        "no-multi-spaces": [2],
+        "no-multi-spaces": [2],      
+
+        "no-console": "error",
 
         "semi": [2, "always"],
         "semi-style": [2, "last"],
