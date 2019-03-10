@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Row, Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 import SingleComment from './SingleComment';
-import AddNewComment from './AddNewComment';
 import { commentsSortDropdowns } from '../utils/dropdowns';
 import SortDropdown from './SortDropdown';
 import AddNewCommentForm from './AddNewCommentForm';

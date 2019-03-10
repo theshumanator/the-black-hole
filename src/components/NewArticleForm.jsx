@@ -144,7 +144,7 @@ class NewArticleForm extends Component {
                             ? <Alert variant='danger'>Article could not be added: {articlePostError}</Alert>
                             : articlePosted
                                 ? <Alert variant='success'>Article has been posted. You can find it 
-                                    <Link to={`/articles/${ newArticleId }`}>here</Link> or close to return to main page.</Alert>
+                                    <Link to={`/articles/${ newArticleId }`}> here</Link> or close to return to main page.</Alert>
                                 : <Fragment/>                            
                     }                                    
                 </Modal.Body>

@@ -25,7 +25,7 @@
 
 .articleListItemCard {
     margin: 20px;   
-   
+    
 }
 
 .articleListItem {        
@@ -101,6 +101,7 @@
 .homeArticlesList {
     margin-top: 20px;
 }
+
 
 .homeBodyFilter, .homeBodySort {
     flex: 3 0px;    

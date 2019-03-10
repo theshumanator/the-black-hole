@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { navigate } from '@reach/router';
-import { makeAPICalls } from '../utils/APICalls';
 import { Row, Col, Button } from 'react-bootstrap';
+import { makeAPICalls } from '../utils/APICalls';
 import TopicsDropdown from './TopicsDropdown';
 import ArticleListItem from './ArticleListItem';
 import { homeSortDropdowns } from '../utils/dropdowns';
@@ -9,24 +9,19 @@ import SortDropdown from './SortDropdown';
 import LoggedInButtons from './LoggedInButtons';
 
 class HomeBody extends Component {
-      
+
     state = {
-        error: false,
-        hasMore: true,
+        hasMore: false,
         isLoading: true,
-        articles: [],
         sortByKey: 'created_at', //default
         sortOrder: 'desc', //default
         pageNum: 1, //default
+        articles: [],
+        topics: [],
         reQuery: false,
         reQueryTopics: false,
         showNewTopicModal: false,
         showNewArticleModal: false,
-        topics: [],
-        pageClicked: false,
-        totalCount: 0,
-        accumCount: 0,
-        prevClicked: false,
         screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''
     };
 
@@ -54,30 +49,29 @@ class HomeBody extends Component {
     handleNewArticleClose = () => {
         this.setState( { showNewArticleModal: false, reQuery: true, reQueryTopics: true, articles: [], pageNum: 1 } );
     } 
-       
+
+    /* 
+        infinite scrolling - 2 scenarios to trigger fetch
+        -scroll reaching bottom, load more if there is
+        -once first batch loaded, if hasMore && .articlesList client height < docElement client Height load more
+    */
+    handleScroll = ( ) => {           
+        const { hasMore, isLoading } = this.state;
+        if ( hasMore && !isLoading ) {
+            //compare the article list height/offset vs the entire window height/offset
+            const lastArticleCard = document.querySelector( '.articleListItemCard:last-of-type' );           
+            const lastArticleCardOffset = lastArticleCard.offsetTop + lastArticleCard.clientHeight;
+            const pageOffset = window.pageYOffset + window.innerHeight;            
+            if ( pageOffset > lastArticleCardOffset ) {                                      
+                this.fetchArticles();
+            }
+        }        
+    }
+
     handleScreenResize = () => {        
         this.setState( {
             screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''            
         } );
-    }
-    componentDidMount () {         
-        window.addEventListener( 'resize', this.handleScreenResize, false );
-        this.fetchArticles();
-        this.fetchTopics();                    
-    }
-    
-    componentDidUpdate ( prevProps, prevState ) {   
-        const { reQuery, pageNum, pageClicked, reQueryTopics } = this.state;        
-        const hasPageChanged = prevState.pageNum !== pageNum;
-        if ( reQuery ) {
-            this.setState( { pageNum: 1, reQuery: false }, () => this.fetchArticles() );
-        } 
-        if ( reQueryTopics ) {
-            this.setState( { reQueryTopics: false }, () => this.fetchTopics() );
-        }
-        if ( hasPageChanged && pageClicked ) {
-            this.fetchArticles();
-        }
     }
 
     fetchTopics () {
@@ -92,8 +86,9 @@ class HomeBody extends Component {
             } )
             .catch( ( ) => this.setState( { topics: [] } ) ); 
     }
-    fetchArticles = () => {        
-        let { pageNum, accumCount, prevClicked } = this.state;
+
+    fetchArticles = () => {   
+        let { pageNum } = this.state;             
         const { sortByKey, sortOrder } = this.state;
         const params = { sort_by: sortByKey, order: sortOrder, p: pageNum } ;
         const apiObj = {
@@ -103,66 +98,55 @@ class HomeBody extends Component {
             params,
             multiRes: true
         };
-        
-        makeAPICalls( apiObj )
-            .then( ( { articles, total_count } ) => {                        
-                if ( !Array.isArray( articles ) ) {
+
+        this.setState( { isLoading: true }, () => {
+            makeAPICalls( apiObj ) 
+                .then ( ( { articles, total_count } ) => {
                     this.setState( {
-                        hasMore: false,                        
+                        hasMore: ( articles.length + this.state.articles.length ) < total_count,
                         isLoading: false,
-                        reQuery: false,
-                        pageNum: --pageNum,
-                        pageClicked: false,
-                        prevClicked: true
+                        articles: pageNum === 1 ? articles : [ ...this.state.articles, ...articles ],
+                        pageNum: ++pageNum
                     } );
-                } else {                                                             
-                    if ( pageNum === 1 ) {
-                        accumCount = articles.length;
-                    } else if ( !prevClicked ) {
-                        accumCount += articles.length;
-                    }
-                    this.setState( {                        
-                        hasMore: ( ( accumCount + articles.length ) < total_count ),         
-                        isLoading: false,                        
-                        articles,
-                        reQuery: false,
-                        pageClicked: false,                        
-                        accumCount: accumCount,
-                        totalCount: total_count,
-                        prevClicked: false 
-                    } );
-                }
-                    
-            } )
-            .catch( ( ) => {
-                this.setState( {
-                    hasMore: false,                        
-                    isLoading: false,
-                    reQuery: false,
-                    pageNum: --pageNum,
-                    pageClicked: false,
-                    prevClicked: true
+                } ) 
+                .catch( () => {
+                    this.setState( { hasMore: false, isLoading: false, articles: [], pageNum: --pageNum } );
                 } );
-            } );             
+        } );
+        
     }
 
-    handlePageClick = ( pageOffset ) => {        
-        this.setState( ( { pageNum, accumCount, articles } ) => ( {
-            pageNum: pageNum + pageOffset,
-            pageClicked: true,
-            prevClicked: pageOffset === -1,
-            accumCount: pageOffset === -1 ? accumCount - articles.length : accumCount
-        } ) );
+    componentDidUpdate () {
+        const { hasMore, isLoading, reQuery, reQueryTopics } = this.state;        
+        if ( reQuery ) {
+            this.setState( { pageNum: 1, reQuery: false }, () => this.fetchArticles() );
+        } else if ( reQueryTopics ) {
+            this.setState( { reQueryTopics: false }, () => this.fetchTopics() );
+        } else if ( !isLoading && hasMore && document.querySelector( '.articlesList' ) !== null ) {
+            //scenario where we load 10 items but there is more space in the window so need to load more
+            const docHeight = document.documentElement.clientHeight;
+            const divHeight = document.querySelector( '.articlesList' ).clientHeight;
+            if ( divHeight < docHeight ) {
+                this.fetchArticles();
+            }
+        }        
+    }
+    componentDidMount () {             
+        window.addEventListener( 'resize', this.handleScreenResize, false ); 
+        window.addEventListener( 'scroll', this.handleScroll );        
+        this.fetchArticles();
+        this.fetchTopics();                    
+        
     }
 
-    render() {
-        const articleArr = this.state.articles;   
-        const { isLoading , accumCount, pageNum, totalCount, screenSize, showNewTopicModal, showNewArticleModal, topics } = this.state;     
+    render () {        
+        const { isLoading , articles, hasMore, screenSize, showNewTopicModal, showNewArticleModal, topics } = this.state;  
         const loggedUser = this.props.loggedUser;        
-        return (    
+        return (
             <div className="homeArticlesList">
-                {                 
-                    isLoading
+                {            
+                    //need to put condition for !hasMore to avoid it jumping back up upon each scroll     
+                    isLoading && !hasMore
                         ? <h3>Loading...</h3>
                         : <div>  
                             <Row className="loggedInFuncsRow">
@@ -172,7 +156,7 @@ class HomeBody extends Component {
                                             showNewTopicModal={showNewTopicModal} handleNewTopicClose={this.handleNewTopicClose}
                                             handleShowNewArticle={this.handleShowNewArticle} handleNewArticleClose={this.handleNewArticleClose}
                                             showNewArticleModal={showNewArticleModal} />
-                                        : <Fragment/>
+                                        : <></>
                                 }
                             </Row>
                             <Row className="sortFilterRow">
@@ -180,26 +164,22 @@ class HomeBody extends Component {
                                 <Button size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
                                 <SortDropdown sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
                             </Row>
-                            <Row className="browseFuncsRow">     
-                                <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( -1 )} 
-                                    variant="outline-primary" disabled={pageNum === 1 || articleArr.length === 0}>Previous</Button>                          
-                                <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} 
-                                    variant="outline-primary" disabled={accumCount === totalCount}>Next</Button>                       
-                            </Row>
                             <Row className="articleListRow">                        
                                 <Col xs={9} className="articleListItem">                            
-                                    {articleArr && <div className="articlesList">
-                                        {articleArr.map( ( article, idx ) => {                       
-                                            return <ArticleListItem key={idx} article={article} idx={idx}/>;
-                                        } )}</div>
+                                    {articles  
+                                        ? <div className="articlesList">
+                                            {articles.map( ( article, idx ) => {                       
+                                                return <ArticleListItem key={idx} article={article} idx={idx}/>;
+                                            } )}</div>
+                                        : <h3 className="noResults">There are no articles in the black hole</h3>
                                     } 
                                 </Col>
                             </Row> 
-                        </div>
-                }
+                        </div>                    
+                }                
             </div>
         );
     }
+    
 }
-
 export default HomeBody;

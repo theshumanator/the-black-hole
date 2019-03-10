@@ -19,7 +19,7 @@ const makeAPICalls = ( { url, reqObjectKey, params, data, method, multiRes } ) =
         method,
         data
     } );
-
+    
     const action = translateMethod( method );    
     const genericMsg = `Could not ${ action } ${ reqObjectKey }. Contact Support.`;
 
