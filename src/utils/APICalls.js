@@ -11,15 +11,15 @@ const translateMethod = ( method ) => {
     };
     return methodTranslation[ method ];
 };
-const makeAPICalls = ( { url, reqObjectKey, params, data, method, multiRes } ) => {    
+const makeAPICalls = ( { url, reqObjectKey, params, data, method, multiRes, cancelToken } ) => {    
     const instance = axios.create( {
         baseURL: `${ BASE_URL }`,
         url,
         params,
         method,
-        data
-    } );
-    
+        data,
+        cancelToken
+    } );    
     const action = translateMethod( method );    
     const genericMsg = `Could not ${ action } ${ reqObjectKey }. Contact Support.`;
 

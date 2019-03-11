@@ -9,8 +9,14 @@ import { homeSortDropdowns } from '../utils/dropdowns';
 import SortDropdown from './SortDropdown';
 import LoggedInButtons from './LoggedInButtons';
 import { shouldScroll, hasSpaceForMore } from '../utils/infiniteScroll';
+import axios from 'axios';
 
 class HomeBody extends Component {
+
+    //avoid memory leak cancel all axios requests, etc
+    CancelToken = axios.CancelToken;
+    source = this.CancelToken.source();
+    _isMounted = false;
 
     state = {
         hasMore: false,
@@ -62,7 +68,7 @@ class HomeBody extends Component {
         if ( hasMore && !isLoading && shouldScroll( '.articlesList' ) ) {
             this.fetchArticles();
         }        
-    }, 500 )
+    }, 500 );
 
     handleScreenResize = () => {        
         this.setState( {
@@ -76,11 +82,15 @@ class HomeBody extends Component {
             reqObjectKey: 'topics',
             method: 'get'
         };
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( topics ) => {
                 this.setState( { topics } );
             } )
-            .catch( ( ) => this.setState( { topics: [] } ) ); 
+            .catch( ( err ) => {
+                if ( !axios.isCancel( err ) ) {
+                    this.setState( { topics: [] } ); 
+                }
+            } ); 
     }
 
     fetchArticles = () => {   
@@ -92,10 +102,11 @@ class HomeBody extends Component {
             reqObjectKey: 'data',
             method: 'get',
             params,
+            cancelToken: this.source.token,
             multiRes: true
         };
 
-        this.setState( { isLoading: true }, () => {
+        this._isMounted && this.setState( { isLoading: true }, () => {
             makeAPICalls( apiObj ) 
                 .then ( ( { articles, total_count } ) => {
                     this.setState( {
@@ -105,8 +116,12 @@ class HomeBody extends Component {
                         pageNum: ++pageNum
                     } );
                 } ) 
-                .catch( () => {
-                    this.setState( { hasMore: false, isLoading: false, articles: [], pageNum: --pageNum } );
+                .catch( ( err ) => {
+                    if ( !axios.isCancel( err ) ) {
+                        this.setState( { hasMore: false, isLoading: false, articles: [], 
+                            pageNum: pageNum > 1 ? --pageNum : pageNum } );
+                    }
+                    
                 } );
         } );
         
@@ -126,12 +141,19 @@ class HomeBody extends Component {
         }            
     }
 
-    componentDidMount () {             
+    componentDidMount () {        
+        this._isMounted = true;     
         window.addEventListener( 'resize', this.handleScreenResize, false ); 
         window.addEventListener( 'scroll', this.handleScroll );        
         this.fetchArticles();
-        this.fetchTopics();                    
-        
+        this.fetchTopics();                            
+    }
+
+    componentWillUnmount () {                
+        this.source.cancel( 'Cancel axios requests as user moved off page' );
+        window.removeEventListener( 'resize', this.handleScreenResize, false ); 
+        window.removeEventListener( 'scroll', this.handleScroll );        
+        this._isMounted = false;
     }
 
     render () {        

@@ -3,53 +3,59 @@ import { makeAPICalls } from '../utils/APICalls';
 import BreadCrumb from './BreadCrumb';
 import SingleUserCard from './SingleUserCard';
 import UserDashboardArticleList from './UserDashboardArticleList';
+import { shouldScroll, hasSpaceForMore } from '../utils/infiniteScroll';
+import { throttle } from 'lodash';
+import axios from 'axios';
 
 class UserDashboard extends Component {
+
+    CancelToken = axios.CancelToken;
+    source = this.CancelToken.source();
+    _isMounted = false;
 
     state = {
         requestedUser: null,
         userStr: '',
         articles: [],
-        articlesFound: false,
-        error: false,
-        hasMore: true,
-        isLoading: true,
-        pageClicked: false,
-        totalCount: 0,
-        accumCount: 0,
-        prevClicked: false,
-        pageNum: 1, //default
-        articleDeleted: false,
+        articlesFound: false,        
+        hasMore: false,
+        isLoading: true,        
+        pageNum: 1, //default        
         screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''
     }
     componentDidMount () {
+        this._isMounted = true;     
         window.addEventListener( 'resize', this.handleScreenResize, false );
+        window.addEventListener( 'scroll', this.handleScroll );        
         this.fetchUserDetails( );
         this.fetchArticles();
     }
 
-    componentDidUpdate ( prevProps, prevState ) {
-        const { pageNum } = this.state;   
-        const { requestedUser, pageClicked, articleDeleted, screenSize } = this.state;       
-        const hasPageChanged = prevState.pageNum !== pageNum;
-        const hasScreenChanged = prevState.screenSize !== screenSize;
-        const hasUserChanged = requestedUser !== this.props.username;        
-        if ( hasUserChanged ) {                        
-            if ( pageNum === 1 ){
+    componentDidUpdate ( ) {       
+        const { isLoading, hasMore } = this.state;       
+        if ( !isLoading && hasMore && document.querySelector( '.articlesList' ) !== null ) {
+            //scenario where we load the first batch but there is more space in the window so need to load more
+            if ( hasSpaceForMore( '.articlesList' ) ) {
                 this.fetchArticles();
-            } else {
-                this.setState( { pageNum: 1 } );                
-            }                         
-        } 
-        if ( hasPageChanged && pageClicked ) {
-            this.fetchArticles();
-        } 
-
-        if ( articleDeleted || hasScreenChanged ) {
-            this.fetchArticles();
+            }
         }
+
     }
 
+    componentWillUnmount () {        
+        this.source.cancel( 'Api is being canceled' );
+        window.removeEventListener( 'resize', this.handleScreenResize, false ); 
+        window.removeEventListener( 'scroll', this.handleScroll );        
+        this._isMounted = false;
+    }
+
+    handleScroll = throttle( ( ) => {           
+        const { hasMore, isLoading } = this.state;
+        if ( hasMore && !isLoading && shouldScroll( '.articlesList' ) ) {
+            this.fetchArticles();
+        }        
+    }, 500 );
+    
     fetchUserDetails = ( ) => {   
         const { username } = this.props;  
         const apiObj = {
@@ -64,14 +70,14 @@ class UserDashboard extends Component {
             .catch( () => this.setState( { userStr: '' } ) );
     }
 
-    handleScreenResize = () => {        
+    handleScreenResize = () => {                
         this.setState( {
             screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''
         } );
     }
 
     fetchArticles () {
-        let { pageNum, accumCount, prevClicked } = this.state;
+        let { pageNum } = this.state;             
         const { username } = this.props;
         const params = { author: username, p: pageNum };
         const apiObj = {
@@ -79,90 +85,59 @@ class UserDashboard extends Component {
             reqObjectKey: 'data',
             method: 'get',
             params,
+            cancelToken: this.source.token,
             multiRes: true
         };
 
-        makeAPICalls( apiObj )
-            .then( ( { articles, total_count } ) => {
-                if ( !Array.isArray( articles ) ) {                    
+        this._isMounted && this.setState( { isLoading: true }, () => {
+            makeAPICalls( apiObj ) 
+                .then ( ( { articles, total_count } ) => {
                     this.setState( {
-                        hasMore: false,                        
+                        hasMore: ( articles.length + this.state.articles.length ) < total_count,
                         isLoading: false,
-                        pageClicked: pageNum > 1 ? true : false,
-                        pageNum: pageNum > 1 ? --pageNum : 1,    
-                        requestedUser: username,                         
-                        prevClicked: true,
-                        articlesFound: false,
-                        articleDeleted: false
-                    } );
-                } else {
-                    if ( pageNum === 1 ) {
-                        accumCount = articles.length;
-                    } else if ( !prevClicked ) {
-                        accumCount += articles.length;
-                    }
-                    this.setState( {                        
-                        hasMore: ( ( this.state.articles.length + articles.length ) < total_count ),
-                        isLoading: false,                        
-                        articles,
+                        articles: pageNum === 1 ? articles : [ ...this.state.articles, ...articles ],
+                        pageNum: ++pageNum,
                         requestedUser: username,
-                        articlesFound: true,
-                        pageClicked: false,
-                        accumCount: accumCount,
-                        totalCount: total_count,
-                        prevClicked: false,
-                        articleDeleted: false
+                        articlesFound: true
                     } );
-                } 
-            } )
-            .catch( ( ) => {
-                this.setState( {
-                    hasMore: false,                        
-                    isLoading: false,
-                    pageClicked: pageNum > 1 ? true : false,
-                    pageNum: pageNum > 1 ? --pageNum : 1,    
-                    requestedUser: username,                         
-                    prevClicked: true,
-                    articlesFound: false,
-                    articleDeleted: false
+                } ) 
+                .catch( ( err ) => {
+                    if ( !axios.isCancel( err ) ) {
+                        this.setState( { 
+                            hasMore: false, 
+                            isLoading: false, 
+                            articles: pageNum === 1 ? [] : this.state.articles, 
+                            pageNum: pageNum > 1 ? --pageNum : pageNum, 
+                            requestedUser: username, 
+                            articlesFound: false } );
+                    }                     
                 } );
-            } ); 
+        } );
     }
 
-    handleDelete = ( articleId ) => {                          
+    handleDelete = ( articleId ) => {           
         const apiObj = {
             url: `/articles/${ articleId }`,
             reqObjectKey: 'status',
             method: 'delete'            
         };
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( status ) => {
                 if ( status === 204 ) {
-                    this.setState( ( { totalCount, accumCount } ) => ( {
-                        totalCount: --totalCount,                                                
-                        accumCount: --accumCount,
-                        articleDeleted: true
-                    } ) );                    
+                    const { articles } = this.state;
+                    const updatedArticles = articles.filter( ( article ) => article.article_id !== articleId );    
+                    this.setState( { articles: updatedArticles } );                    
                 }
             } )
-            .catch( () => this.setState( { articleDeleted: false } ) );
-    }
-
-    handlePageClick = ( pageOffset ) => {        
-        this.setState( ( { pageNum, accumCount, articles } ) => ( {
-            pageNum: pageNum + pageOffset,
-            pageClicked: true,
-            prevClicked: pageOffset === -1,
-            accumCount: pageOffset === -1 ? accumCount - articles.length : accumCount
-        } ) );
+            .catch();
     }
 
     render() {        
         const { username, loggedUser } = this.props;
-        const articleArr = this.state.articles;
-        const { articlesFound, pageNum, accumCount, totalCount, isLoading, screenSize, userStr } = this.state;  
+        //const articleArr = this.state.articles;
+        const { articlesFound, pageNum, accumCount, totalCount, isLoading, screenSize, userStr,articles, hasMore } = this.state;  
         const user = userStr === '' ? {} : JSON.parse( userStr );
-        const articleProps = { articlesFound, username, screenSize, pageNum, articleArr, accumCount, totalCount, 
+        const articleProps = { articlesFound, username, screenSize, pageNum, articles, accumCount, totalCount, 
             userStr, loggedUser };
         return (
             <div className="articlesList">
@@ -172,7 +147,7 @@ class UserDashboard extends Component {
                     : <h3 className="noResults">Username {username} does not exist.</h3>                 
                 }
                 {
-                    isLoading
+                    isLoading && !hasMore
                         ? <h3>Loading...</h3>
                         : <UserDashboardArticleList articleProps={articleProps} handleDelete={this.handleDelete} 
                             handlePageClick={this.handlePageClick}/> 
