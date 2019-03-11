@@ -61,7 +61,8 @@ class UserDashboard extends Component {
         const apiObj = {
             url: `/users/${ username }`,
             reqObjectKey: 'user',
-            method: 'get'
+            method: 'get',
+            cancelToken: this.source.token
         };
         this._isMounted && makeAPICalls( apiObj )
             .then( ( user ) => {                
@@ -94,7 +95,7 @@ class UserDashboard extends Component {
         };
 
         this._isMounted && this.setState( { isLoading: true }, () => {
-            makeAPICalls( apiObj ) 
+            this._isMounted && makeAPICalls( apiObj ) 
                 .then ( ( { articles, total_count } ) => {
                     const morePendingRecords = ( articles.length + this.state.articles.length ) < total_count;
                     this.setState( {

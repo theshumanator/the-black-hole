@@ -62,7 +62,8 @@ class SingleArticle extends Component {
             url: `/articles/${ articleId }`,
             reqObjectKey: 'article',
             method: 'patch',
-            data
+            data,
+            cancelToken: this.source.token
         };
         this._isMounted && makeAPICalls( apiObj )
             .then( ( article ) => this.setState( { article: JSON.stringify( article ), userVoted: true } ) )
@@ -78,10 +79,11 @@ class SingleArticle extends Component {
         const apiObj = {
             url: `/articles/${ articleId }`,
             reqObjectKey: 'status',
-            method: 'delete'            
+            method: 'delete',
+            cancelToken: this.source.token            
         };
 
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( status ) => {
                 if ( status === 204 ) {
                     navigate( '/' );

@@ -52,16 +52,14 @@ class ArticleComments extends Component {
     }, 500 );
 
     componentDidMount () {                 
-        this._isMounted = true;     
-        //window.addEventListener( 'resize', this.handleScreenResize, false ); 
+        this._isMounted = true;             
         window.addEventListener( 'scroll', this.handleScroll );        
         this.fetchComments(); 
     }
 
     componentWillUnmount () {                
-        this.source.cancel( 'Cancel axios requests as user moved off page' );
-        window.removeEventListener( 'resize', this.handleScreenResize, false ); 
-        //window.removeEventListener( 'scroll', this.handleScroll );        
+        this.source.cancel( 'Cancel axios requests as user moved off page' );        
+        window.removeEventListener( 'scroll', this.handleScroll );        
         this._isMounted = false;
     }
 

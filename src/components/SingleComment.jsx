@@ -19,6 +19,7 @@ class SingleComment extends Component {
     }
 
     componentWillUnmount(){
+        this.source.cancel( 'Cancel axios requests as user moved off page' );
         this._isMounted = false;
     }
     componentDidMount() {     
