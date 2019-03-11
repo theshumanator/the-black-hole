@@ -62,7 +62,7 @@ class HomeBody extends Component {
         if ( hasMore && !isLoading && shouldScroll( '.articlesList' ) ) {
             this.fetchArticles();
         }        
-    }, 1000 )
+    }, 500 )
 
     handleScreenResize = () => {        
         this.setState( {
