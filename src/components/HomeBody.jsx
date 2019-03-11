@@ -116,10 +116,10 @@ class HomeBody extends Component {
         
     }
 
-    componentDidUpdate () {
-        const { hasMore, isLoading, reQuery, reQueryTopics } = this.state;        
+    componentDidUpdate ( ) {
+        const { hasMore, isLoading, reQuery, reQueryTopics } = this.state;
         if ( reQuery ) {
-            this.setState( { pageNum: 1, reQuery: false }, () => this.fetchArticles() );
+            this.setState( { reQuery: false }, () => this.fetchArticles() ); 
         } else if ( reQueryTopics ) {
             this.setState( { reQueryTopics: false }, () => this.fetchTopics() );
         } else if ( !isLoading && hasMore && document.querySelector( '.articlesList' ) !== null ) {
@@ -129,8 +129,9 @@ class HomeBody extends Component {
             if ( divHeight < docHeight ) {
                 this.fetchArticles();
             }
-        }        
+        }            
     }
+
     componentDidMount () {             
         window.addEventListener( 'resize', this.handleScreenResize, false ); 
         window.addEventListener( 'scroll', this.handleScroll );        
