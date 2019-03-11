@@ -1,15 +1,22 @@
 import React, { Component, Fragment } from 'react';
 import { Modal, Button, FormControl, Form, Alert } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
+import axios from 'axios';
 
 class SignupForm extends Component {
-  state = {
-      newUserAdded: false,
-      userAddError: '',
-      inputUsername: '',
-      inputName: '',
-      inputAvatar: 'https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg' //setting a default avatar
-  }
+
+    //avoid memory leak cancel all axios requests, etc
+	CancelToken = axios.CancelToken;
+	source = this.CancelToken.source();
+    _isMounted = false;
+    
+    state = {
+        newUserAdded: false,
+        userAddError: '',
+        inputUsername: '',
+        inputName: '',
+        inputAvatar: 'https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg' //setting a default avatar
+    }
 
   handleTextChange = ( event ) => {
       const { id, value } = event.target;
@@ -28,10 +35,11 @@ class SignupForm extends Component {
           url: '/users',
           reqObjectKey: 'user',
           method: 'post',
+          cancelToken: this.source.token,
           data
       };
 
-      makeAPICalls( apiObj )
+      this._isMounted && makeAPICalls( apiObj )
           .then( ( user ) => {               
               localStorage.setItem( 'userLoggedIn', user.username );
               localStorage.setItem( 'userName', user.name );
@@ -40,10 +48,21 @@ class SignupForm extends Component {
                   this.props.handleNewUserAdded();
               } );  
           } )
-          .catch( ( error ) => {                            
-              this.setState( { newUserAdded: false, userAddError: error } );
+          .catch( ( error ) => {   
+              if ( !axios.isCancel( error ) ) {
+                  this.setState( { newUserAdded: false, userAddError: error } );
+              }                                       
           } );
       
+  }
+
+  componentWillUnmount () {
+      this.source.cancel( 'Cancel axios requests as user moved off page' );
+      this._isMounted = false;   
+  }
+
+  componentDidMount(){
+      this._isMounted = true;
   }
 
   render () {

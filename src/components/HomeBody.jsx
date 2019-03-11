@@ -80,7 +80,8 @@ class HomeBody extends Component {
         const apiObj = {
             url: '/topics/',
             reqObjectKey: 'topics',
-            method: 'get'
+            method: 'get',
+            cancelToken: this.source.token
         };
         this._isMounted && makeAPICalls( apiObj )
             .then( ( topics ) => {

@@ -2,8 +2,14 @@ import React , { Component, Fragment } from 'react';
 import { makeAPICalls } from '../utils/APICalls';
 import '../main.css';
 import { Form, Button, FormControl, Modal, Alert } from 'react-bootstrap';
+import axios from 'axios';
 
 class NewTopicForm extends Component {    
+
+    //avoid memory leak cancel all axios requests, etc
+    CancelToken = axios.CancelToken;
+    source = this.CancelToken.source();
+    _isMounted = false;
 
     state = {
         inputTopic: '',
@@ -24,13 +30,28 @@ class NewTopicForm extends Component {
             url: '/topics',
             reqObjectKey: 'topics',
             method: 'post',
-            data
+            data,
+            cancelToken: this.source.token,
         };
         
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( ) => this.setState( { topicAdded: true } ) )
-            .catch( ( error ) => this.setState( { topicAdded: false, topicAddError: error } ) );       
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { topicAdded: false, topicAddError: error } );
+                }
+            } );       
     }
+
+    componentDidMount () {        
+        this._isMounted = true;             
+    }
+
+    componentWillUnmount () {                
+        this.source.cancel( 'Cancel axios requests as user moved off page' );        
+        this._isMounted = false;
+    }
+
     render() {
         const { inputTopic, topicAddError,topicAdded } = this.state;    
         const { showNewTopicModal, handleNewTopicClose, size } = this.props;

@@ -3,8 +3,15 @@ import { Link } from '@reach/router';
 import '../main.css';
 import { makeAPICalls } from '../utils/APICalls';
 import { Form, Button, FormControl, Modal, Alert, Row, Col } from 'react-bootstrap';
+import axios from 'axios';
 
 class NewArticleForm extends Component {
+
+    //avoid memory leak cancel all axios requests, etc
+    CancelToken = axios.CancelToken;
+    source = this.CancelToken.source();
+    _isMounted = false;
+    
     state = {
         articlePostError: '',
         articlePosted: false,
@@ -47,12 +54,15 @@ class NewArticleForm extends Component {
                 url: '/topics',
                 reqObjectKey: 'topics',
                 method: 'post',
-                data
+                data,
+                cancelToken: this.source.token,
             };
-            makeAPICalls( apiObj )
+            this._isMounted && makeAPICalls( apiObj )
                 .then( ( ) => this.postNewArticle( articleObj ) )
                 .catch( ( error ) => {
-                    this.setState( { topicAdded: false, topicAddError: error } );
+                    if ( !axios.isCancel( error ) ) {
+                        this.setState( { topicAdded: false, topicAddError: error } );
+                    }                    
                 } );       
         } else {
             this.postNewArticle( articleObj );
@@ -64,29 +74,45 @@ class NewArticleForm extends Component {
             url: '/articles',
             reqObjectKey: 'article',
             method: 'post',
-            data
+            data,
+            cancelToken: this.source.token,
         };
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( article ) => {         
                 this.setState( { articlePosted: true, articlePostError: '', newArticleId: article.article_id } );
             } )
-            .catch( ( error ) => this.setState( { articlePosted: false, articlePostError: error } ) ); 
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { articlePosted: false, articlePostError: error } ); 
+                }
+            } ); 
     }
     
     getAllTopics = () => {
         const apiObj = {
             url: '/topics/',
             reqObjectKey: 'topics',
-            method: 'get'
+            method: 'get',
+            cancelToken: this.source.token,
         };
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( topics ) => {
                 this.setState( { topics } );
             } )
-            .catch( ( ) => this.setState( { topics: [] } ) ); 
+            .catch( ( err ) => {
+                if ( !axios.isCancel( err ) ) {
+                    this.setState( { topics: [] } ); 
+                }
+            } ); 
     }
     componentDidMount () {
+        this._isMounted = true;     
         this.getAllTopics();             
+    }
+
+    componentWillUnmount () {                
+        this.source.cancel( 'Cancel axios requests as user moved off page' );   
+        this._isMounted = false;
     }
 
     render () {        

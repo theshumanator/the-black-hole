@@ -3,16 +3,26 @@ import { Card, Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 import PrettyDate from './PrettyDate';
 import VotingButtons from './VotingButtons';
+import axios from 'axios';
 
 class SingleComment extends Component {
 
+    //avoid memory leak cancel all axios requests, etc
+	CancelToken = axios.CancelToken;
+	source = this.CancelToken.source();
+    _isMounted = false;
+    
     state = {
         comment: null,
         userVoted: false,
         deleteError: false
     }
 
-    componentDidMount() {                
+    componentWillUnmount(){
+        this._isMounted = false;
+    }
+    componentDidMount() {     
+        this._isMounted = true;           
         this.setState( { comment: this.props.comment } );
     }
 
@@ -29,12 +39,17 @@ class SingleComment extends Component {
             url: `/comments/${ comment_id }`,
             reqObjectKey: 'comment',
             method: 'patch',
-            data
+            data,
+            cancelToken: this.source.token
         };
 
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( comment ) => this.setState( { comment, userVoted: true, deleteError: false } ) )
-            .catch( () => this.setState( { comment: null, userVoted: false, deleteError: false } ) );
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { comment: null, userVoted: false, deleteError: false } );
+                }
+            } );
     }
 
     handleDelete = () => {     
@@ -42,15 +57,20 @@ class SingleComment extends Component {
         const apiObj = {
             url: `/comments/${ comment_id }`,
             reqObjectKey: 'status',
-            method: 'delete'            
+            method: 'delete' ,       
+            cancelToken: this.source.token   
         };
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( status ) => {
                 if ( status === 204 ) {
                     this.setState( { comment: null, deleteError: false }, () => this.props.handleDeleteDone() );                    
                 }
             } )
-            .catch( () => this.setState( { comment: null, deleteError: true }, () => this.props.handleDeleteDone() ) );
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { comment: null, deleteError: true }, () => this.props.handleDeleteDone() );
+                }
+            } );
     }
 
     render() {        

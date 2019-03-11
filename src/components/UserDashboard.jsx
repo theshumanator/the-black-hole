@@ -63,11 +63,15 @@ class UserDashboard extends Component {
             reqObjectKey: 'user',
             method: 'get'
         };
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( user ) => {                
                 this.setState( { userStr: JSON.stringify( user ) } );
             } )
-            .catch( () => this.setState( { userStr: '' } ) );
+            .catch( ( err ) => {
+                if ( !axios.isCancel( err ) ) {
+                    this.setState( { userStr: '' } );
+                }
+            } );
     }
 
     handleScreenResize = () => {                

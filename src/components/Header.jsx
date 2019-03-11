@@ -7,8 +7,14 @@ import WelcomeUser from './WelcomeUser';
 import SignupForm from './SignupForm';
 import '../main.css';
 import LoginError from './LoginError';
+import axios from 'axios';
 
 class Header extends Component {
+
+    //avoid memory leak cancel all axios requests, etc
+    CancelToken = axios.CancelToken;
+    source = this.CancelToken.source();
+    _isMounted = false;
 
     state = {
         userInput: '',
@@ -28,17 +34,20 @@ class Header extends Component {
         const apiObj = {
             url: `/users/${ userInput }`,
             reqObjectKey: 'user',
+            cancelToken: this.source.token,
             method: 'get'
         }; 
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( user ) => {                      
                 localStorage.setItem( 'userLoggedIn', userInput );
                 localStorage.setItem( 'userName', user.name );
                 localStorage.setItem( 'userAvatar', user.avatar_url );
                 this.setState( { loginError: false, isActionLoginOut: true, userInput: '' } );           
             } )
-            .catch( () => {                          
-                this.setState( { userInput: '', loginError: true, isActionLoginOut: false } );
+            .catch( ( err ) => {                          
+                if ( !axios.isCancel( err ) ) {
+                    this.setState( { userInput: '', loginError: true, isActionLoginOut: false } );
+                }                
             } );
     }
 
@@ -67,7 +76,13 @@ class Header extends Component {
         this.setState( { showSignupModal: false }, () => this.props.handleNewUserAdded() );
     }
     
+    componentWillUnmount () {
+        this.source.cancel( 'Cancel axios requests as user moved off page' );
+        window.removeEventListener( 'resize', this.handleScreenResize, false ); 
+        this._isMounted = false;
+    }
     componentDidMount () {
+        this._isMounted = true;     
         window.addEventListener( 'resize', this.handleScreenResize, false );
     }
     componentDidUpdate () {

@@ -3,13 +3,21 @@ import { ListGroup } from 'react-bootstrap';
 import { Link } from '@reach/router';
 import { makeAPICalls } from '../utils/APICalls';
 import BreadCrumb from './BreadCrumb';
+import axios from 'axios';
 
 class UsersList extends Component {
+
+    //avoid memory leak cancel all axios requests, etc
+	CancelToken = axios.CancelToken;
+	source = this.CancelToken.source();
+    _isMounted = false;
+    
     state = {
         users: [],
         hasError: false
     }
     componentDidMount() {
+        this._isMounted = true;
         this.fetchAllUsers();        
     }
     componentDidUpdate( prevProps ) {
@@ -18,17 +26,27 @@ class UsersList extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.source.cancel( 'Cancel axios requests as user moved off page' );
+        this._isMounted = false;
+    }
+    
     fetchAllUsers = () => {
         const obj = {
             url: '/users',
             reqObjectKey: 'users',
-            method: 'get'
+            method: 'get',
+            cancelToken: this.source.token,
         };
-        makeAPICalls( obj )
+        this._isMounted && makeAPICalls( obj )
             .then( ( users ) => {
                 this.setState( { users, error: null, hasError: false } );
             } )
-            .catch( ( ) => this.setState( { users: [], hasError: true } ) );
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { users: [], hasError: true } );
+                }                
+            } );
     }
     render() {
         const { users, hasError } = this.state;        

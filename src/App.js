@@ -39,7 +39,6 @@ class App extends Component {
               <Header updateUser={this.updateUser} handleNewUserAdded={this.handleNewUserAdded}/>
               <Router>
                   <HomeBody path='/' loggedUser={loggedUser}/>
-                  {/* <NewHomeBody path='/new' loggedUser={loggedUser}/> */}
                   <UserDashboard path='/users/:username' loggedUser={loggedUser} />
                   <UsersList path='/users' newUserAdded={newUserAdded}/>
                   <SingleArticle path='/articles/:articleId' loggedUser={loggedUser}/>          

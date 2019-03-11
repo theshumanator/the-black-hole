@@ -6,9 +6,15 @@ import ArticleComments from './ArticleComments';
 import PrettyDate from './PrettyDate';
 import BreadCrumb from './BreadCrumb';
 import VotingButtons from './VotingButtons';
+import axios from 'axios';
 
 class SingleArticle extends Component {
 
+    //avoid memory leak cancel all axios requests, etc
+	CancelToken = axios.CancelToken;
+	source = this.CancelToken.source();
+    _isMounted = false;
+    
     state = {
         article: null,
         userVoted: false,        
@@ -16,21 +22,31 @@ class SingleArticle extends Component {
         screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''
     }
 
+    componentWillUnmount() {
+        this.source.cancel( 'Cancel axios requests as user moved off page' );
+        window.removeEventListener( 'resize', this.handleScreenResize, false ); this._isMounted = false;
+    }
     componentDidMount () {
+        this._isMounted = true;
         window.addEventListener( 'resize', this.handleScreenResize, false );
         const { articleId } = this.props;
         const apiObj = {
             url: `/articles/${ articleId }`,
             reqObjectKey: 'article',
-            method: 'get'
+            method: 'get',
+            cancelToken: this.source.token
         };
 
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( article ) => { 
                 this.setState( { article: JSON.stringify( article ) } );
                 
             } )
-            .catch( () => this.setState( { article: null } ) );
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { article: null } );
+                }                
+            } );
     }
 
     handleScreenResize = () => {        
@@ -48,9 +64,13 @@ class SingleArticle extends Component {
             method: 'patch',
             data
         };
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( article ) => this.setState( { article: JSON.stringify( article ), userVoted: true } ) )
-            .catch( () => this.setState( { article: null, userVoted: false } ) );
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { article: null, userVoted: false } );
+                }                
+            } );
     }
 
     handleDelete = () => {
@@ -67,7 +87,11 @@ class SingleArticle extends Component {
                     navigate( '/' );
                 }
             } )
-            .catch( () => this.setState( { deleteError: true } ) );
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { deleteError: true } ); 
+                }
+            } );
     }
 
     render() {

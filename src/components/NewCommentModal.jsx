@@ -1,8 +1,15 @@
 import React, { Component, Fragment } from 'react';
 import { Form, Button, FormControl, Modal, Alert } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
+import axios from 'axios';
 
 class NewCommentModal extends Component {
+    
+    //avoid memory leak cancel all axios requests, etc
+	CancelToken = axios.CancelToken;
+	source = this.CancelToken.source();
+    _isMounted = false;
+    
     state = {
         username: null,
         commentBody: '',
@@ -20,14 +27,19 @@ class NewCommentModal extends Component {
             url: `/articles/${ articleId }/comments`,
             reqObjectKey: 'comment',
             method: 'post',
-            data
+            data,
+            cancelToken: this.source.token,
         };
 
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( { comment_id } ) => {                
                 this.setState( { commentAdded: true, commentAddError: 'none', newCommentId: comment_id } );                
             } )
-            .catch( ( error ) => this.setState( { commentAdded: false, commentAddError: error } ) );
+            .catch( ( error ) => {
+                if ( !axios.isCancel( error ) ) {
+                    this.setState( { commentAdded: false, commentAddError: error } ); 
+                }
+            } );
     }
 
     handleCommentChange = ( event ) => {
@@ -40,8 +52,15 @@ class NewCommentModal extends Component {
         }
     }
     componentDidMount () {
+        this._isMounted = true;     
         this.setState( { username: this.props.loggedUser } );        
     }
+
+    componentWillUnmount () {
+        this.source.cancel( 'Cancel axios requests as user moved off page' );
+        this._isMounted = false;
+    }
+    
     render () {
         const { showNewCommentModal, handleNewCommentClose, } = this.props;
         const { commentAdded, commentAddError, commentBody } = this.state;
