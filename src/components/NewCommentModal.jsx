@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Form, Button, FormControl, Modal, Alert } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 
-class AddNewComment extends Component {
+class NewCommentModal extends Component {
     state = {
         username: null,
         commentBody: '',
@@ -78,4 +78,4 @@ class AddNewComment extends Component {
     }
 }
 
-export default AddNewComment;
+export default NewCommentModal;

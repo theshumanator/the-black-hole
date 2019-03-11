@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Row, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 import { throttle } from 'lodash';
 import SingleComment from './SingleComment';
 import { commentsSortDropdowns } from '../utils/dropdowns';
 import SortDropdown from './SortDropdown';
-import AddNewCommentForm from './AddNewCommentForm';
+import NewCommentForm from './NewCommentForm';
 import { shouldScroll, hasSpaceForMore } from '../utils/infiniteScroll';
 import axios from 'axios';
 
@@ -127,13 +127,13 @@ class ArticleComments extends Component {
                         ? <h3>Loading...</h3>
                         : <div>              
                             <h3 className="articleCommentHeader">Article Comments</h3>
-                            <Row className="addSortComment">
+                            <div className="addSortComment">
                                 {
                                     loggedUser && <Button className="addButton" size={size} variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
                                 }    
-                                <SortDropdown className="commentSort" sortDropdowns={commentsSortDropdowns} handleSortSelect={this.handleSortSelect} size={size}/>
-                            </Row>
-                            <AddNewCommentForm showNewCommentModal={showNewCommentModal} loggedUser={loggedUser} articleId={article.article_id} 
+                            </div>
+                            <SortDropdown className="commentSort" sortDropdowns={commentsSortDropdowns} handleSortSelect={this.handleSortSelect} size={size}/>
+                            <NewCommentForm showNewCommentModal={showNewCommentModal} loggedUser={loggedUser} articleId={article.article_id} 
                                 handleNewCommentClose={this.handleNewCommentClose}/>                           
                             <div className="commentListDiv">
                                 {

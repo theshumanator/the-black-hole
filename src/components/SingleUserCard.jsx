@@ -15,4 +15,5 @@ const SingleUserCard = ( { user } ) => {
         
     );
 };
+
 export default SingleUserCard;

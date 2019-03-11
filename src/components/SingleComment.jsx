@@ -57,9 +57,7 @@ class SingleComment extends Component {
         const { userVoted, deleteError } = this.state;  
         const { comment, size, loggedUser } = this.props;        
         const isUserAuthor = loggedUser === comment.author;
-        const voteCount = userVoted && this.state.comment ? this.state.comment.votes : comment.votes;
-
-        console.log( 'loggedUser is ' + loggedUser + 'userVoted ' + userVoted + ' author: ' + comment.author );
+        const voteCount = userVoted && this.state.comment ? this.state.comment.votes : comment.votes;        
         
         return (
             comment && <Card key={comment.comment_id} className="singleCommentItem">                            
