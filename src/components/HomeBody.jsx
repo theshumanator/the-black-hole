@@ -109,11 +109,12 @@ class HomeBody extends Component {
         this._isMounted && this.setState( { isLoading: true }, () => {
             makeAPICalls( apiObj ) 
                 .then ( ( { articles, total_count } ) => {
+                    const morePendingRecords = ( articles.length + this.state.articles.length ) < total_count;
                     this.setState( {
-                        hasMore: ( articles.length + this.state.articles.length ) < total_count,
+                        hasMore: morePendingRecords,
                         isLoading: false,
                         articles: pageNum === 1 ? articles : [ ...this.state.articles, ...articles ],
-                        pageNum: ++pageNum
+                        pageNum: morePendingRecords ? ++pageNum : pageNum
                     } );
                 } ) 
                 .catch( ( err ) => {

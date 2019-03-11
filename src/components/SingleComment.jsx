@@ -12,8 +12,14 @@ class SingleComment extends Component {
         deleteError: false
     }
 
-    componentDidMount() {        
+    componentDidMount() {                
         this.setState( { comment: this.props.comment } );
+    }
+
+    componentDidUpdate ( prevProps ) {
+        if ( prevProps.loggedUser !== this.props.loggedUser ) {
+            this.setState( { userVoted: false } );
+        }
     }
 
     handleVote = ( voteVal ) => {  
@@ -49,9 +55,11 @@ class SingleComment extends Component {
 
     render() {        
         const { userVoted, deleteError } = this.state;  
-        const { comment, size, loggedUser } = this.props;
+        const { comment, size, loggedUser } = this.props;        
         const isUserAuthor = loggedUser === comment.author;
         const voteCount = userVoted && this.state.comment ? this.state.comment.votes : comment.votes;
+
+        console.log( 'loggedUser is ' + loggedUser + 'userVoted ' + userVoted + ' author: ' + comment.author );
         
         return (
             comment && <Card key={comment.comment_id} className="singleCommentItem">                            

@@ -1,47 +1,59 @@
 import React, { Component } from 'react';
 import { makeAPICalls } from '../utils/APICalls';
-import { Button, Col, Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
+import { throttle } from 'lodash';
 import ArticleListItem from './ArticleListItem';
 import BreadCrumb from './BreadCrumb';
+import { shouldScroll, hasSpaceForMore } from '../utils/infiniteScroll';
+import axios from 'axios';
 
 class SingleTopic extends Component {
+
+    //avoid memory leak cancel all axios requests, etc
+    CancelToken = axios.CancelToken;
+    source = this.CancelToken.source();
+    _isMounted = false;
+
     state = {
         topic: null,
         articles: [],
-        articlesFound: true,
-        error: false,
-        hasMore: true,
-        isLoading: true,
-        pageClicked: false,
-        totalCount: 0,
-        accumCount: 0,
-        prevClicked: false,
+        articlesFound: false,        
+        hasMore: false,
+        isLoading: true,        
         pageNum: 1, //default
         screenSize: window.innerHeight < 600 ? 'sm' : window.innerHeight > 1200 ? 'lg' : ''
     }
 
     componentDidMount () {
+        this._isMounted = true;     
         window.addEventListener( 'resize', this.handleScreenResize, false );
+        window.addEventListener( 'scroll', this.handleScroll );        
         this.fetchArticles();
     }
 
-    componentDidUpdate( prevProps, prevState ) {        
-        const { pageNum, topic, pageClicked,screenSize } = this.state;        
-        const hasPageChanged = prevState.pageNum !== pageNum;
-        const hasScreenChanged = prevState.screenSize !== screenSize;
-        const hasTopicChanged = topic !== this.props.slug;
-         
-        if ( hasTopicChanged && topic !== null ) {            
-            if ( pageNum === 1 ) {
-                this.fetchArticles();
-            } else {
-                this.setState( { pageNum: 1 } );
-            }            
-        }
-        if ( ( hasPageChanged && pageClicked ) || hasScreenChanged ) {
-            this.fetchArticles();
-        }       
+    componentWillUnmount () {                
+        this.source.cancel( 'Cancel axios requests as user moved off page' );
+        window.removeEventListener( 'resize', this.handleScreenResize, false ); 
+        window.removeEventListener( 'scroll', this.handleScroll );        
+        this._isMounted = false;
     }
+
+    componentDidUpdate( ) {        
+        const { isLoading, hasMore } = this.state;
+        if ( !isLoading && hasMore && document.querySelector( '.articleListRow' ) !== null ) {
+            //scenario where we load the first batch but there is more space in the window so need to load more
+            if ( hasSpaceForMore( '.articleListRow' ) ) {
+                this.fetchArticles();
+            }
+        }
+    }
+
+    handleScroll = throttle( ( ) => {           
+        const { hasMore, isLoading } = this.state;
+        if ( hasMore && !isLoading && shouldScroll( '.articleListRow' ) ) {
+            this.fetchArticles();
+        }        
+    }, 500 );
 
     handleScreenResize = () => {        
         this.setState( {
@@ -50,7 +62,7 @@ class SingleTopic extends Component {
     }
 
     fetchArticles = () => {
-        let { pageNum, accumCount, prevClicked } = this.state;
+        let { pageNum } = this.state;
         const { slug } = this.props;
         const params = { topic: slug, p: pageNum };
         const apiObj = {
@@ -58,75 +70,46 @@ class SingleTopic extends Component {
             reqObjectKey: 'data',
             method: 'get',
             params,
+            cancelToken: this.source.token,
             multiRes: true
         };
         
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( { articles, total_count } ) => {     
-                if ( !Array.isArray( articles ) ) {
+                const morePendingRecords = ( articles.length + this.state.articles.length ) < total_count;
+                this.setState( {
+                    hasMore: morePendingRecords,
+                    isLoading: false,
+                    articles: pageNum === 1 ? articles : [ ...this.state.articles, ...articles ],
+                    topic: slug,                            
+                    articlesFound: true,
+                    pageNum: morePendingRecords ? ++pageNum : pageNum,
+                } );                                                    
+            } )
+            .catch( ( err ) => {     
+                if ( !axios.isCancel( err ) ) {
                     this.setState( {
                         isLoading: false,
                         hasMore: false,
                         topic: slug,
-                        pageClicked: false,
-                        prevClicked: true,
+                        pageNum: pageNum > 1 ? --pageNum : pageNum, 
                         articlesFound: false } );
-                } else {
-                    if ( !prevClicked ) {
-                        accumCount += articles.length;
-                    }
-                    this.setState( {
-                        hasMore: ( ( accumCount + articles.length ) < total_count ), 
-                        isLoading: false,
-                        articles,
-                        topic: slug,                            
-                        articlesFound: true,    
-                        pageClicked: false,
-                        accumCount: accumCount,
-                        totalCount: total_count,
-                        prevClicked: true
-                    } );
-                }                                    
-            } )
-            .catch( ( err ) => {                
-                this.setState( {
-                    isLoading: false,
-                    hasMore: false,
-                    topic: slug,
-                    pageClicked: false,
-                    prevClicked: true,
-                    articlesFound: false } );
+                }                           
             } ); 
-    }
-
-    handlePageClick = ( pageOffset ) => {        
-        this.setState( ( { pageNum, accumCount, pageClicked, articles } ) => ( {
-            pageNum: pageNum + pageOffset,
-            pageClicked: true,
-            prevClicked: pageOffset === -1,
-            accumCount: pageOffset === -1 ? accumCount - articles.length : accumCount
-        } ) );
     }
 
     render () {
         const slug = this.props.slug;
         const articleArr = this.state.articles;
-        const { screenSize, articlesFound, isLoading , accumCount, pageNum, totalCount } = this.state;             
+        const { screenSize, articlesFound, hasMore, isLoading } = this.state;             
         return (
             <div className="articlesByTopic">
                 <BreadCrumb currentPage={`Articles on: ${ slug }`}/>                
                 {
-                    isLoading
+                    isLoading && !hasMore
                         ? <h3>Loading...</h3>
                         : articlesFound && articleArr
-                            ? <div>                            
-                                <Row className="browseFuncsRow">     
-                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( -1 )} 
-                                        variant="outline-primary" disabled={pageNum === 1 || articleArr.length === 0}>Previous</Button>                               
-                                    <Button size={screenSize} className="prevNextButton prevNextGap" onClick={() => this.handlePageClick( 1 )} 
-                                        variant="outline-primary" disabled={accumCount === totalCount}>Next</Button>                       
-                                </Row>
-
+                            ? <div>                
                                 <Row className="articleListRow">
                                     <Col xs={9}>
                                         {
@@ -137,7 +120,7 @@ class SingleTopic extends Component {
                                     </Col>
                                 </Row>
                             </div>
-                            : <h3 className="noResults">No articles found for topic: {slug}</h3>                                      
+                            : <h3 className="noResults">No articles found for topic: {slug}</h3>                                     
                 }                
             </div>
         );
