@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { makeAPICalls } from '../utils/APICalls';
 import BreadCrumb from './BreadCrumb';
 import SingleUserCard from './SingleUserCard';
@@ -162,4 +163,10 @@ class UserDashboard extends Component {
         );
     }
 }
+
+UserDashboard.propTypes = {
+    loggedUser: PropTypes.string,
+    username: PropTypes.string,
+};
+
 export default UserDashboard;

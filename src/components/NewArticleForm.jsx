@@ -1,4 +1,5 @@
 import React , { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from '@reach/router';
 import '../main.css';
 import { makeAPICalls } from '../utils/APICalls';
@@ -186,4 +187,11 @@ class NewArticleForm extends Component {
         );
     }
 }
+
+NewArticleForm.propTypes = {
+    handleNewArticleClose: PropTypes.func,
+    showNewArticleModal: PropTypes.bool,
+    size: PropTypes.string,    
+};
+
 export default NewArticleForm;

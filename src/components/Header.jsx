@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Alert, Container, Row, Col, Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 import { Link } from '@reach/router';
@@ -139,5 +140,9 @@ class Header extends Component {
     }
     
 }
+
+Header.propTypes = {
+    updateUser: PropTypes.func,
+};
 
 export default Header;

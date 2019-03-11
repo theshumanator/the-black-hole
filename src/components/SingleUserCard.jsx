@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Card } from 'react-bootstrap';
 
 const SingleUserCard = ( { user } ) => {
@@ -16,4 +17,7 @@ const SingleUserCard = ( { user } ) => {
     );
 };
 
+SingleUserCard.propTypes = {
+    user: PropTypes.object,
+};
 export default SingleUserCard;

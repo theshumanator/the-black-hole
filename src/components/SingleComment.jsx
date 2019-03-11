@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Card, Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 import PrettyDate from './PrettyDate';
@@ -102,4 +103,12 @@ class SingleComment extends Component {
         );
     }
 }
+
+SingleComment.propTypes = {
+    handleDeleteDone: PropTypes.func,
+    comment: PropTypes.object,
+    loggedUser: PropTypes.string,
+    size: PropTypes.string,    
+};
+
 export default SingleComment;

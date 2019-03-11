@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 import { throttle } from 'lodash';
@@ -15,7 +16,7 @@ class ArticleComments extends Component {
     CancelToken = axios.CancelToken;
     source = this.CancelToken.source();
     _isMounted = false;
-
+    
     state = {
         sortByKey: 'created_at', //default
         sortOrder: 'desc', //default
@@ -115,7 +116,7 @@ class ArticleComments extends Component {
     }
 
     render () {
-        const { article, loggedUser, size } = this.props;
+        const { article, loggedUser, size } = this.props;        
         const { comments, showNewCommentModal, isLoading, hasMore } = this.state;
         
         return (
@@ -148,4 +149,11 @@ class ArticleComments extends Component {
         );
     }
 }
+
+ArticleComments.propTypes = {
+    article: PropTypes.object,
+    loggedUser: PropTypes.string,
+    size: PropTypes.string,    
+};
+
 export default ArticleComments;

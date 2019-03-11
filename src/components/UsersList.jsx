@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { ListGroup } from 'react-bootstrap';
 import { Link } from '@reach/router';
 import { makeAPICalls } from '../utils/APICalls';
@@ -77,5 +78,9 @@ class UsersList extends Component {
         );
     }    
 }
+
+UsersList.propTypes = {
+    newUserAdded: PropTypes.bool,
+};
 
 export default UsersList;

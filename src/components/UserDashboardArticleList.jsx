@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Row, Col } from 'react-bootstrap';
 import ArticleListItem from './ArticleListItem';
 
@@ -22,6 +23,11 @@ const UserDashboardArticleList = ( { articleProps, handleDelete } ) => {
             }            
         </div>
     );
+};
+
+UserDashboardArticleList.propTypes = {
+    handleDelete: PropTypes.func,
+    articleProps: PropTypes.object,    
 };
 
 export default UserDashboardArticleList;

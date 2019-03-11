@@ -1,4 +1,5 @@
 import React , { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { makeAPICalls } from '../utils/APICalls';
 import '../main.css';
 import { Form, Button, FormControl, Modal, Alert } from 'react-bootstrap';
@@ -92,5 +93,10 @@ class NewTopicForm extends Component {
     }
   
 }
+NewTopicForm.propTypes = {
+    handleNewTopicClose: PropTypes.func,
+    showNewTopicModal: PropTypes.bool,
+    size: PropTypes.string,    
+};
 
 export default NewTopicForm;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link, navigate } from '@reach/router';
 import { Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
@@ -132,5 +133,10 @@ class SingleArticle extends Component {
         );
     }
 }
+
+SingleArticle.propTypes = {
+    articleId: PropTypes.string,
+    loggedUser: PropTypes.string
+};
 
 export default SingleArticle;

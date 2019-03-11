@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 
 const SortDropdown = ( { screenSize, handleSortSelect, sortDropdowns } ) => {
@@ -11,6 +12,12 @@ const SortDropdown = ( { screenSize, handleSortSelect, sortDropdowns } ) => {
             }
         </DropdownButton>
     );
+};
+
+SortDropdown.propTypes = {
+    handleSortSelect: PropTypes.func,
+    sortDropdowns: PropTypes.array,
+    screenSize: PropTypes.string,    
 };
 
 export default SortDropdown;

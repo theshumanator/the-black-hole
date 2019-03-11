@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { navigate } from '@reach/router';
 import { Row, Col, Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
@@ -160,7 +161,7 @@ class HomeBody extends Component {
 
     render () {        
         const { isLoading , articles, hasMore, screenSize, showNewTopicModal, showNewArticleModal, topics } = this.state;  
-        const loggedUser = this.props.loggedUser;        
+        const { loggedUser } = this.props;        
         return (
             <div className="homeArticlesList">
                 {            
@@ -201,4 +202,9 @@ class HomeBody extends Component {
     }
     
 }
+
+HomeBody.propTypes = {
+    loggedUser: PropTypes.string
+};
+
 export default HomeBody;

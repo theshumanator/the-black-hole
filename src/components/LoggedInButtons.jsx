@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import NewTopicForm from './NewTopicForm';
 import NewArticleForm from './NewArticleForm';
@@ -20,6 +21,16 @@ const LoggedInButtons = ( { screenSize, handleShowNewTopic, showNewTopicModal, h
         </Fragment>
         
     );
+};
+
+LoggedInButtons.propTypes = {
+    handleShowNewTopic: PropTypes.func,
+    handleNewTopicClose: PropTypes.func,
+    handleShowNewArticle: PropTypes.func,
+    handleNewArticleClose: PropTypes.func,
+    showNewTopicModal: PropTypes.bool,
+    showNewArticleModal: PropTypes.bool,    
+    screenSize: PropTypes.string
 };
 
 export default LoggedInButtons;
