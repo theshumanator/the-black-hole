@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { navigate } from '@reach/router';
 import { Row, Col, Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
+import { throttle } from 'lodash';
 import TopicsDropdown from './TopicsDropdown';
 import ArticleListItem from './ArticleListItem';
 import { homeSortDropdowns } from '../utils/dropdowns';
 import SortDropdown from './SortDropdown';
 import LoggedInButtons from './LoggedInButtons';
+import { shouldScroll, hasSpaceForMore } from '../utils/infiniteScroll';
 
 class HomeBody extends Component {
 
@@ -55,18 +57,12 @@ class HomeBody extends Component {
         -scroll reaching bottom, load more if there is
         -once first batch loaded, if hasMore && .articlesList client height < docElement client Height load more
     */
-    handleScroll = ( ) => {           
+    handleScroll = throttle( ( ) => {           
         const { hasMore, isLoading } = this.state;
-        if ( hasMore && !isLoading ) {
-            //compare the article list height/offset vs the entire window height/offset
-            const lastArticleCard = document.querySelector( '.articleListItemCard:last-of-type' );           
-            const lastArticleCardOffset = lastArticleCard.offsetTop + lastArticleCard.clientHeight;
-            const pageOffset = window.pageYOffset + window.innerHeight;            
-            if ( pageOffset > lastArticleCardOffset ) {                                      
-                this.fetchArticles();
-            }
+        if ( hasMore && !isLoading && shouldScroll( '.articlesList' ) ) {
+            this.fetchArticles();
         }        
-    }
+    }, 1000 )
 
     handleScreenResize = () => {        
         this.setState( {
@@ -123,10 +119,8 @@ class HomeBody extends Component {
         } else if ( reQueryTopics ) {
             this.setState( { reQueryTopics: false }, () => this.fetchTopics() );
         } else if ( !isLoading && hasMore && document.querySelector( '.articlesList' ) !== null ) {
-            //scenario where we load 10 items but there is more space in the window so need to load more
-            const docHeight = document.documentElement.clientHeight;
-            const divHeight = document.querySelector( '.articlesList' ).clientHeight;
-            if ( divHeight < docHeight ) {
+            //scenario where we load the first batch but there is more space in the window so need to load more
+            if ( hasSpaceForMore( '.articlesList' ) ) {
                 this.fetchArticles();
             }
         }            
