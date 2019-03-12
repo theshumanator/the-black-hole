@@ -167,34 +167,35 @@ class HomeBody extends Component {
                     //need to put condition for !hasMore to avoid it jumping back up upon each scroll     
                     isLoading && !hasMore
                         ? <h3>Loading...</h3>
-                        : <div>  
-                            <Row className="loggedInFuncsRow">
-                                {
-                                    loggedUser
-                                        ? <LoggedInButtons screenSize={screenSize} handleShowNewTopic={this.handleShowNewTopic}
-                                            showNewTopicModal={showNewTopicModal} handleNewTopicClose={this.handleNewTopicClose}
-                                            handleShowNewArticle={this.handleShowNewArticle} handleNewArticleClose={this.handleNewArticleClose}
-                                            showNewArticleModal={showNewArticleModal} />
-                                        : <></>
-                                }
-                            </Row>
-                            <Row className="sortFilterRow">
-                                <TopicsDropdown size={screenSize} className="filterDropdown" topics={topics} handleFilterSelect={this.handleFilterSelect}/>                          
-                                <Button size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
-                                <SortDropdown sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
-                            </Row>
-                            <Row className="articleListRow">                        
-                                <Col xs={9} className="articleListItem">                            
-                                    {articles  
-                                        ? <div className="articlesList">
+                        : articles.length === 0 && !hasMore
+                            ? <h3 className="noResults">There are no articles in the black hole</h3>
+                            : <div>  
+                                <Row className="loggedInFuncsRow">
+                                    {
+                                        loggedUser
+                                            ? <LoggedInButtons screenSize={screenSize} handleShowNewTopic={this.handleShowNewTopic}
+                                                showNewTopicModal={showNewTopicModal} handleNewTopicClose={this.handleNewTopicClose}
+                                                handleShowNewArticle={this.handleShowNewArticle} handleNewArticleClose={this.handleNewArticleClose}
+                                                showNewArticleModal={showNewArticleModal} />
+                                            : <></>
+                                    }
+                                </Row>
+                                <Row className="sortFilterRow">
+                                    <TopicsDropdown size={screenSize} className="filterDropdown" topics={topics} handleFilterSelect={this.handleFilterSelect}/>                          
+                                    <Button size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
+                                    <SortDropdown sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
+                                </Row>
+                                <Row className="articleListRow">                        
+                                    {articles && <Col xs={9} className="articleListItem">                            
+                                        <div className="articlesList">
                                             {articles.map( ( article, idx ) => {                       
                                                 return <ArticleListItem key={idx} article={article} idx={idx}/>;
                                             } )}</div>
-                                        : <h3 className="noResults">There are no articles in the black hole</h3>
+                                    </Col>                                                                                                                        
                                     } 
-                                </Col>
-                            </Row> 
-                        </div>                    
+                                        
+                                </Row> 
+                            </div>                    
                 }                
             </div>
         );
