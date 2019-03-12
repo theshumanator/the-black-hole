@@ -3,6 +3,7 @@
     font-size: 14px;    
 }
 
+
 .header {    
     background-color: black;    
 }
@@ -47,6 +48,10 @@
 .articleListItemTopic {
     color: red;
     font-weight: 600;
+}
+
+.singleArticleBodyDiv {
+    white-space: pre-wrap;
 }
 
 .singleArticle {

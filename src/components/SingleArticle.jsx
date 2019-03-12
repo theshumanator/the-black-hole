@@ -117,7 +117,9 @@ class SingleArticle extends Component {
                                 <p className="articleListItemTopic"><Link to={`/topics/${ singleArticle.topic }`} className="articleListItemTopic">{singleArticle.topic}</Link></p>
                                 <p className="articleListItemAuthor"><Link to={`/users/${ singleArticle.author }`} className="articleListItemAuthor">{singleArticle.author}</Link></p>
                                 <p><PrettyDate dateType="longDate" created_at={singleArticle.created_at}/></p>                                
-                                <p>{singleArticle.body}</p>                                
+                                <div className="singleArticleBodyDiv">
+                                    <>{singleArticle.body}</>
+                                </div>                                
                                 {
                                     loggedUser === singleArticle.author && <Button size={screenSize} variant="danger" onClick={this.handleDelete} className="deleteArticleButton">Delete article</Button>
                                 }

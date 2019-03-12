@@ -80,6 +80,10 @@ class NewArticleForm extends Component {
         };
         this._isMounted && makeAPICalls( apiObj )
             .then( ( article ) => {         
+                this.formArticleBody.value = '';
+                this.formArticleTopic.value = '';
+                this.formArticleTitle.value = '';
+                this.formArticleTopicSelect.selectedIndex = 0;
                 this.setState( { articlePosted: true, articlePostError: '', newArticleId: article.article_id } );
             } )
             .catch( ( error ) => {
@@ -135,7 +139,7 @@ class NewArticleForm extends Component {
                             <Row>
                                 <Col>
                                     <Form.Check inline label="Select a topic" name="formTopicRadio" type="radio" id="selectTopicEnable" value="true" onChange={this.handleRadioChange}/>                                
-                                    <Form.Control as="select" disabled={!selectTopicEnable} onChange={this.handleTextChange}>     
+                                    <Form.Control as="select" disabled={!selectTopicEnable} onChange={this.handleTextChange} ref={node => this.formArticleTopicSelect = node}>     
                                         <option value="placeholder">Choose a topic</option>
                                         {
                                             topics && topics.map( topic => {                     
@@ -148,15 +152,15 @@ class NewArticleForm extends Component {
                                 </Col>
                                 <Col>
                                     <Form.Check inline label="Create a new topic" name="formTopicRadio" type="radio" id="createTopicEnable" value="true" onChange={this.handleRadioChange}/>
-                                    <FormControl type="text" placeholder="Enter a new topic" disabled={!createTopicEnable} onChange={this.handleTextChange}/>
+                                    <FormControl type="text" placeholder="Enter a new topic" disabled={!createTopicEnable} onChange={this.handleTextChange} ref={node => this.formArticleTopic = node}/>
                                 </Col>
                             </Row>                        
                         </Form.Group>
                         <Form.Group controlId="inputTitle">
-                            <FormControl type="text" placeholder="Enter article title" onChange={this.handleTextChange}/>
+                            <FormControl type="text" placeholder="Enter article title" onChange={this.handleTextChange} ref={node => this.formArticleTitle = node}/>
                         </Form.Group>
                         <Form.Group controlId="inputBody">
-                            <FormControl as="textarea" rows="3" placeholder="Enter article body" onChange={this.handleTextChange}/>
+                            <FormControl as="textarea" rows="3" placeholder="Enter article body" onChange={this.handleTextChange} ref={node => this.formArticleBody = node}/>
                         </Form.Group>
                     </Form>
                     {
