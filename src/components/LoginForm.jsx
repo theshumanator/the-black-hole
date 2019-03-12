@@ -11,7 +11,7 @@ const LoginForm = ( { handleLogin, handleChange, size, userInput } ) => {
                 <FormGroup controlId="username">
                     <Row>
                         <Col>
-                            <FormControl type="text" placeholder="E.g jessjelly" 
+                            <FormControl type="text" placeholder="E.g shumi" 
                                 onChange={handleChange}/>
                         </Col>
                         <Col>

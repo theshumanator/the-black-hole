@@ -130,7 +130,7 @@ class Header extends Component {
                         <Col/>
                         <Col className="headerInfoCol">
                             {!localStorage.getItem( 'userLoggedIn' ) && <Alert variant='primary'>
-                                Signup or login to be able to create new topics, post articles, comment and vote.</Alert>}
+                                Signup or login (using any of the available users e.g shumi) to be able to create new topics, post articles, comment and vote.</Alert>}
                         </Col>
                         <Col/>
                     </Row>
