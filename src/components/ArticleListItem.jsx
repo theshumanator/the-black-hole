@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from '@reach/router';
 import PrettyDate from './PrettyDate';
 import '../main.css';
@@ -27,4 +28,14 @@ const ArticleListItem = ( { idx, article, loggedUser, username , handleDelete, s
 
     );
 };
+
+ArticleListItem.propTypes = {
+    handleDelete: PropTypes.func,
+    idx: PropTypes.number,
+    article: PropTypes.object,
+    loggedUser: PropTypes.string,
+    username: PropTypes.string,
+    size: PropTypes.string,    
+};
+
 export default ArticleListItem;

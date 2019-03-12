@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../main.css';
 import { Container, Button } from 'react-bootstrap';
 import { Link } from '@reach/router';
@@ -12,6 +13,11 @@ const WelcomeUser = ( { size, handleLogout } ) => {
         </Container>
         
     );
+};
+
+WelcomeUser.propTypes = {
+    handleLogout: PropTypes.func,
+    size: PropTypes.string,    
 };
 
 export default WelcomeUser;

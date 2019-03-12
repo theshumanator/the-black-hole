@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Button, FormControl, Form, Alert } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 import axios from 'axios';
@@ -109,5 +110,11 @@ class SignupForm extends Component {
   }
         
 }
+
+SignupForm.propTypes = {
+    handleNewUserAdded: PropTypes.func,
+    handleSignupClose: PropTypes.func,
+    showSignupModal: PropTypes.bool,     
+};
 
 export default SignupForm;

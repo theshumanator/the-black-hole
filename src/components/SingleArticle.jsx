@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link, navigate } from '@reach/router';
 import { Button } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
@@ -62,7 +63,8 @@ class SingleArticle extends Component {
             url: `/articles/${ articleId }`,
             reqObjectKey: 'article',
             method: 'patch',
-            data
+            data,
+            cancelToken: this.source.token
         };
         this._isMounted && makeAPICalls( apiObj )
             .then( ( article ) => this.setState( { article: JSON.stringify( article ), userVoted: true } ) )
@@ -78,10 +80,11 @@ class SingleArticle extends Component {
         const apiObj = {
             url: `/articles/${ articleId }`,
             reqObjectKey: 'status',
-            method: 'delete'            
+            method: 'delete',
+            cancelToken: this.source.token            
         };
 
-        makeAPICalls( apiObj )
+        this._isMounted && makeAPICalls( apiObj )
             .then( ( status ) => {
                 if ( status === 204 ) {
                     navigate( '/' );
@@ -130,5 +133,10 @@ class SingleArticle extends Component {
         );
     }
 }
+
+SingleArticle.propTypes = {
+    articleId: PropTypes.string,
+    loggedUser: PropTypes.string
+};
 
 export default SingleArticle;

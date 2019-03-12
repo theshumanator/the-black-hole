@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 
 class TopicsDropdown extends Component {
@@ -19,5 +20,11 @@ class TopicsDropdown extends Component {
         );
     }
 }
+
+TopicsDropdown.propTypes = {
+    handleFilterSelect: PropTypes.func,
+    topics: PropTypes.array,
+    size: PropTypes.string,    
+};
 
 export default TopicsDropdown;

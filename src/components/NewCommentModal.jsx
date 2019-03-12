@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Form, Button, FormControl, Modal, Alert } from 'react-bootstrap';
 import { makeAPICalls } from '../utils/APICalls';
 import axios from 'axios';
@@ -96,5 +97,12 @@ class NewCommentModal extends Component {
         );
     }
 }
+
+NewCommentModal.propTypes = {
+    showNewCommentModal: PropTypes.bool,
+    handleNewCommentClose: PropTypes.func,
+    articleId: PropTypes.number,    
+    loggedUser: PropTypes.string,    
+};
 
 export default NewCommentModal;

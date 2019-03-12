@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { makeAPICalls } from '../utils/APICalls';
 import { Col, Row } from 'react-bootstrap';
 import { throttle } from 'lodash';
@@ -99,7 +100,7 @@ class SingleTopic extends Component {
     }
 
     render () {
-        const slug = this.props.slug;
+        const { slug } = this.props;
         const articleArr = this.state.articles;
         const { screenSize, articlesFound, hasMore, isLoading } = this.state;             
         return (
@@ -126,5 +127,9 @@ class SingleTopic extends Component {
         );
     }
 }
+
+SingleTopic.propTypes = {
+    slug: PropTypes.string
+};
 
 export default SingleTopic;

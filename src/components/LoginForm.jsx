@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../main.css';
 import { Form, Button, Row, Col, FormGroup, FormControl } from 'react-bootstrap';
 
@@ -21,6 +22,14 @@ const LoginForm = ( { handleLogin, handleChange, size, userInput } ) => {
             </Form>                
         </div>
     );    
+};
+
+LoginForm.propTypes = {
+    handleLogin: PropTypes.func,
+    handleChange: PropTypes.func,
+    idx: PropTypes.number,
+    userInput: PropTypes.string,
+    size: PropTypes.string,    
 };
 
 export default LoginForm;
