@@ -27,6 +27,7 @@ class HomeBody extends Component {
         pageNum: 1, //default
         articles: [],
         topics: [],
+        dropDownTitle: 'Sort By',
         reQuery: false,
         reQueryTopics: false,
         showNewTopicModal: false,
@@ -38,9 +39,9 @@ class HomeBody extends Component {
         navigate( `/topics/${ eventKey }` );        
     }
 
-    handleSortSelect = ( eventKey ) => {
+    handleSortSelect = ( eventKey, e ) => {        
         const sortArr = eventKey.split( ' ' );
-        this.setState( { sortByKey: sortArr[ 0 ], sortOrder: sortArr[ 1 ], reQuery: true, articles: [], pageNum: 1 } );
+        this.setState( { sortByKey: sortArr[ 0 ], sortOrder: sortArr[ 1 ], reQuery: true, articles: [], pageNum: 1, dropDownTitle: e.target.text } );
     }
 
     handleShowNewTopic = () => {
@@ -160,7 +161,7 @@ class HomeBody extends Component {
     }
 
     render () {        
-        const { isLoading , articles, hasMore, screenSize, showNewTopicModal, showNewArticleModal, topics } = this.state;  
+        const { isLoading , articles, hasMore, screenSize, showNewTopicModal, showNewArticleModal, topics, dropDownTitle } = this.state;  
         const { loggedUser } = this.props;        
         return (
             <div className="homeArticlesList">
@@ -184,7 +185,7 @@ class HomeBody extends Component {
                                 <Row className="sortFilterRow">
                                     <TopicsDropdown size={screenSize} className="filterDropdown" topics={topics} handleFilterSelect={this.handleFilterSelect}/>                          
                                     <Button size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
-                                    <SortDropdown sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
+                                    <SortDropdown dropDownTitle={dropDownTitle} sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
                                 </Row>
                                 <Row className="articleListRow">                        
                                     {articles && <Col xs={9} className="articleListItem">                            
