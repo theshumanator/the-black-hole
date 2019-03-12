@@ -124,7 +124,7 @@ class SingleArticle extends Component {
                                     loggedUser === singleArticle.author && <Button size={screenSize} variant="danger" onClick={this.handleDelete} className="deleteArticleButton">Delete article</Button>
                                 }
                                 <p className="voteRequest">Tell us what you think of this article</p>
-                                <p><span className="likesItem">(Dis)Likes: </span><span>{singleArticle.votes}</span></p>
+                                <p><span className="likesItem">(Dis)Likes: </span><span data-cy="cyArticleVotes" >{singleArticle.votes}</span></p>
                                 {loggedUser && <VotingButtons size={screenSize} userVoted={userVoted} upVote="I like it" downVote="I loathe it" handleVote={this.handleVote}/>}                           
                                 <ArticleComments size={screenSize} article={singleArticle} loggedUser={loggedUser}/>                                                   
                             </div>                                    

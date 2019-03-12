@@ -39,15 +39,33 @@ describe( 'The black hole web tests', () => {
         cy.get( '[data-cy=jessjelly]' ).click();
         cy.contains( 'User dashboard: jessjelly' );
         cy.contains( 'Name: Jess Jelly' );
+    } );    
+    it( 'Visiting an article url will return article and comments', () => {
+        cy.server();
+        cy.visit( 'http://localhost:3000/articles/52' );
+        cy.contains( 'What is up with the cold weather' );
+        cy.contains( 'shumi comment on this' );
+        cy.contains( 'it is very cold' );
+    } );
+    it( 'Liking an articling increments the like count', () => {
+        cy.server();
+        cy.visit( 'http://localhost:3000' );
+        cy.get( '[data-cy=loginField]' ).type( 'shumi' );            
+        cy.get( '[data-cy=loginButton]' ).click();
+        cy.visit( 'http://localhost:3000/articles/52' );
+        cy.get( '[data-cy=cyArticleVotes]' ) ;
+        cy.get( '[data-cy=cyUpVote]' ).click();
+        cy.get( '[data-cy=cyArticleVotes]' ).should( 'contain', '15' );
     } );
 } );
 
-//data-cy="loginField"
+//data-cy="loginField" cyArticleVotes (Dis)Likes: 
 
 /* 
+data-cy="cyUpVote"
+data-cy="cyDownVote"
 To test:
 -signup
--open article
 -like article
 -comment on article
 -like a comment

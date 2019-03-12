@@ -22,6 +22,7 @@ class ArticleComments extends Component {
         sortOrder: 'desc', //default
         comments: [],
         reQuery: true,
+        dropDownTitle: 'Sort By',
         showNewCommentModal: false,        
         hasMore: true,
         isLoading: true,    
@@ -40,9 +41,9 @@ class ArticleComments extends Component {
         this.setState( { reQuery: true, isLoading: false } );
     }
 
-    handleSortSelect = ( eventKey ) => {
+    handleSortSelect = ( eventKey, e ) => {
         const sortArr = eventKey.split( ' ' );
-        this.setState( { sortByKey: sortArr[ 0 ], sortOrder: sortArr[ 1 ], reQuery: true } );
+        this.setState( { sortByKey: sortArr[ 0 ], sortOrder: sortArr[ 1 ], reQuery: true, dropDownTitle: e.target.text } );
     }
 
     handleScroll = throttle( ( ) => {           
@@ -117,7 +118,7 @@ class ArticleComments extends Component {
 
     render () {
         const { article, loggedUser, size } = this.props;        
-        const { comments, showNewCommentModal, isLoading, hasMore } = this.state;
+        const { comments, showNewCommentModal, isLoading, hasMore, dropDownTitle } = this.state;
         
         return (
             <div className="commentList">
@@ -131,7 +132,7 @@ class ArticleComments extends Component {
                                     loggedUser && <Button className="addButton" size={size} variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
                                 }    
                             </div>
-                            <SortDropdown className="commentSort" sortDropdowns={commentsSortDropdowns} handleSortSelect={this.handleSortSelect} size={size}/>
+                            <SortDropdown className="commentSort" dropDownTitle={dropDownTitle} sortDropdowns={commentsSortDropdowns} handleSortSelect={this.handleSortSelect} size={size}/>
                             <NewCommentForm showNewCommentModal={showNewCommentModal} loggedUser={loggedUser} articleId={article.article_id} 
                                 handleNewCommentClose={this.handleNewCommentClose}/>                           
                             <div className="commentListDiv">
