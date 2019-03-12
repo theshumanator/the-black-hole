@@ -11,11 +11,11 @@ const LoginForm = ( { handleLogin, handleChange, size, userInput } ) => {
                 <FormGroup controlId="username">
                     <Row>
                         <Col>
-                            <FormControl type="text" placeholder="E.g shumi" 
+                            <FormControl data-cy="loginField" type="text" placeholder="E.g shumi" 
                                 onChange={handleChange}/>
                         </Col>
                         <Col>
-                            <Button size={size} variant="primary" type="submit" disabled={userInput === ''}>Login</Button>
+                            <Button data-cy="loginButton" size={size} variant="primary" type="submit" disabled={userInput === ''}>Login</Button>
                         </Col>
                     </Row>                                                
                 </FormGroup>

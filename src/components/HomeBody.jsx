@@ -184,7 +184,7 @@ class HomeBody extends Component {
                                 </Row>
                                 <Row className="sortFilterRow">
                                     <TopicsDropdown size={screenSize} className="filterDropdown" topics={topics} handleFilterSelect={this.handleFilterSelect}/>                          
-                                    <Button size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
+                                    <Button data-cy="cyAllUsers" size={screenSize} className="allUsersButton" variant="primary" href="/users">Show all users</Button>
                                     <SortDropdown dropDownTitle={dropDownTitle} sortDropdowns={homeSortDropdowns} handleSortSelect={this.handleSortSelect} size={screenSize}/>                                                           
                                 </Row>
                                 <Row className="articleListRow">                        

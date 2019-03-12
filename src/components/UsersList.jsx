@@ -68,7 +68,7 @@ class UsersList extends Component {
                                     {users.map( ( user ) => {                            
                                         return (
                                             <ListGroup.Item key={user.username} className="userListItem">
-                                                <Link to={`/users/${ user.username }`}>{user.username}</Link>
+                                                <Link data-cy={user.username} to={`/users/${ user.username }`}>{user.username}</Link>
                                             </ListGroup.Item>
                                         );} )}
                                 </ListGroup>
