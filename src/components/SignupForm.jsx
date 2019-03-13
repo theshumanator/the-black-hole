@@ -80,10 +80,10 @@ class SignupForm extends Component {
               <Modal.Body>
                   <Form>
                       <Form.Group controlId="inputUsername">
-                          <FormControl type="text" placeholder="Enter your username (mandatory)" onChange={this.handleTextChange}/>
+                          <FormControl data-cy="inputUsername" type="text" placeholder="Enter your username (mandatory)" onChange={this.handleTextChange}/>
                       </Form.Group>
                       <Form.Group controlId="inputName">
-                          <FormControl type="text" placeholder="Enter your name (mandatory)" onChange={this.handleTextChange}/>
+                          <FormControl data-cy="inputName" type="text" placeholder="Enter your name (mandatory)" onChange={this.handleTextChange}/>
                       </Form.Group >
                       <Form.Group controlId="inputAvatar">
                           <FormControl type="text" placeholder="Enter your avatar url (optional)" onChange={this.handleTextChange}/>
@@ -91,14 +91,14 @@ class SignupForm extends Component {
                   </Form>
                   {
                       hasSignupError
-                          ? <Alert variant='danger'>Could not sign you up: {userAddError}</Alert>
+                          ? <Alert data-cy="signupError" variant='danger'>Could not sign you up: {userAddError}</Alert>
                           : newUserAdded
                               ? <Alert variant='success'>Sign up successful! You have also been logged in.</Alert>
                               : <Fragment/>                            
                   } 
               </Modal.Body>
               <Modal.Footer>
-                  <Button variant="primary" onClick={this.handleSignup} disabled={disabledSignup}>
+                  <Button data-cy="signMeUp" variant="primary" onClick={this.handleSignup} disabled={disabledSignup}>
            Sign up
                   </Button>
                   <Button variant="secondary" onClick={handleSignupClose}>

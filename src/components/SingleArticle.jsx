@@ -112,7 +112,7 @@ class SingleArticle extends Component {
                     !singleArticle || articleStr === null
                         ? <h3 className="noResults">Could not fetch article with id: {articleId}</h3>
                         : ( singleArticle.article_id )
-                            ? <div className="singleArticle">
+                            ? <div data-cy="singleArticle" className="singleArticle">
                                 <h3>{singleArticle.title}</h3>
                                 <p className="articleListItemTopic"><Link to={`/topics/${ singleArticle.topic }`} className="articleListItemTopic">{singleArticle.topic}</Link></p>
                                 <p className="articleListItemAuthor"><Link to={`/users/${ singleArticle.author }`} className="articleListItemAuthor">{singleArticle.author}</Link></p>

@@ -42,7 +42,7 @@ class ArticleComments extends Component {
     }
 
     handleSortSelect = ( eventKey, e ) => {
-        const sortArr = eventKey.split( ' ' );
+        const sortArr = eventKey.split( ' ' );        
         this.setState( { sortByKey: sortArr[ 0 ], sortOrder: sortArr[ 1 ], reQuery: true, dropDownTitle: e.target.text } );
     }
 
@@ -129,13 +129,13 @@ class ArticleComments extends Component {
                             <h3 className="articleCommentHeader">Article Comments</h3>
                             <div className="addSortComment">
                                 {
-                                    loggedUser && <Button className="addButton" size={size} variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
+                                    loggedUser && <Button data-cy="addCommentButton" className="addButton" size={size} variant="primary" onClick={this.handleAddNewComment}>Add a Comment</Button>
                                 }    
                             </div>
                             <SortDropdown className="commentSort" dropDownTitle={dropDownTitle} sortDropdowns={commentsSortDropdowns} handleSortSelect={this.handleSortSelect} size={size}/>
                             <NewCommentForm showNewCommentModal={showNewCommentModal} loggedUser={loggedUser} articleId={article.article_id} 
                                 handleNewCommentClose={this.handleNewCommentClose}/>                           
-                            <div className="commentListDiv">
+                            <div data-cy="cyCommentList" className="commentListDiv">
                                 {
                                     comments && comments.map( ( comment, idx ) => {                                
                                         return <SingleComment size={size} key={idx} articleId={article.article_id} comment={comment} loggedUser={loggedUser} 

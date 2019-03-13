@@ -6,7 +6,7 @@ const VotingButtons = ( { size, handleVote, upVote, downVote, userVoted } ) => {
     return (
         <Fragment>
             <Button data-cy="cyUpVote" size={size} disabled={userVoted} variant="outline-success" className = "commentLikeButton" onClick={() => handleVote( 1 )}>{upVote}</Button> 
-            <Button data-cy="cyDowVote" size={size} disabled={userVoted} variant="outline-danger" className = "prevNextGap commentLikeButton" onClick={() => handleVote( -1 )}>{downVote}</Button>
+            <Button data-cy="cyDownVote" size={size} disabled={userVoted} variant="outline-danger" className = "prevNextGap commentLikeButton" onClick={() => handleVote( -1 )}>{downVote}</Button>
         </Fragment>     
     ) ;   
 };

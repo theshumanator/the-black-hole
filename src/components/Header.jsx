@@ -114,7 +114,7 @@ class Header extends Component {
                         {
                             !localStorage.getItem( 'userLoggedIn' )
                                 ? <Col className="headerSignupCol">
-                                    <Button size={screenSize} variant="success" onClick={this.handleShowSignup}>Sign Up</Button>
+                                    <Button data-cy="signup" size={screenSize} variant="success" onClick={this.handleShowSignup}>Sign Up</Button>
                                     {
                                         showSignupModal && <SignupForm 
                                             showSignupModal={showSignupModal} 

@@ -1,6 +1,6 @@
 # The Black Hole
 
-This is a social news [website](https://the-black-hole.netlify.com/) serving as the frontend to the NC-Knews [API](https://shumanator-nc-knews.herokuapp.com/api) for which the git can be found [here](https://github.com/theshumanator/BE2-NC-Knews). 
+This is a social news [website](https://the-black-hole.netlify.com/) serving as the frontend to the NC-Knews [API](https://shumanator-nc-knews.herokuapp.com/api) for which the git can be found [here](https://github.com/theshumanator/the-black-hole-be). 
 
 The application allows you to post articles to new or existing topics and comment + vote on the articles.
 
@@ -43,6 +43,25 @@ To run the app:
 ```
 npm start
 ```
+
+## Tech used
+
+### Front end
+
+#### Frameworks
+The front-end was developed using React and most of the styling was done via React Bootstrap. I considered other frameworks such as semantics but I preferred the styling provided by React Bootstrap.
+
+#### Pagination vs Infinite Scrolling
+Because the back-end returns paginated results, I had a choice to implement infinite scrolling or pagination. I initially started with infinite scrolling but ran into issues so I switched to pagination then revisited infinite scrolling. The website now has infinite scrolling and shouldn't take more than half a second before it begins loading the new set of data.
+
+#### Testing
+Testing was done with Cypress. Given the limited time, not all of the test cases were incorporated.
+
+### Back end
+The database holding the article info is Postgres and Express was used to build the server. Supertest, Mocha and Chai were used for testing.
+
+### Sprint management
+A Trello board was used to track the todo list.
 
 ## Authors
 

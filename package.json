@@ -5,13 +5,12 @@
   "dependencies": {
     "@reach/router": "^1.2.1",
     "axios": "^0.18.0",
-    "bootstrap": "^4.3.1",    
+    "bootstrap": "^4.3.1",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "react": "^16.8.3",
     "react-bootstrap": "^1.0.0-beta.5",
     "react-dom": "^16.8.3",
-    "react-infinite-scroll-component": "^4.5.1",
     "react-moment": "^0.8.4",
     "react-scripts": "2.1.5"
   },

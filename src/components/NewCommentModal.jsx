@@ -74,7 +74,7 @@ class NewCommentModal extends Component {
                 <Modal.Body>
                     <Form>
                         <Form.Group controlId="formComment">
-                            <FormControl as="textarea" rows="3" placeholder="Enter your comment" onChange={this.handleCommentChange}/>
+                            <FormControl data-cy="formComment" as="textarea" rows="3" placeholder="Enter your comment" onChange={this.handleCommentChange}/>
                         </Form.Group>
                     </Form>
                     { 
@@ -86,7 +86,7 @@ class NewCommentModal extends Component {
                     }                   
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button disabled={commentBody === ''} variant="primary" onClick={this.handleAddNewComment}>
+                    <Button data-cy="postNewComment" disabled={commentBody === ''} variant="primary" onClick={this.handleAddNewComment}>
                         Post comment
                     </Button>
                     <Button variant="secondary" onClick={handleNewCommentClose}>
